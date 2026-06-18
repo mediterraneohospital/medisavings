@@ -73,6 +73,11 @@ function sortData(data) {
   return [...data].sort((a, b) => {
     let va = sortCol === 'total_saving' ? totalSaving(a) : a[sortCol];
     let vb = sortCol === 'total_saving' ? totalSaving(b) : b[sortCol];
+    if (va == null) va = sortDir === 'asc' ? '\uffff' : '';
+    if (vb == null) vb = sortDir === 'asc' ? '\uffff' : '';
+    if (typeof va === 'string' && typeof vb === 'string') {
+      return sortDir === 'asc' ? va.localeCompare(vb, 'el') : vb.localeCompare(va, 'el');
+    }
     if (va == null) va = sortDir === 'asc' ? Infinity : -Infinity;
     if (vb == null) vb = sortDir === 'asc' ? Infinity : -Infinity;
     return sortDir === 'asc' ? va - vb : vb - va;
@@ -158,7 +163,12 @@ document.querySelectorAll('th.sortable').forEach(th => {
   th.addEventListener('click', () => {
     const col = th.dataset.col;
     if (sortCol === col) sortDir = sortDir === 'desc' ? 'asc' : 'desc';
-    else { sortCol = col; sortDir = 'desc'; }
+    else { sortCol = col; sortDir = 'asc'; }
+    // Update indicators
+    document.querySelectorAll('th.sortable').forEach(t => {
+      t.textContent = t.textContent.replace(/ [▲▼]$/, '');
+    });
+    th.textContent += sortDir === 'asc' ? ' ▲' : ' ▼';
     renderTable(allData);
   });
 });
