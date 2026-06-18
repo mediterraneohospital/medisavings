@@ -59,7 +59,7 @@ async function loadForEdit(id) {
     'old_code','old_description','old_supplier','old_price',
     'new_code','new_description','new_supplier','new_price',
     'purchases_2024','purchases_2025_old','purchases_2025_new','purchases_2026_h1',
-    'consumption_2024','consumption_2025','consumption_2026',
+    'consumption_2024','consumption_2025','consumption_2026','consumption_2026_h1',
     'saving_from_purchases','category','status','change_date','notes'
   ];
 
