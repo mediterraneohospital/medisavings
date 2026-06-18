@@ -1,6 +1,6 @@
 // MediSavings - List Logic
 let allData = [];
-let sortCol = 'annual_saving_2025';
+let sortCol = 'total_saving';
 let sortDir = 'desc';
 
 async function loadData() {
@@ -21,16 +21,23 @@ async function loadData() {
   renderTable(allData);
 }
 
+function totalSaving(r) {
+  // Πραγματικό όφελος: αγορές 2025 + κατανάλωση Α΄ εξαμήνου 2026 × διαφορά τιμής
+  const s2025 = r.saving_from_purchases || 0;
+  const s2026h1 = (r.consumption_2026_h1 || 0) * (r.price_diff || 0);
+  return s2025 + s2026h1;
+}
+
 function renderStats(data) {
   const active = data.filter(r => r.status === 'active');
-  const totalSaving = active.reduce((s, r) => s + (r.annual_saving_2025 || 0), 0);
-  const totalPurchases = active.reduce((s, r) => s + (r.saving_from_purchases || 0), 0);
+  const total = active.reduce((s, r) => s + totalSaving(r), 0);
+  const total2025 = active.reduce((s, r) => s + (r.saving_from_purchases || 0), 0);
   const pcts = active.filter(r => r.price_reduction_pct).map(r => r.price_reduction_pct);
   const avgPct = pcts.length ? pcts.reduce((a, b) => a + b, 0) / pcts.length : 0;
 
   document.getElementById('statTotal').textContent = data.length;
-  document.getElementById('statSaving').textContent = formatEuro(totalSaving);
-  document.getElementById('statPurchases').textContent = formatEuro(totalPurchases);
+  document.getElementById('statSaving').textContent = formatEuro(total);
+  document.getElementById('statPurchases').textContent = formatEuro(total2025);
   document.getElementById('statAvgPct').textContent = formatPct(avgPct);
 }
 
@@ -64,7 +71,8 @@ function getFiltered() {
 
 function sortData(data) {
   return [...data].sort((a, b) => {
-    let va = a[sortCol], vb = b[sortCol];
+    let va = sortCol === 'total_saving' ? totalSaving(a) : a[sortCol];
+    let vb = sortCol === 'total_saving' ? totalSaving(b) : b[sortCol];
     if (va == null) va = sortDir === 'asc' ? Infinity : -Infinity;
     if (vb == null) vb = sortDir === 'asc' ? Infinity : -Infinity;
     return sortDir === 'asc' ? va - vb : vb - va;
@@ -89,7 +97,7 @@ function renderTable(data) {
 
   const tbody = document.getElementById('tableBody');
   tbody.innerHTML = sorted.map(r => {
-    const saving = r.annual_saving_2025;
+    const saving = totalSaving(r);
     const savingHtml = saving != null
       ? `<span class="saving-pill ${saving < 0 ? 'negative' : ''}">${saving >= 0 ? '▼' : '▲'} ${formatEuro(Math.abs(saving))}</span>`
       : '—';

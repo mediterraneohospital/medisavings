@@ -45,10 +45,31 @@
   <div id="loadingState" class="loading"><div class="spinner"></div><p>Φόρτωση...</p></div>
   <div id="content" style="display:none">
 
-    <!-- Big Saving -->
-    <div class="big-saving">
-      <div class="amount" id="bigSaving">—</div>
-      <div class="label">Ετήσια Εξοικονόμηση 2025 (βάσει κατανάλωσης)</div>
+    <!-- Saving Breakdown -->
+    <div class="form-card" style="margin-bottom:20px">
+      <div class="form-section-title">💰 Εξοικονόμηση</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+        <div class="num-card">
+          <div class="year">Όφελος Αγορών 2025</div>
+          <div class="qty green-text" id="d_sfp">—</div>
+          <div class="sub">πραγματικό</div>
+        </div>
+        <div class="num-card">
+          <div class="year">Όφελος Α΄ Εξαμήνου 2026</div>
+          <div class="qty green-text" id="d_saving_2026h1">—</div>
+          <div class="sub">πραγματικό</div>
+        </div>
+        <div class="num-card" style="background:var(--green-light);border:1px solid var(--green)">
+          <div class="year" style="color:var(--green)">Συνολική Εξοικονόμηση</div>
+          <div class="qty" style="color:var(--green);font-size:24px" id="d_total_saving">—</div>
+          <div class="sub">2025 + Α΄ εξάμηνο 2026</div>
+        </div>
+        <div class="num-card" style="background:var(--yellow-light)">
+          <div class="year" style="color:var(--yellow)">Projected 2026</div>
+          <div class="qty" style="color:var(--yellow)" id="d_projected">—</div>
+          <div class="sub">Α΄ εξάμηνο × 2 (εκτίμηση)</div>
+        </div>
+      </div>
     </div>
 
     <!-- Old vs New -->
@@ -73,11 +94,10 @@
 
     <!-- Price comparison -->
     <div class="form-card" style="margin-bottom:20px">
-      <div class="form-section-title">💰 Σύγκριση Τιμών</div>
+      <div class="form-section-title">📊 Σύγκριση Τιμών</div>
       <div style="display:flex; gap:32px; flex-wrap:wrap">
         <div class="preview-item"><span class="preview-label">Διαφορά Τιμής</span><span class="preview-value" id="d_diff">—</span></div>
         <div class="preview-item"><span class="preview-label">Μείωση %</span><span class="preview-value" id="d_pct">—</span></div>
-        <div class="preview-item"><span class="preview-label">Όφελος από Αγορές</span><span class="preview-value" id="d_sfp">—</span></div>
         <div class="preview-item"><span class="preview-label">Κατηγορία</span><span class="preview-value" id="d_cat">—</span></div>
         <div class="preview-item"><span class="preview-label">Κατάσταση</span><span id="d_status">—</span></div>
       </div>
@@ -92,7 +112,8 @@
         <div class="num-card"><div class="year">2026</div><div class="qty" id="d_c2026">—</div><div class="sub">Κατανάλωση</div></div>
         <div class="num-card"><div class="year">Αγορές 2024</div><div class="qty" id="d_p2024">—</div><div class="sub">τεμάχια</div></div>
         <div class="num-card"><div class="year">Αγορές 2025 (παλιό)</div><div class="qty" id="d_p2025o">—</div><div class="sub">τεμάχια</div></div>
-        <div class="num-card"><div class="year">Αγορές 2025 (νέο)</div><div class="qty" id="d_p2025n">—</div><div class="sub">τεμάχια</div></div>
+        <div class="num-card"><div class="year">Αγορές 2026 Α΄εξ.</div><div class="qty" id="d_p2026h1">—</div><div class="sub">τεμάχια</div></div>
+        <div class="num-card"><div class="year">Κατανάλωση 2026 Α΄εξ.</div><div class="qty" id="d_c2026h1">—</div><div class="sub">τεμάχια</div></div>
       </div>
     </div>
 
@@ -134,7 +155,6 @@ async function load() {
   document.getElementById('d_cost_new').textContent  = formatEuro(r.cost_new_price_2025);
   document.getElementById('d_diff').textContent      = formatEuro(r.price_diff);
   document.getElementById('d_pct').textContent       = formatPct(r.price_reduction_pct);
-  document.getElementById('d_sfp').textContent       = formatEuro(r.saving_from_purchases);
   document.getElementById('d_cat').textContent       = r.category || '—';
   document.getElementById('d_status').innerHTML      = statusBadge(r.status || 'active');
   document.getElementById('d_c2024').textContent     = formatNum(r.consumption_2024);
@@ -143,6 +163,18 @@ async function load() {
   document.getElementById('d_p2024').textContent     = formatNum(r.purchases_2024);
   document.getElementById('d_p2025o').textContent    = formatNum(r.purchases_2025_old);
   document.getElementById('d_p2025n').textContent    = formatNum(r.purchases_2025_new);
+  document.getElementById('d_p2026h1').textContent   = formatNum(r.purchases_2026_h1);
+  document.getElementById('d_c2026h1').textContent   = formatNum(r.consumption_2026_h1);
+
+  // Εξοικονόμηση
+  const sfp = r.saving_from_purchases || 0;
+  const saving2026h1 = (r.consumption_2026_h1 || 0) * (r.price_diff || 0);
+  const totalSav = sfp + saving2026h1;
+  const projected = saving2026h1 * 2;
+  document.getElementById('d_sfp').textContent          = formatEuro(sfp);
+  document.getElementById('d_saving_2026h1').textContent = formatEuro(saving2026h1 || null);
+  document.getElementById('d_total_saving').textContent  = formatEuro(totalSav);
+  document.getElementById('d_projected').textContent     = saving2026h1 ? formatEuro(projected) : '—';
 
   if (r.notes) {
     document.getElementById('notesCard').style.display = 'block';

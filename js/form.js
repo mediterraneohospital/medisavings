@@ -6,7 +6,7 @@ const editId = params.get('id');
 function recalc() {
   const op = parseFloat(document.getElementById('old_price').value);
   const np = parseFloat(document.getElementById('new_price').value);
-  const cons = parseFloat(document.getElementById('consumption_2025').value);
+  const cons2026h1 = parseFloat(document.getElementById('consumption_2026_h1').value);
   const purch2025new = parseFloat(document.getElementById('purchases_2025_new').value);
   const purch2025old = parseFloat(document.getElementById('purchases_2025_old').value);
 
@@ -21,28 +21,29 @@ function recalc() {
     document.getElementById('prevDiff').textContent = formatEuro(diff);
     document.getElementById('prevPct').textContent = formatPct(pct);
 
-    if (!isNaN(cons)) {
-      const costOld = cons * op;
-      const costNew = cons * np;
-      const saving = costOld - costNew;
-      document.getElementById('prevOldCost').textContent = formatEuro(costOld);
-      document.getElementById('prevNewCost').textContent = formatEuro(costNew);
-      document.getElementById('prevSaving').textContent = formatEuro(saving);
-    }
-
-    // Auto-fill saving_from_purchases if quantities present
+    // Όφελος από αγορές 2025
     const purchNew = isNaN(purch2025new) ? 0 : purch2025new;
     const purchOld = isNaN(purch2025old) ? 0 : purch2025old;
-    if ((purchNew + purchOld) > 0 && !isNaN(diff)) {
-      const sfp = purchNew * diff;
-      document.getElementById('saving_from_purchases').value = sfp.toFixed(2);
-    }
+    const sfp = (purchNew + purchOld) > 0 ? purchNew * diff : null;
+    if (sfp !== null) document.getElementById('saving_from_purchases').value = sfp.toFixed(2);
+
+    // Όφελος Α΄ εξαμήνου 2026
+    const saving2026h1 = !isNaN(cons2026h1) ? cons2026h1 * diff : 0;
+    document.getElementById('prevSaving2026').textContent = saving2026h1 ? formatEuro(saving2026h1) : '—';
+
+    // Συνολική εξοικονόμηση
+    const total = (sfp || 0) + saving2026h1;
+    document.getElementById('prevSaving').textContent = formatEuro(total);
+
+    // Κόστη
+    document.getElementById('prevOldCost').textContent = '—';
+    document.getElementById('prevNewCost').textContent = '—';
   } else {
     preview.style.display = 'none';
   }
 }
 
-['old_price','new_price','consumption_2025','purchases_2025_new','purchases_2025_old'].forEach(id => {
+['old_price','new_price','consumption_2026_h1','purchases_2025_new','purchases_2025_old'].forEach(id => {
   document.getElementById(id)?.addEventListener('input', recalc);
 });
 
@@ -115,6 +116,7 @@ async function saveRecord() {
     consumption_2024:     g('consumption_2024'),
     consumption_2025:     cons,
     consumption_2026:     g('consumption_2026'),
+    consumption_2026_h1:  g('consumption_2026_h1'),
     cost_old_price_2025:  costOld,
     cost_new_price_2025:  costNew,
     annual_saving_2025:   saving,

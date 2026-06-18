@@ -165,8 +165,8 @@ tr:hover td { background: var(--teal-subtle); }
 
 .arrow-col { text-align: center; color: var(--teal); font-size: 16px; width: 32px; }
 
-.price-old { color: var(--gray-400); text-decoration: line-through; font-size: 12px; }
-.price-new { color: var(--teal-dark); font-weight: 600; font-size: 13px; }
+.price-old { color: var(--red); font-weight: 600; font-size: 13px; }
+.price-new { color: var(--green); font-weight: 600; font-size: 13px; }
 
 .saving-pill {
   display: inline-flex;

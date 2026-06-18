@@ -13,9 +13,9 @@ import pandas as pd
 from supabase import create_client
 
 # ─── ΣΥΜΠΛΗΡΩΣΕ ΤΑ ΣΤΟΙΧΕΙΑ ΣΟΥ ───────────────────────────────────────────
-SUPABASE_URL = 'https://odtbtugzilxsfqxlpofq.supabase.co'
-SUPABASE_KEY = 'sb_publishable_ch-7C1ihpZRrxEhXFqV1xA_hXPwq61S'
-EXCEL_FILE = 'data.xlsx'
+SUPABASE_URL = "https://XXXXXXXXXXXX.supabase.co"
+SUPABASE_KEY = "your-anon-or-service-role-key"
+EXCEL_FILE   = "SHORT_REPORT_ΥΛΙΚΩΝ_ΚΑΤΑΝΑΛΩΣΗ_2.xlsx"
 # ────────────────────────────────────────────────────────────────────────────
 
 def clean(v):
