@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediSavings – Καταχώρηση Αλλαγής</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+  <span class="logo">Medi<span>Savings</span></span>
+  <a href="index.html">📋 Λίστα</a>
+  <a href="add.html" class="active">➕ Νέα Αλλαγή</a>
+  <span class="spacer"></span>
+  <span class="hospital">Mediterraneo Hospital</span>
+</nav>
+
+<div class="container">
+
+  <div class="page-header">
+    <div class="page-title" id="pageTitle">➕ Νέα Αλλαγή Υλικού</div>
+    <a href="index.html" class="btn btn-outline">← Πίσω στη Λίστα</a>
+  </div>
+
+  <!-- Saving Preview -->
+  <div class="saving-preview" id="savingPreview" style="display:none">
+    <div class="preview-item">
+      <span class="preview-label">Διαφορά Τιμής</span>
+      <span class="preview-value" id="prevDiff">—</span>
+    </div>
+    <div class="preview-item">
+      <span class="preview-label">Μείωση %</span>
+      <span class="preview-value" id="prevPct">—</span>
+    </div>
+    <div class="preview-item">
+      <span class="preview-label">Ετήσια Εξοικονόμηση 2025</span>
+      <span class="preview-value big" id="prevSaving">—</span>
+    </div>
+    <div class="preview-item">
+      <span class="preview-label">Κόστος Παλιά Τιμή</span>
+      <span class="preview-value" id="prevOldCost">—</span>
+    </div>
+    <div class="preview-item">
+      <span class="preview-label">Κόστος Νέα Τιμή</span>
+      <span class="preview-value" id="prevNewCost">—</span>
+    </div>
+  </div>
+
+  <!-- Two columns: Old | New -->
+  <div class="two-sections">
+
+    <!-- Παλιό Υλικό -->
+    <div class="form-card">
+      <div class="form-section-title">📦 Παλιό Υλικό</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Κωδικός *</label>
+          <input type="text" id="old_code" placeholder="π.χ. 11000032-1">
+        </div>
+        <div class="form-group">
+          <label>Εταιρεία</label>
+          <input type="text" id="old_supplier" placeholder="π.χ. Paul Hartmann">
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Περιγραφή *</label>
+          <input type="text" id="old_description" placeholder="Περιγραφή υλικού">
+        </div>
+        <div class="form-group">
+          <label>Παλιά Τιμή (€) *</label>
+          <input type="number" id="old_price" step="0.0001" placeholder="0.0000">
+        </div>
+      </div>
+    </div>
+
+    <!-- Νέο Υλικό -->
+    <div class="form-card">
+      <div class="form-section-title">✅ Νέο Υλικό</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Κωδικός *</label>
+          <input type="text" id="new_code" placeholder="π.χ. 11000032">
+        </div>
+        <div class="form-group">
+          <label>Εταιρεία</label>
+          <input type="text" id="new_supplier" placeholder="π.χ. ΤΑΜΠΟΥ">
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Περιγραφή</label>
+          <input type="text" id="new_description" placeholder="Περιγραφή νέου υλικού">
+        </div>
+        <div class="form-group">
+          <label>Νέα Τιμή (€) *</label>
+          <input type="number" id="new_price" step="0.0001" placeholder="0.0000">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Στοιχεία Κατανάλωσης -->
+  <div class="form-card">
+    <div class="form-section-title">📊 Ποσότητες & Κατανάλωση</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Αγορές 2024</label>
+        <input type="number" id="purchases_2024" placeholder="τεμάχια">
+      </div>
+      <div class="form-group">
+        <label>Αγορές 2025 (Παλιό)</label>
+        <input type="number" id="purchases_2025_old" placeholder="τεμάχια">
+      </div>
+      <div class="form-group">
+        <label>Αγορές 2025 (Νέο)</label>
+        <input type="number" id="purchases_2025_new" placeholder="τεμάχια">
+      </div>
+      <div class="form-group">
+        <label>Αγορές 2026 Α΄ εξάμηνο</label>
+        <input type="number" id="purchases_2026_h1" placeholder="τεμάχια">
+      </div>
+      <div class="form-group">
+        <label>Κατανάλωση 2024</label>
+        <input type="number" id="consumption_2024" placeholder="τεμάχια">
+      </div>
+      <div class="form-group">
+        <label>Κατανάλωση 2025</label>
+        <input type="number" id="consumption_2025" placeholder="τεμάχια" oninput="recalc()">
+      </div>
+      <div class="form-group">
+        <label>Κατανάλωση 2026</label>
+        <input type="number" id="consumption_2026" placeholder="τεμάχια">
+      </div>
+      <div class="form-group">
+        <label>Όφελος από Αγορές (€)</label>
+        <input type="number" id="saving_from_purchases" step="0.01" placeholder="αυτόματος υπολογισμός">
+        <span class="hint">Προαιρετικό — υπολογίζεται αυτόματα αν υπάρχουν ποσότητες</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Metadata -->
+  <div class="form-card">
+    <div class="form-section-title">🏷️ Πρόσθετα Στοιχεία</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Κατηγορία</label>
+        <select id="category">
+          <option value="">— Επιλογή —</option>
+          <option>Γάντια</option>
+          <option>Γάζες & Επιδέσμοι</option>
+          <option>Σύριγγες & Βελόνες</option>
+          <option>Καθετήρες</option>
+          <option>Αποστειρωμένα Πεδία</option>
+          <option>Ρούχα & Σκουφιά</option>
+          <option>Μάσκες & Φίλτρα</option>
+          <option>Υλικά Αναισθησίας</option>
+          <option>Υγιεινή & Καθαριότητα</option>
+          <option>Λοιπά Αναλώσιμα</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Κατάσταση</label>
+        <select id="status">
+          <option value="active">Ενεργό</option>
+          <option value="pending">Εκκρεμεί</option>
+          <option value="discontinued">Ανενεργό</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Ημερομηνία Αλλαγής</label>
+        <input type="date" id="change_date">
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Σημειώσεις</label>
+        <textarea id="notes" placeholder="Αιτιολογία αλλαγής, σχόλια..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div style="display:flex; gap:12px; justify-content:flex-end; margin-bottom:40px;">
+    <a href="index.html" class="btn btn-outline">Ακύρωση</a>
+    <button class="btn btn-primary" id="saveBtn" onclick="saveRecord()">💾 Αποθήκευση</button>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="js/form.js"></script>
+</body>
+</html>

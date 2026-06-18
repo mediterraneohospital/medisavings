@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediSavings – Λεπτομέρειες</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+    .detail-card { background: white; border-radius: 8px; box-shadow: var(--shadow); padding: 20px; }
+    .detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--gray-100); font-size: 13px; }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-row .lbl { color: var(--gray-600); }
+    .detail-row .val { font-weight: 500; text-align: right; max-width: 60%; }
+    .big-saving { text-align: center; padding: 20px; background: var(--green-light); border-radius: 8px; margin-bottom: 20px; }
+    .big-saving .amount { font-size: 36px; font-weight: 800; color: var(--green); }
+    .big-saving .label { color: var(--gray-600); font-size: 13px; margin-top: 4px; }
+    .numbers-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+    .num-card { background: var(--gray-50); border-radius: 8px; padding: 14px; text-align: center; }
+    .num-card .year { font-size: 11px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px; }
+    .num-card .qty { font-size: 20px; font-weight: 700; color: var(--gray-800); margin: 4px 0; }
+    .num-card .sub { font-size: 11px; color: var(--gray-400); }
+    @media(max-width:768px) { .detail-grid { grid-template-columns: 1fr; } .numbers-grid { grid-template-columns: 1fr 1fr; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <span class="logo">Medi<span>Savings</span></span>
+  <a href="index.html">📋 Λίστα</a>
+  <a href="add.html">➕ Νέα Αλλαγή</a>
+  <span class="spacer"></span>
+  <span class="hospital">Mediterraneo Hospital</span>
+</nav>
+
+<div class="container">
+  <div class="page-header">
+    <div class="page-title" id="pageTitle">Λεπτομέρειες Αλλαγής</div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-outline" id="editBtn">✏️ Επεξεργασία</button>
+      <button class="btn btn-outline" onclick="history.back()">← Πίσω</button>
+    </div>
+  </div>
+
+  <div id="loadingState" class="loading"><div class="spinner"></div><p>Φόρτωση...</p></div>
+  <div id="content" style="display:none">
+
+    <!-- Big Saving -->
+    <div class="big-saving">
+      <div class="amount" id="bigSaving">—</div>
+      <div class="label">Ετήσια Εξοικονόμηση 2025 (βάσει κατανάλωσης)</div>
+    </div>
+
+    <!-- Old vs New -->
+    <div class="detail-grid">
+      <div class="detail-card">
+        <div class="form-section-title">📦 Παλιό Υλικό</div>
+        <div class="detail-row"><span class="lbl">Κωδικός</span><span class="val" id="d_old_code">—</span></div>
+        <div class="detail-row"><span class="lbl">Περιγραφή</span><span class="val" id="d_old_desc">—</span></div>
+        <div class="detail-row"><span class="lbl">Εταιρεία</span><span class="val" id="d_old_sup">—</span></div>
+        <div class="detail-row"><span class="lbl">Τιμή</span><span class="val" id="d_old_price">—</span></div>
+        <div class="detail-row"><span class="lbl">Κόστος 2025 (παλιά τιμή)</span><span class="val" id="d_cost_old">—</span></div>
+      </div>
+      <div class="detail-card">
+        <div class="form-section-title">✅ Νέο Υλικό</div>
+        <div class="detail-row"><span class="lbl">Κωδικός</span><span class="val" id="d_new_code">—</span></div>
+        <div class="detail-row"><span class="lbl">Περιγραφή</span><span class="val" id="d_new_desc">—</span></div>
+        <div class="detail-row"><span class="lbl">Εταιρεία</span><span class="val" id="d_new_sup">—</span></div>
+        <div class="detail-row"><span class="lbl">Τιμή</span><span class="val" id="d_new_price">—</span></div>
+        <div class="detail-row"><span class="lbl">Κόστος 2025 (νέα τιμή)</span><span class="val" id="d_cost_new">—</span></div>
+      </div>
+    </div>
+
+    <!-- Price comparison -->
+    <div class="form-card" style="margin-bottom:20px">
+      <div class="form-section-title">💰 Σύγκριση Τιμών</div>
+      <div style="display:flex; gap:32px; flex-wrap:wrap">
+        <div class="preview-item"><span class="preview-label">Διαφορά Τιμής</span><span class="preview-value" id="d_diff">—</span></div>
+        <div class="preview-item"><span class="preview-label">Μείωση %</span><span class="preview-value" id="d_pct">—</span></div>
+        <div class="preview-item"><span class="preview-label">Όφελος από Αγορές</span><span class="preview-value" id="d_sfp">—</span></div>
+        <div class="preview-item"><span class="preview-label">Κατηγορία</span><span class="preview-value" id="d_cat">—</span></div>
+        <div class="preview-item"><span class="preview-label">Κατάσταση</span><span id="d_status">—</span></div>
+      </div>
+    </div>
+
+    <!-- Quantities -->
+    <div class="form-card" style="margin-bottom:20px">
+      <div class="form-section-title">📊 Κατανάλωση & Αγορές</div>
+      <div class="numbers-grid">
+        <div class="num-card"><div class="year">2024</div><div class="qty" id="d_c2024">—</div><div class="sub">Κατανάλωση</div></div>
+        <div class="num-card"><div class="year">2025</div><div class="qty" id="d_c2025">—</div><div class="sub">Κατανάλωση</div></div>
+        <div class="num-card"><div class="year">2026</div><div class="qty" id="d_c2026">—</div><div class="sub">Κατανάλωση</div></div>
+        <div class="num-card"><div class="year">Αγορές 2024</div><div class="qty" id="d_p2024">—</div><div class="sub">τεμάχια</div></div>
+        <div class="num-card"><div class="year">Αγορές 2025 (παλιό)</div><div class="qty" id="d_p2025o">—</div><div class="sub">τεμάχια</div></div>
+        <div class="num-card"><div class="year">Αγορές 2025 (νέο)</div><div class="qty" id="d_p2025n">—</div><div class="sub">τεμάχια</div></div>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="form-card" id="notesCard" style="display:none;margin-bottom:40px">
+      <div class="form-section-title">📝 Σημειώσεις</div>
+      <p id="d_notes" style="font-size:13px;color:var(--gray-600);line-height:1.6"></p>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script>
+const id = new URLSearchParams(window.location.search).get('id');
+if (!id) window.location.href = 'index.html';
+
+document.getElementById('editBtn').onclick = () => window.location.href = `add.html?id=${id}`;
+
+async function load() {
+  const { data: r, error } = await db.from('material_changes').select('*').eq('id', id).single();
+  document.getElementById('loadingState').style.display = 'none';
+  if (error || !r) { alert('Δεν βρέθηκε εγγραφή'); history.back(); return; }
+
+  document.getElementById('content').style.display = 'block';
+  document.getElementById('pageTitle').textContent = r.old_description || 'Λεπτομέρειες';
+
+  document.getElementById('bigSaving').textContent = formatEuro(r.annual_saving_2025);
+  document.getElementById('d_old_code').textContent  = r.old_code || '—';
+  document.getElementById('d_old_desc').textContent  = r.old_description || '—';
+  document.getElementById('d_old_sup').textContent   = r.old_supplier || '—';
+  document.getElementById('d_old_price').textContent = formatEuro(r.old_price);
+  document.getElementById('d_cost_old').textContent  = formatEuro(r.cost_old_price_2025);
+  document.getElementById('d_new_code').textContent  = r.new_code || '—';
+  document.getElementById('d_new_desc').textContent  = r.new_description || '—';
+  document.getElementById('d_new_sup').textContent   = r.new_supplier || '—';
+  document.getElementById('d_new_price').textContent = formatEuro(r.new_price);
+  document.getElementById('d_cost_new').textContent  = formatEuro(r.cost_new_price_2025);
+  document.getElementById('d_diff').textContent      = formatEuro(r.price_diff);
+  document.getElementById('d_pct').textContent       = formatPct(r.price_reduction_pct);
+  document.getElementById('d_sfp').textContent       = formatEuro(r.saving_from_purchases);
+  document.getElementById('d_cat').textContent       = r.category || '—';
+  document.getElementById('d_status').innerHTML      = statusBadge(r.status || 'active');
+  document.getElementById('d_c2024').textContent     = formatNum(r.consumption_2024);
+  document.getElementById('d_c2025').textContent     = formatNum(r.consumption_2025);
+  document.getElementById('d_c2026').textContent     = formatNum(r.consumption_2026);
+  document.getElementById('d_p2024').textContent     = formatNum(r.purchases_2024);
+  document.getElementById('d_p2025o').textContent    = formatNum(r.purchases_2025_old);
+  document.getElementById('d_p2025n').textContent    = formatNum(r.purchases_2025_new);
+
+  if (r.notes) {
+    document.getElementById('notesCard').style.display = 'block';
+    document.getElementById('d_notes').textContent = r.notes;
+  }
+}
+
+load();
+</script>
+</body>
+</html>

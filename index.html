@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediSavings – Αλλαγές Υλικών</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+  <span class="logo">Medi<span>Savings</span></span>
+  <a href="index.html" class="active">📋 Λίστα</a>
+  <a href="add.html">➕ Νέα Αλλαγή</a>
+  <span class="spacer"></span>
+  <span class="hospital">Mediterraneo Hospital</span>
+</nav>
+
+<div class="container">
+
+  <!-- Stats Bar -->
+  <div class="stats-bar" id="statsBar">
+    <div class="stat-card">
+      <div class="stat-label">Σύνολο Αλλαγών</div>
+      <div class="stat-value" id="statTotal">—</div>
+      <div class="stat-sub">καταχωρημένες</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Ετήσια Εξοικονόμηση 2025</div>
+      <div class="stat-value green" id="statSaving">—</div>
+      <div class="stat-sub">βάσει κατανάλωσης</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Όφελος από Αγορές</div>
+      <div class="stat-value green" id="statPurchases">—</div>
+      <div class="stat-sub">πραγματικό 2025</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Μ.Ο. Μείωση Τιμής</div>
+      <div class="stat-value" id="statAvgPct">—</div>
+      <div class="stat-sub">ανά αλλαγή υλικού</div>
+    </div>
+  </div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-title">
+      Αλλαγές Υλικών
+      <small id="countLabel"></small>
+    </div>
+    <a href="add.html" class="btn btn-primary">➕ Νέα Αλλαγή</a>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <label>🔍</label>
+    <input type="search" id="searchInput" placeholder="Αναζήτηση περιγραφή, κωδικό, εταιρεία...">
+
+    <label>Κατάσταση</label>
+    <select id="filterStatus">
+      <option value="">Όλα</option>
+      <option value="active">Ενεργά</option>
+      <option value="discontinued">Ανενεργά</option>
+      <option value="pending">Εκκρεμή</option>
+    </select>
+
+    <label>Εταιρεία (παλιά)</label>
+    <select id="filterSupplier">
+      <option value="">Όλες</option>
+    </select>
+
+    <div class="filter-spacer"></div>
+
+    <button class="btn btn-outline btn-sm" id="clearFilters">✕ Καθαρισμός</button>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <div id="loadingState" class="loading">
+      <div class="spinner"></div>
+      <p>Φόρτωση δεδομένων...</p>
+    </div>
+    <div id="emptyState" class="empty-state" style="display:none">
+      <div class="icon">📦</div>
+      <p>Δεν βρέθηκαν αλλαγές υλικών</p>
+    </div>
+    <table id="mainTable" style="display:none">
+      <thead>
+        <tr>
+          <th>Παλιό Υλικό</th>
+          <th class="arrow-col"></th>
+          <th>Νέο Υλικό</th>
+          <th class="sortable" data-col="old_price">Παλιά Τιμή</th>
+          <th class="sortable" data-col="new_price">Νέα Τιμή</th>
+          <th class="sortable" data-col="price_reduction_pct">Μείωση</th>
+          <th class="sortable" data-col="annual_saving_2025">Εξοικον. 2025</th>
+          <th>Κατάσταση</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="js/list.js"></script>
+</body>
+</html>
