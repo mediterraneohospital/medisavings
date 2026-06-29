@@ -1,13 +1,13 @@
 // MediSavings - List Logic
 let allData = [];
-let sortCol = 'total_saving';
-let sortDir = 'desc';
+let sortCol = 'sort_order';
+let sortDir = 'asc';
 
 async function loadData() {
   const { data, error } = await db
     .from('material_changes')
     .select('*')
-    .order('annual_saving_2025', { ascending: false, nullsFirst: false });
+    .order('sort_order', { ascending: true, nullsFirst: false });
 
   if (error) {
     document.getElementById('loadingState').innerHTML =
@@ -108,6 +108,7 @@ function renderTable(data) {
       : '—';
 
     return `<tr>
+      <td style="text-align:center;color:var(--gray-400);font-size:12px;font-weight:600">${r.sort_order ?? '—'}</td>
       <td>
         <div class="item-code">${esc(r.old_code)}</div>
         <div class="item-desc">${esc(r.old_description)}</div>
