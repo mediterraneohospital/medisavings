@@ -101,14 +101,15 @@ function renderTable(data) {
   document.getElementById('mainTable').style.display = 'table';
 
   const tbody = document.getElementById('tableBody');
-  tbody.innerHTML = sorted.map(r => {
+  tbody.innerHTML = sorted.map((r, idx) => {
+    const aa = idx + 1;
     const saving = totalSaving(r);
     const savingHtml = saving != null
       ? `<span class="saving-pill ${saving < 0 ? 'negative' : ''}">${saving >= 0 ? '▼' : '▲'} ${formatEuro(Math.abs(saving))}</span>`
       : '—';
 
     return `<tr>
-      <td style="text-align:center;color:var(--gray-400);font-size:12px;font-weight:600">${r.sort_order ?? '—'}</td>
+      <td style="text-align:center;color:var(--gray-400);font-size:12px;font-weight:600">${aa}</td>
       <td>
         <div class="item-code">${esc(r.old_code)}</div>
         <div class="item-desc">${esc(r.old_description)}</div>
