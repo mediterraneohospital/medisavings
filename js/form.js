@@ -75,38 +75,30 @@ async function loadForEdit(id) {
   const { data, error } = await db.from('material_changes').select('*').eq('id', id).single();
   if (error || !data) { showToast('Σφάλμα φόρτωσης', 'error'); return; }
 
-  // Τύπος — πρώτα για να εμφανιστεί το σωστό section
   const type = data.change_type || 'substitution';
-  document.getElementById(type === 'elimination' ? 'type_elimination' : 'type_substitution').checked = true;
-  onTypeChange();
 
-  // Κοινά πεδία (πάντα υπάρχουν)
-  const common = [
+  // Γεμίζουμε ΟΛΑ τα πεδία πρώτα
+  const allFields = [
     'old_code','old_description','old_supplier','old_price',
     'new_code','new_description','new_supplier','new_price',
-    'category','status','change_date','notes'
+    'purchases_2024','purchases_2025_old','purchases_2025_new','purchases_2026_h1',
+    'consumption_2024','consumption_2025','consumption_2026','consumption_2026_h1',
+    'annual_elimination_saving','category','status','change_date','notes'
   ];
-  common.forEach(f => {
+  allFields.forEach(f => {
     const el = document.getElementById(f);
     if (el && data[f] != null) el.value = data[f];
   });
 
-  if (type === 'substitution') {
-    // Πεδία αντικατάστασης
-    const substFields = [
-      'purchases_2024','purchases_2025_old','purchases_2025_new','purchases_2026_h1',
-      'consumption_2024','consumption_2025','consumption_2026','consumption_2026_h1'
-    ];
-    substFields.forEach(f => {
-      const el = document.getElementById(f);
-      if (el && data[f] != null) el.value = data[f];
-    });
-  } else {
-    // Πεδία κατάργησης
+  // Για κατάργηση, γεμίζουμε και τα elim πεδία
+  if (type === 'elimination') {
     if (data.consumption_2024 != null) document.getElementById('consumption_2024_elim').value = data.consumption_2024;
     if (data.consumption_2025 != null) document.getElementById('consumption_2025_elim').value = data.consumption_2025;
-    if (data.annual_elimination_saving != null) document.getElementById('annual_elimination_saving').value = data.annual_elimination_saving;
   }
+
+  // Μετά αλλάζουμε τον τύπο και εμφανίζουμε το σωστό section
+  document.getElementById(type === 'elimination' ? 'type_elimination' : 'type_substitution').checked = true;
+  onTypeChange();
 
   recalc();
 }
