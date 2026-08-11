@@ -41,6 +41,7 @@
     <div style="display:flex;gap:10px">
       <button class="btn btn-outline" id="editBtn">✏️ Επεξεργασία</button>
       <button class="btn btn-outline" onclick="history.back()">← Πίσω</button>
+      <button class="btn" style="background:var(--red);color:white" onclick="deleteRecord()">🗑️ Διαγραφή</button>
     </div>
   </div>
 
@@ -148,6 +149,14 @@ var id = new URLSearchParams(window.location.search).get('id');
 if (!id) window.location.href = 'index.html';
 document.getElementById('editBtn').onclick = function() { window.location.href = 'add.html?id=' + id; };
 
+async function deleteRecord() {
+  if (!confirm('Διαγραφή αυτής της εγγραφής; Η ενέργεια δεν αναιρείται.')) return;
+  await db.from('material_periods').delete().eq('change_id', id);
+  var res = await db.from('material_changes').delete().eq('id', id);
+  if (res.error) { alert('Σφάλμα διαγραφής: ' + res.error.message); return; }
+  window.location.href = 'index.html';
+}
+
 async function load() {
   var results = await Promise.all([
     db.from('material_changes').select('*').eq('id', id).single(),
@@ -178,8 +187,14 @@ async function load() {
   document.getElementById('d_diff').textContent      = formatEuro(r.price_diff);
   document.getElementById('d_pct').textContent       = formatPct(r.price_reduction_pct);
   document.getElementById('d_cat').textContent       = r.category || '—';
-  document.getElementById('d_status').innerHTML      = statusBadge(r.status || 'active');
-  if (r.is_discontinued) document.getElementById('d_disc').innerHTML = '<span style="color:var(--red);font-size:11px">Καταργημένο</span>';
+
+  // Κατάσταση: αν καταργημένο, δείχνει μόνο "Καταργημένο" σε κόκκινο
+  if (r.is_discontinued) {
+    document.getElementById('d_status').innerHTML = '<span class="badge badge-discontinued">Καταργημένο 🚫</span>';
+  } else {
+    document.getElementById('d_status').innerHTML = statusBadge(r.status || 'active');
+  }
+  document.getElementById('d_disc').textContent = '';
 
   // Κατανάλωση
   document.getElementById('d_c2024').textContent   = formatNum(r.consumption_2024);
@@ -187,9 +202,37 @@ async function load() {
   document.getElementById('d_c2026h1').textContent = formatNum(r.consumption_2026_h1);
   document.getElementById('d_c2026').textContent   = formatNum(r.consumption_2026);
 
-  // Περίοδοι
+  // Ιστορικό Περιόδων
   var tbody = document.getElementById('periodsBody');
   var totalSaving = 0;
+
+  // Πληροφοριακές γραμμές: 2024 και 2025 παλιό
+  if (r.purchases_2024 != null) {
+    var tr0 = document.createElement('tr');
+    tr0.style.color = 'var(--gray-400)';
+    tr0.style.fontStyle = 'italic';
+    tr0.innerHTML =
+      '<td>2024 <span style="font-size:10px">(πληρ.)</span></td>' +
+      '<td>' + formatNum(r.purchases_2024) + '</td>' +
+      '<td>' + formatEuro(r.old_price) + '</td>' +
+      '<td style="color:var(--gray-300)">—</td>' +
+      '<td style="font-size:11px">Αγορές με παλιά τιμή</td>';
+    tbody.appendChild(tr0);
+  }
+  if (r.purchases_2025_old != null) {
+    var tr1 = document.createElement('tr');
+    tr1.style.color = 'var(--gray-400)';
+    tr1.style.fontStyle = 'italic';
+    tr1.innerHTML =
+      '<td>2025 παλιό <span style="font-size:10px">(πληρ.)</span></td>' +
+      '<td>' + formatNum(r.purchases_2025_old) + '</td>' +
+      '<td>' + formatEuro(r.old_price) + '</td>' +
+      '<td style="color:var(--gray-300)">—</td>' +
+      '<td style="font-size:11px">Αγορές με παλιά τιμή</td>';
+    tbody.appendChild(tr1);
+  }
+
+  // Κανονικές περίοδοι
   (periods || []).forEach(function(p) {
     totalSaving += (p.saving || 0);
     var tr = document.createElement('tr');

@@ -139,7 +139,7 @@ function renderTable(data) {
       <td><span class="price-new">${formatEuro(r.new_price)}</span></td>
       <td>${r.price_reduction_pct != null ? `<strong style="color:var(--green)">${formatPct(r.price_reduction_pct)}</strong>` : '—'}</td>
       <td>${savingHtml}</td>
-      <td>${statusBadge(r.status || 'active')}</td>
+      <td>${isDisc ? '<span class="badge badge-discontinued">Καταργημένο 🚫</span>' : statusBadge(r.status || 'active')}</td>
       <td>
         <button class="btn btn-outline btn-sm btn-icon" onclick="openDetail('${r.id}')" title="Λεπτομέρειες">🔍</button>
         <button class="btn btn-outline btn-sm btn-icon" onclick="editRecord('${r.id}')"  title="Επεξεργασία">✏️</button>
