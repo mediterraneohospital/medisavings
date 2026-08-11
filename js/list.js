@@ -22,12 +22,13 @@ async function loadData() {
 }
 
 function saving2025(r) {
-  // Αγορές νέου 2025 × διαφορά τιμής
   return (r.purchases_2025_new || 0) * (r.price_diff || 0);
 }
 
 function saving2026h1(r) {
-  // Αγορές 2026 Α΄εξ. × διαφορά τιμής
+  if (r.change_type === 'elimination') {
+    return (r.estimated_consumption_2026_h1 || 0) * (r.new_price || 0);
+  }
   return (r.purchases_2026_h1 || 0) * (r.price_diff || 0);
 }
 
@@ -107,10 +108,10 @@ function renderTable(data) {
 
   const tbody = document.getElementById('tableBody');
   tbody.innerHTML = sorted.map((r, idx) => {
-    const aa     = idx + 1;
-    const saving = totalSaving(r);
-    const savingHtml = `<span class="saving-pill ${saving < 0 ? 'negative' : ''}">
-      ${saving >= 0 ? '▼' : '▲'} ${formatEuro(Math.abs(saving))}</span>`;
+    const aa      = idx + 1;
+    const saving  = totalSaving(r);
+    const isElim  = r.change_type === 'elimination';
+    const savingHtml = `<span class="saving-pill ${saving < 0 ? 'negative' : ''}">${saving >= 0 ? '▼' : '▲'} ${formatEuro(Math.abs(saving))}</span>${isElim ? ' <span title="Κατάργηση" style="font-size:11px">🚫</span>' : ''}`;
 
     return `<tr>
       <td style="text-align:center;color:var(--gray-400);font-size:12px;font-weight:600">${aa}</td>
