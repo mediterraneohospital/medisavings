@@ -34,7 +34,11 @@
       <span class="preview-value" id="prevPct">—</span>
     </div>
     <div class="preview-item">
-      <span class="preview-label">Όφελος Α΄ εξαμήνου 2026</span>
+      <span class="preview-label">Όφελος Αγορών 2025</span>
+      <span class="preview-value" id="prevSaving2025">—</span>
+    </div>
+    <div class="preview-item">
+      <span class="preview-label">Όφελος Αγορών 2026 Α΄εξ.</span>
       <span class="preview-value" id="prevSaving2026">—</span>
     </div>
     <div class="preview-item">
@@ -42,19 +46,13 @@
       <span class="preview-value big" id="prevSaving">—</span>
     </div>
     <div class="preview-item">
-      <span class="preview-label">Κόστος Παλιά Τιμή</span>
-      <span class="preview-value" id="prevOldCost">—</span>
-    </div>
-    <div class="preview-item">
-      <span class="preview-label">Κόστος Νέα Τιμή</span>
-      <span class="preview-value" id="prevNewCost">—</span>
+      <span class="preview-label">Projected 2026</span>
+      <span class="preview-value" id="prevProjected" style="color:var(--yellow)">—</span>
     </div>
   </div>
 
   <!-- Two columns: Old | New -->
   <div class="two-sections">
-
-    <!-- Παλιό Υλικό -->
     <div class="form-card">
       <div class="form-section-title">📦 Παλιό Υλικό</div>
       <div class="form-grid">
@@ -77,7 +75,6 @@
       </div>
     </div>
 
-    <!-- Νέο Υλικό -->
     <div class="form-card">
       <div class="form-section-title">✅ Νέο Υλικό</div>
       <div class="form-grid">
@@ -101,7 +98,7 @@
     </div>
   </div>
 
-  <!-- Στοιχεία Κατανάλωσης -->
+  <!-- Ποσότητες & Κατανάλωση -->
   <div class="form-card">
     <div class="form-section-title">📊 Ποσότητες & Κατανάλωση</div>
     <div class="form-grid">
@@ -116,10 +113,12 @@
       <div class="form-group">
         <label>Αγορές 2025 (Νέο)</label>
         <input type="number" id="purchases_2025_new" placeholder="τεμάχια">
+        <span class="hint">Για υπολογισμό οφέλους 2025</span>
       </div>
       <div class="form-group">
         <label>Αγορές 2026 Α΄ εξάμηνο</label>
         <input type="number" id="purchases_2026_h1" placeholder="τεμάχια">
+        <span class="hint">Για υπολογισμό οφέλους 2026</span>
       </div>
       <div class="form-group">
         <label>Κατανάλωση 2024</label>
@@ -127,21 +126,16 @@
       </div>
       <div class="form-group">
         <label>Κατανάλωση 2025</label>
-        <input type="number" id="consumption_2025" placeholder="τεμάχια" oninput="recalc()">
+        <input type="number" id="consumption_2025" placeholder="τεμάχια">
       </div>
       <div class="form-group">
         <label>Κατανάλωση 2026 Α΄ Εξάμηνο</label>
-        <input type="number" id="consumption_2026_h1" placeholder="τεμάχια" oninput="recalc()">
-        <span class="hint">Για υπολογισμό πραγματικού οφέλους 2026</span>
+        <input type="number" id="consumption_2026_h1" placeholder="τεμάχια">
+        <span class="hint">Πληροφοριακό</span>
       </div>
       <div class="form-group">
         <label>Κατανάλωση 2026</label>
         <input type="number" id="consumption_2026" placeholder="τεμάχια">
-      </div>
-      <div class="form-group">
-        <label>Όφελος από Αγορές (€)</label>
-        <input type="number" id="saving_from_purchases" step="0.01" placeholder="αυτόματος υπολογισμός">
-        <span class="hint">Προαιρετικό — υπολογίζεται αυτόματα αν υπάρχουν ποσότητες</span>
       </div>
     </div>
   </div>
@@ -185,7 +179,6 @@
     </div>
   </div>
 
-  <!-- Actions -->
   <div style="display:flex; gap:12px; justify-content:flex-end; margin-bottom:40px;">
     <a href="index.html" class="btn btn-outline">Ακύρωση</a>
     <button class="btn btn-primary" id="saveBtn" onclick="saveRecord()">💾 Αποθήκευση</button>

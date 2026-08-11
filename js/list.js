@@ -21,24 +21,31 @@ async function loadData() {
   renderTable(allData);
 }
 
+function saving2025(r) {
+  // Αγορές νέου 2025 × διαφορά τιμής
+  return (r.purchases_2025_new || 0) * (r.price_diff || 0);
+}
+
+function saving2026h1(r) {
+  // Αγορές 2026 Α΄εξ. × διαφορά τιμής
+  return (r.purchases_2026_h1 || 0) * (r.price_diff || 0);
+}
+
 function totalSaving(r) {
-  // Πραγματικό όφελος: αγορές 2025 + κατανάλωση Α΄ εξαμήνου 2026 × διαφορά τιμής
-  const s2025 = r.saving_from_purchases || 0;
-  const s2026h1 = (r.consumption_2026_h1 || 0) * (r.price_diff || 0);
-  return s2025 + s2026h1;
+  return saving2025(r) + saving2026h1(r);
 }
 
 function renderStats(data) {
   const active = data.filter(r => r.status === 'active');
-  const total = active.reduce((s, r) => s + totalSaving(r), 0);
-  const total2025 = active.reduce((s, r) => s + (r.saving_from_purchases || 0), 0);
-  const pcts = active.filter(r => r.price_reduction_pct).map(r => r.price_reduction_pct);
+  const total  = active.reduce((s, r) => s + totalSaving(r), 0);
+  const tot25  = active.reduce((s, r) => s + saving2025(r), 0);
+  const pcts   = active.filter(r => r.price_reduction_pct).map(r => r.price_reduction_pct);
   const avgPct = pcts.length ? pcts.reduce((a, b) => a + b, 0) / pcts.length : 0;
 
-  document.getElementById('statTotal').textContent = data.length;
-  document.getElementById('statSaving').textContent = formatEuro(total);
-  document.getElementById('statPurchases').textContent = formatEuro(total2025);
-  document.getElementById('statAvgPct').textContent = formatPct(avgPct);
+  document.getElementById('statTotal').textContent     = data.length;
+  document.getElementById('statSaving').textContent    = formatEuro(total);
+  document.getElementById('statPurchases').textContent = formatEuro(tot25);
+  document.getElementById('statAvgPct').textContent    = formatPct(avgPct);
 }
 
 function populateSupplierFilter(data) {
@@ -46,20 +53,19 @@ function populateSupplierFilter(data) {
   const sel = document.getElementById('filterSupplier');
   suppliers.forEach(s => {
     const o = document.createElement('option');
-    o.value = s;
-    o.textContent = s;
+    o.value = s; o.textContent = s;
     sel.appendChild(o);
   });
 }
 
 function getFiltered() {
-  const search = document.getElementById('searchInput').value.toLowerCase();
-  const status = document.getElementById('filterStatus').value;
+  const search   = document.getElementById('searchInput').value.toLowerCase();
+  const status   = document.getElementById('filterStatus').value;
   const supplier = document.getElementById('filterSupplier').value;
 
   return allData.filter(r => {
-    if (status && r.status !== status) return false;
-    if (supplier && r.old_supplier !== supplier) return false;
+    if (status   && r.status       !== status)   return false;
+    if (supplier && r.old_supplier !== supplier)  return false;
     if (search) {
       const hay = [r.old_code, r.old_description, r.new_code, r.new_description,
                    r.old_supplier, r.new_supplier].join(' ').toLowerCase();
@@ -75,9 +81,8 @@ function sortData(data) {
     let vb = sortCol === 'total_saving' ? totalSaving(b) : b[sortCol];
     if (va == null) va = sortDir === 'asc' ? '\uffff' : '';
     if (vb == null) vb = sortDir === 'asc' ? '\uffff' : '';
-    if (typeof va === 'string' && typeof vb === 'string') {
+    if (typeof va === 'string' && typeof vb === 'string')
       return sortDir === 'asc' ? va.localeCompare(vb, 'el') : vb.localeCompare(va, 'el');
-    }
     if (va == null) va = sortDir === 'asc' ? Infinity : -Infinity;
     if (vb == null) vb = sortDir === 'asc' ? Infinity : -Infinity;
     return sortDir === 'asc' ? va - vb : vb - va;
@@ -86,7 +91,7 @@ function sortData(data) {
 
 function renderTable(data) {
   const filtered = getFiltered();
-  const sorted = sortData(filtered);
+  const sorted   = sortData(filtered);
 
   document.getElementById('loadingState').style.display = 'none';
   document.getElementById('countLabel').textContent = `${sorted.length} εγγραφές`;
@@ -98,15 +103,14 @@ function renderTable(data) {
   }
 
   document.getElementById('emptyState').style.display = 'none';
-  document.getElementById('mainTable').style.display = 'table';
+  document.getElementById('mainTable').style.display  = 'table';
 
   const tbody = document.getElementById('tableBody');
   tbody.innerHTML = sorted.map((r, idx) => {
-    const aa = idx + 1;
+    const aa     = idx + 1;
     const saving = totalSaving(r);
-    const savingHtml = saving != null
-      ? `<span class="saving-pill ${saving < 0 ? 'negative' : ''}">${saving >= 0 ? '▼' : '▲'} ${formatEuro(Math.abs(saving))}</span>`
-      : '—';
+    const savingHtml = `<span class="saving-pill ${saving < 0 ? 'negative' : ''}">
+      ${saving >= 0 ? '▼' : '▲'} ${formatEuro(Math.abs(saving))}</span>`;
 
     return `<tr>
       <td style="text-align:center;color:var(--gray-400);font-size:12px;font-weight:600">${aa}</td>
@@ -123,16 +127,14 @@ function renderTable(data) {
       </td>
       <td><span class="price-old">${formatEuro(r.old_price)}</span></td>
       <td><span class="price-new">${formatEuro(r.new_price)}</span></td>
-      <td>
-        ${r.price_reduction_pct != null
-          ? `<strong style="color:var(--green)">${formatPct(r.price_reduction_pct)}</strong>`
-          : '—'}
-      </td>
+      <td>${r.price_reduction_pct != null
+        ? `<strong style="color:var(--green)">${formatPct(r.price_reduction_pct)}</strong>`
+        : '—'}</td>
       <td>${savingHtml}</td>
       <td>${statusBadge(r.status || 'active')}</td>
       <td>
         <button class="btn btn-outline btn-sm btn-icon" onclick="openDetail('${r.id}')" title="Λεπτομέρειες">🔍</button>
-        <button class="btn btn-outline btn-sm btn-icon" onclick="editRecord('${r.id}')" title="Επεξεργασία">✏️</button>
+        <button class="btn btn-outline btn-sm btn-icon" onclick="editRecord('${r.id}')"  title="Επεξεργασία">✏️</button>
       </td>
     </tr>`;
   }).join('');
@@ -141,22 +143,16 @@ function renderTable(data) {
 function esc(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
-
-function openDetail(id) {
-  window.location.href = `detail.html?id=${id}`;
-}
-
-function editRecord(id) {
-  window.location.href = `add.html?id=${id}`;
-}
+function openDetail(id) { window.location.href = `detail.html?id=${id}`; }
+function editRecord(id)  { window.location.href = `add.html?id=${id}`; }
 
 // ── Event Listeners ──────────────────────────────────────
-document.getElementById('searchInput').addEventListener('input', () => renderTable(allData));
+document.getElementById('searchInput').addEventListener('input',  () => renderTable(allData));
 document.getElementById('filterStatus').addEventListener('change', () => renderTable(allData));
-document.getElementById('filterSupplier').addEventListener('change', () => renderTable(allData));
+document.getElementById('filterSupplier').addEventListener('change',() => renderTable(allData));
 document.getElementById('clearFilters').addEventListener('click', () => {
-  document.getElementById('searchInput').value = '';
-  document.getElementById('filterStatus').value = '';
+  document.getElementById('searchInput').value    = '';
+  document.getElementById('filterStatus').value   = '';
   document.getElementById('filterSupplier').value = '';
   renderTable(allData);
 });
@@ -166,14 +162,11 @@ document.querySelectorAll('th.sortable').forEach(th => {
     const col = th.dataset.col;
     if (sortCol === col) sortDir = sortDir === 'desc' ? 'asc' : 'desc';
     else { sortCol = col; sortDir = 'asc'; }
-    // Update indicators
-    document.querySelectorAll('th.sortable').forEach(t => {
-      t.textContent = t.textContent.replace(/ [▲▼]$/, '');
-    });
+    document.querySelectorAll('th.sortable').forEach(t =>
+      t.textContent = t.textContent.replace(/ [▲▼]$/, ''));
     th.textContent += sortDir === 'asc' ? ' ▲' : ' ▼';
     renderTable(allData);
   });
 });
 
-// ── Init ─────────────────────────────────────────────────
 loadData();
