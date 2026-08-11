@@ -90,11 +90,27 @@
     <!-- Σύγκριση Τιμών -->
     <div class="form-card" style="margin-bottom:20px">
       <div class="form-section-title">📊 Σύγκριση Τιμών</div>
-      <div style="display:flex; gap:32px; flex-wrap:wrap">
-        <div class="preview-item"><span class="preview-label">Διαφορά Τιμής</span><span class="preview-value" id="d_diff">—</span></div>
-        <div class="preview-item"><span class="preview-label">Μείωση %</span><span class="preview-value" id="d_pct">—</span></div>
-        <div class="preview-item"><span class="preview-label">Κατηγορία</span><span class="preview-value" id="d_cat">—</span></div>
-        <div class="preview-item"><span class="preview-label">Κατάσταση</span><span id="d_status">—</span></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
+        <div class="num-card">
+          <div class="year">Διαφορά Τιμής</div>
+          <div class="qty" style="color:var(--teal-dark)" id="d_diff">—</div>
+          <div class="sub">ανά τεμάχιο</div>
+        </div>
+        <div class="num-card">
+          <div class="year">Μείωση %</div>
+          <div class="qty" style="color:var(--green)" id="d_pct">—</div>
+          <div class="sub">επί της παλιάς τιμής</div>
+        </div>
+        <div class="num-card">
+          <div class="year">Κατηγορία</div>
+          <div class="qty" style="font-size:14px;color:var(--gray-600)" id="d_cat">—</div>
+          <div class="sub">&nbsp;</div>
+        </div>
+        <div class="num-card">
+          <div class="year">Κατάσταση</div>
+          <div style="margin:8px 0" id="d_status">—</div>
+          <div class="sub">&nbsp;</div>
+        </div>
       </div>
     </div>
 
