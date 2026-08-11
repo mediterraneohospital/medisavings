@@ -3,7 +3,7 @@ const params  = new URLSearchParams(window.location.search);
 const editId  = params.get('id');
 let periodCount = 0;
 
-const PERIOD_OPTIONS = ['2024','2025','2026-H1','2026-H2','2027-H1','2027-H2','2027'];
+const PERIOD_OPTIONS = ["2024","2025","2026-Α' Εξ.","2026-Β' Εξ.","2027-Α' Εξ.","2027-Β' Εξ.","2027"];
 
 function addPeriod(data) {
   data = data || {};

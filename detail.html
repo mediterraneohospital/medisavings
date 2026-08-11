@@ -208,27 +208,33 @@ async function load() {
   // Πληροφοριακές γραμμές: 2024 και 2025 παλιό
   if (r.purchases_2024 != null) {
     var tr0 = document.createElement('tr');
-    tr0.style.color = 'var(--gray-400)';
+    tr0.style.color = 'var(--gray-600)';
     tr0.style.fontStyle = 'italic';
     tr0.innerHTML =
-      '<td>2024 <span style="font-size:10px">(πληρ.)</span></td>' +
+      '<td>2024 <span style="font-size:10px;color:var(--gray-500)">(πληρ.)</span></td>' +
       '<td>' + formatNum(r.purchases_2024) + '</td>' +
       '<td>' + formatEuro(r.old_price) + '</td>' +
-      '<td style="color:var(--gray-300)">—</td>' +
-      '<td style="font-size:11px">Αγορές με παλιά τιμή</td>';
+      '<td style="color:var(--gray-400)">—</td>' +
+      '<td style="font-size:12px;color:var(--gray-500)">Αγορές με παλιά τιμή</td>';
     tbody.appendChild(tr0);
   }
   if (r.purchases_2025_old != null) {
     var tr1 = document.createElement('tr');
-    tr1.style.color = 'var(--gray-400)';
+    tr1.style.color = 'var(--gray-600)';
     tr1.style.fontStyle = 'italic';
     tr1.innerHTML =
-      '<td>2025 παλιό <span style="font-size:10px">(πληρ.)</span></td>' +
+      '<td>2025 παλιό <span style="font-size:10px;color:var(--gray-500)">(πληρ.)</span></td>' +
       '<td>' + formatNum(r.purchases_2025_old) + '</td>' +
       '<td>' + formatEuro(r.old_price) + '</td>' +
-      '<td style="color:var(--gray-300)">—</td>' +
-      '<td style="font-size:11px">Αγορές με παλιά τιμή</td>';
+      '<td style="color:var(--gray-400)">—</td>' +
+      '<td style="font-size:12px;color:var(--gray-500)">Αγορές με παλιά τιμή</td>';
     tbody.appendChild(tr1);
+  }
+
+  // Κανονικές περίοδοι — μετατροπή H1/H2 σε ελληνικά
+  function periodLabel(p) {
+    return p.replace('H1', "Α' Εξ.").replace('H2', "Β' Εξ.")
+            .replace('ΑΕΞ', "Α' Εξ.").replace('ΒΕΞ', "Β' Εξ.");
   }
 
   // Κανονικές περίοδοι
@@ -236,12 +242,11 @@ async function load() {
     totalSaving += (p.saving || 0);
     var tr = document.createElement('tr');
     tr.innerHTML =
-      '<td><strong>' + (p.period || '—') + '</strong></td>' +
+      '<td><strong>' + periodLabel(p.period || '—') + '</strong></td>' +
       '<td>' + formatNum(p.purchases) + '</td>' +
       '<td>' + formatEuro(p.price_used) + '</td>' +
-      '<td style="color:var(--green);font-weight:600">' + formatEuro(p.saving) +
-        (p.saving_manual ? '<span class="manual-tag">✏️ χειροκίνητο</span>' : '') + '</td>' +
-      '<td style="color:var(--gray-400);font-size:12px">' + (p.notes || '') + '</td>';
+      '<td style="color:var(--green);font-weight:600">' + formatEuro(p.saving) + '</td>' +
+      '<td style="color:var(--gray-600);font-size:12px">' + (p.notes || '') + '</td>';
     tbody.appendChild(tr);
   });
 
