@@ -187,22 +187,22 @@ async function load() {
   document.getElementById('d_c2026h1').textContent = formatNum(r.consumption_2026_h1);
   document.getElementById('d_c2026').textContent   = formatNum(r.consumption_2026);
 
-  // Εξοικονόμηση — υπολογισμός βάσει τύπου
-  const diff    = r.price_diff || 0;
-  const isElim  = r.change_type === 'elimination';
-  const sfp     = (r.purchases_2025_new || 0) * diff;
-  const sfp2026 = isElim
-    ? (r.estimated_consumption_2026_h1 || 0) * (r.new_price || 0)
+  // Εξοικονόμηση
+  const diff   = r.price_diff || 0;
+  const isElim = r.change_type === 'elimination';
+  const sfp    = (r.purchases_2025_new || 0) * diff;
+  const sfp26  = isElim
+    ? (r.annual_elimination_saving || 0)
     : (r.purchases_2026_h1 || 0) * diff;
-  const total     = sfp + sfp2026;
-  const projected = sfp2026 * 2;
+  const total     = isElim ? sfp + sfp26 : sfp + sfp26;
+  const projected = isElim ? sfp26 : sfp26 * 2;
 
   document.getElementById('d_sfp').textContent            = formatEuro(sfp);
-  document.getElementById('d_saving_2026h1').textContent  = formatEuro(sfp2026);
   document.getElementById('d_saving_2026h1_label').textContent = isElim
-    ? 'Εξοικονόμηση Κατάργησης 2026 Α΄εξ.' : 'Όφελος Αγορών 2026 Α΄εξ.';
+    ? 'Ετήσιο Όφελος Κατάργησης' : 'Όφελος Αγορών 2026 Α΄εξ.';
+  document.getElementById('d_saving_2026h1').textContent  = formatEuro(sfp26);
   document.getElementById('d_total_saving').textContent   = formatEuro(total);
-  document.getElementById('d_projected').textContent      = sfp2026 > 0 ? formatEuro(projected) : '—';
+  document.getElementById('d_projected').textContent      = (!isElim && sfp26 > 0) ? formatEuro(projected) : (isElim ? '—' : '—');
 
   if (r.notes) {
     document.getElementById('notesCard').style.display = 'block';

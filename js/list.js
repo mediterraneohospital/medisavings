@@ -26,13 +26,13 @@ function saving2025(r) {
 }
 
 function saving2026h1(r) {
-  if (r.change_type === 'elimination') {
-    return (r.estimated_consumption_2026_h1 || 0) * (r.new_price || 0);
-  }
   return (r.purchases_2026_h1 || 0) * (r.price_diff || 0);
 }
 
 function totalSaving(r) {
+  if (r.change_type === 'elimination') {
+    return (r.saving_from_purchases || 0) + (r.annual_elimination_saving || 0);
+  }
   return saving2025(r) + saving2026h1(r);
 }
 
