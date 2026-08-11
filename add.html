@@ -6,16 +6,54 @@
   <title>MediSavings – Καταχώρηση Αλλαγής</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    .period-row { display:grid; grid-template-columns:120px 1fr 1fr 1fr 1fr auto; gap:8px; align-items:start; padding:12px; background:var(--gray-50); border-radius:8px; margin-bottom:8px; }
-    .period-row .form-group { margin:0; }
-    .period-row label { font-size:11px; }
-    .periods-header { display:grid; grid-template-columns:120px 1fr 1fr 1fr 1fr auto; gap:8px; padding:0 12px; margin-bottom:4px; }
-    .periods-header span { font-size:11px; font-weight:600; color:var(--gray-600); text-transform:uppercase; }
-    .add-period-btn { background:var(--teal-subtle); border:1px dashed var(--teal); color:var(--teal); border-radius:8px; padding:10px; width:100%; cursor:pointer; font-size:13px; font-weight:600; margin-top:8px; }
-    .add-period-btn:hover { background:var(--teal-light); }
-    .del-period { background:none; border:none; color:var(--gray-400); cursor:pointer; font-size:16px; padding:4px; }
-    .del-period:hover { color:var(--red); }
-    .manual-badge { font-size:10px; color:var(--yellow); font-weight:600; }
+    .period-row {
+      display: grid;
+      grid-template-columns: 130px 120px 140px 140px 1fr 32px;
+      gap: 8px;
+      align-items: end;
+      padding: 10px 12px;
+      background: var(--gray-50);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border: 1px solid var(--gray-200);
+    }
+    .period-row .form-group { margin: 0; }
+    .period-row label { font-size: 11px; color: var(--gray-600); font-weight: 600; display: block; margin-bottom: 3px; }
+    .periods-header {
+      display: grid;
+      grid-template-columns: 130px 120px 140px 140px 1fr 32px;
+      gap: 8px;
+      padding: 0 12px 6px;
+    }
+    .periods-header span { font-size: 11px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; }
+    .add-period-btn {
+      background: var(--teal-subtle);
+      border: 2px dashed var(--teal);
+      color: var(--teal);
+      border-radius: 8px;
+      padding: 12px;
+      width: 100%;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 10px;
+      transition: all 0.15s;
+    }
+    .add-period-btn:hover { background: var(--teal-light); }
+    .del-period {
+      background: none;
+      border: 1px solid var(--gray-200);
+      color: var(--gray-400);
+      cursor: pointer;
+      font-size: 14px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      height: 36px;
+    }
+    .del-period:hover { color: var(--red); border-color: var(--red); }
+    .manual-row { display: flex; align-items: center; gap: 5px; margin-top: 4px; }
+    .manual-row label { font-size: 10px; color: var(--yellow); font-weight: 600; margin: 0; }
+    .saving-input { color: var(--green) !important; font-weight: 700 !important; }
   </style>
 </head>
 <body>
@@ -50,12 +88,15 @@
         <div class="form-group"><label>Κωδικός *</label><input type="text" id="new_code" placeholder="π.χ. 11000032"></div>
         <div class="form-group"><label>Εταιρεία</label><input type="text" id="new_supplier" placeholder="π.χ. ΤΑΜΠΟΥ"></div>
         <div class="form-group" style="grid-column:1/-1"><label>Περιγραφή</label><input type="text" id="new_description"></div>
-        <div class="form-group"><label>Τρέχουσα Τιμή (€) *</label><input type="number" id="new_price" step="0.0001" placeholder="0.0000"><span class="hint">Πάντα η τελευταία τιμή</span></div>
+        <div class="form-group"><label>Τρέχουσα Τιμή (€) *</label>
+          <input type="number" id="new_price" step="0.0001" placeholder="0.0000">
+          <span class="hint">Πάντα η τελευταία τιμή</span>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Περίοδοι -->
+  <!-- Ιστορικό Περιόδων -->
   <div class="form-card">
     <div class="form-section-title">📊 Ιστορικό Περιόδων</div>
     <div class="periods-header">
@@ -67,7 +108,18 @@
       <span></span>
     </div>
     <div id="periodsContainer"></div>
-    <button class="add-period-btn" onclick="addPeriod()">+ Προσθήκη Περιόδου</button>
+    <button type="button" class="add-period-btn" id="addPeriodBtn">+ Προσθήκη Περιόδου</button>
+  </div>
+
+  <!-- Κατανάλωση -->
+  <div class="form-card">
+    <div class="form-section-title">📋 Κατανάλωση <span style="font-size:11px;color:var(--gray-400);font-weight:400">(πληροφοριακό)</span></div>
+    <div class="form-grid">
+      <div class="form-group"><label>Κατανάλωση 2024</label><input type="number" id="consumption_2024" placeholder="τεμάχια"></div>
+      <div class="form-group"><label>Κατανάλωση 2025</label><input type="number" id="consumption_2025" placeholder="τεμάχια"></div>
+      <div class="form-group"><label>Κατανάλωση 2026 Α΄εξ.</label><input type="number" id="consumption_2026_h1" placeholder="τεμάχια"></div>
+      <div class="form-group"><label>Κατανάλωση 2026</label><input type="number" id="consumption_2026" placeholder="τεμάχια"></div>
+    </div>
   </div>
 
   <!-- Metadata -->
@@ -110,7 +162,7 @@
 
   <div style="display:flex;gap:12px;justify-content:flex-end;margin-bottom:40px;">
     <a href="index.html" class="btn btn-outline">Ακύρωση</a>
-    <button class="btn btn-primary" id="saveBtn" onclick="saveRecord()">💾 Αποθήκευση</button>
+    <button type="button" class="btn btn-primary" id="saveBtn">💾 Αποθήκευση</button>
   </div>
 </div>
 
