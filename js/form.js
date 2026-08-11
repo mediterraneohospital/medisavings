@@ -185,6 +185,8 @@ async function saveRecord() {
 
   document.getElementById('saveBtn').disabled = true;
   document.getElementById('saveBtn').textContent = '⏳ Αποθήκευση...';
+  document.getElementById('saveBtnTop').disabled = true;
+  document.getElementById('saveBtnTop').textContent = '⏳ Αποθήκευση...';
 
   var changeId = editId;
   var saveError;
@@ -202,6 +204,8 @@ async function saveRecord() {
     showToast('Σφάλμα: ' + saveError.message, 'error');
     document.getElementById('saveBtn').disabled = false;
     document.getElementById('saveBtn').textContent = '💾 Αποθήκευση';
+    document.getElementById('saveBtnTop').disabled = false;
+    document.getElementById('saveBtnTop').textContent = '💾 Αποθήκευση';
     return;
   }
 
@@ -233,6 +237,7 @@ async function saveRecord() {
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('addPeriodBtn').addEventListener('click', function() { addPeriod(); });
   document.getElementById('saveBtn').addEventListener('click', saveRecord);
+  document.getElementById('saveBtnTop').addEventListener('click', saveRecord);
   document.getElementById('old_price').addEventListener('input', function() {
     document.querySelectorAll('[id^="period_"]').forEach(function(row) {
       var idx = row.id.replace('period_', '');
