@@ -5,35 +5,32 @@ let periodCount = 0;
 
 const PERIOD_OPTIONS = ['2024','2025','2026-H1','2026-H2','2027-H1','2027-H2','2027'];
 
-// ── Periods ───────────────────────────────────────────────
 function addPeriod(data) {
   data = data || {};
   periodCount++;
-  const idx = periodCount;
-  const container = document.getElementById('periodsContainer');
+  var idx = periodCount;
+  var container = document.getElementById('periodsContainer');
   if (!container) return;
 
-  const div = document.createElement('div');
+  var div = document.createElement('div');
   div.className = 'period-row';
   div.id = 'period_' + idx;
   div.dataset.dbId = data.id || '';
 
-  const opts = PERIOD_OPTIONS.map(function(p) {
+  var opts = PERIOD_OPTIONS.map(function(p) {
     return '<option value="' + p + '"' + (data.period === p ? ' selected' : '') + '>' + p + '</option>';
   }).join('');
 
-  const savingVal  = (data.saving  != null) ? data.saving  : '';
-  const priceVal   = (data.price_used != null) ? data.price_used : '';
-  const purchVal   = (data.purchases  != null) ? data.purchases  : '';
-  const notesVal   = (data.notes || '');
-  const isManual   = data.saving_manual ? 'checked' : '';
+  var savingVal = (data.saving  != null) ? data.saving  : '';
+  var priceVal  = (data.price_used != null) ? data.price_used : '';
+  var purchVal  = (data.purchases  != null) ? data.purchases  : '';
+  var notesVal  = data.notes || '';
+  var isManual  = data.saving_manual ? 'checked' : '';
 
   div.innerHTML =
     '<div class="form-group">' +
       '<label>Περίοδος</label>' +
-      '<select id="p_period_' + idx + '">' +
-        '<option value="">— Επιλογή —</option>' + opts +
-      '</select>' +
+      '<select id="p_period_' + idx + '"><option value="">— Επιλογή —</option>' + opts + '</select>' +
     '</div>' +
     '<div class="form-group">' +
       '<label>Αγορές</label>' +
@@ -46,10 +43,10 @@ function addPeriod(data) {
     '<div class="form-group">' +
       '<label>Όφελος (€)</label>' +
       '<input type="number" id="p_saving_' + idx + '" step="0.01" placeholder="αυτόματο" value="' + savingVal + '" class="saving-input">' +
-      '<div class="manual-row">' +
-        '<input type="checkbox" id="p_manual_' + idx + '" ' + isManual + ' style="accent-color:var(--yellow)">' +
-        '<label for="p_manual_' + idx + '">✏️ Χειροκίνητο</label>' +
-      '</div>' +
+    '</div>' +
+    '<div class="manual-col">' +
+      '<input type="checkbox" id="p_manual_' + idx + '" ' + isManual + ' style="accent-color:var(--yellow);width:16px;height:16px;cursor:pointer">' +
+      '<label for="p_manual_' + idx + '">Χειρ.</label>' +
     '</div>' +
     '<div class="form-group">' +
       '<label>Σημειώσεις</label>' +
@@ -59,9 +56,8 @@ function addPeriod(data) {
 
   container.appendChild(div);
 
-  // Listeners για αυτόματο υπολογισμό
   document.getElementById('p_purchases_' + idx).addEventListener('input', function() { calcPeriodSaving(idx); });
-  document.getElementById('p_price_' + idx).addEventListener('input', function() { calcPeriodSaving(idx); });
+  document.getElementById('p_price_'     + idx).addEventListener('input', function() { calcPeriodSaving(idx); });
 }
 
 function removePeriod(idx) {
@@ -72,14 +68,11 @@ function removePeriod(idx) {
 function calcPeriodSaving(idx) {
   var manualEl = document.getElementById('p_manual_' + idx);
   if (manualEl && manualEl.checked) return;
-
   var purchases = parseFloat(document.getElementById('p_purchases_' + idx).value);
-  var price     = parseFloat(document.getElementById('p_price_' + idx).value);
+  var price     = parseFloat(document.getElementById('p_price_'     + idx).value);
   var oldPrice  = parseFloat(document.getElementById('old_price').value);
-
   if (!isNaN(purchases) && !isNaN(price) && !isNaN(oldPrice)) {
-    var saving = purchases * (oldPrice - price);
-    document.getElementById('p_saving_' + idx).value = saving.toFixed(2);
+    document.getElementById('p_saving_' + idx).value = (purchases * (oldPrice - price)).toFixed(2);
   }
 }
 
@@ -88,25 +81,25 @@ function getPeriods() {
   var result = [];
   rows.forEach(function(row) {
     var idx = row.id.replace('period_', '');
-    var period = document.getElementById('p_period_' + idx);
-    if (!period || !period.value) return;
+    var periodEl = document.getElementById('p_period_' + idx);
+    if (!periodEl || !periodEl.value) return;
     result.push({
       id:           row.dataset.dbId || null,
-      period:       period.value,
+      period:       periodEl.value,
       purchases:    parseFloat(document.getElementById('p_purchases_' + idx).value) || null,
-      price_used:   parseFloat(document.getElementById('p_price_' + idx).value) || null,
-      saving:       parseFloat(document.getElementById('p_saving_' + idx).value) || null,
-      saving_manual:document.getElementById('p_manual_' + idx).checked || false,
-      notes:        document.getElementById('p_notes_' + idx).value.trim() || null,
+      price_used:   parseFloat(document.getElementById('p_price_'     + idx).value) || null,
+      saving:       parseFloat(document.getElementById('p_saving_'    + idx).value) || null,
+      saving_manual:document.getElementById('p_manual_'   + idx).checked || false,
+      notes:        document.getElementById('p_notes_'    + idx).value.trim() || null,
     });
   });
   return result;
 }
 
-// ── Load for edit ─────────────────────────────────────────
 async function loadForEdit(id) {
-  document.getElementById('pageTitle').textContent = '✏️ Επεξεργασία Αλλαγής';
-  document.getElementById('saveBtn').textContent   = '💾 Αποθήκευση Αλλαγών';
+  document.getElementById('pageTitle').textContent  = '✏️ Επεξεργασία Αλλαγής';
+  document.getElementById('saveBtn').textContent    = '💾 Αποθήκευση Αλλαγών';
+  document.getElementById('saveBtnTop').textContent = '💾 Αποθήκευση Αλλαγών';
 
   var results = await Promise.all([
     db.from('material_changes').select('*').eq('id', id).single(),
@@ -122,6 +115,7 @@ async function loadForEdit(id) {
   var fields = [
     'old_code','old_description','old_supplier','old_price',
     'new_code','new_description','new_supplier','new_price',
+    'purchases_2024','purchases_2025_old',
     'consumption_2024','consumption_2025','consumption_2026_h1','consumption_2026',
     'category','status','change_date','notes'
   ];
@@ -129,16 +123,20 @@ async function loadForEdit(id) {
     var el = document.getElementById(f);
     if (el && rec[f] != null) el.value = rec[f];
   });
-
   if (rec.is_discontinued) document.getElementById('is_discontinued').checked = true;
 
-  // Φόρτωση περιόδων
-  if (periods && periods.length > 0) {
-    periods.forEach(function(p) { addPeriod(p); });
-  }
+  (periods || []).forEach(function(p) { addPeriod(p); });
 }
 
-// ── Save ─────────────────────────────────────────────────
+function setBtns(disabled, text) {
+  ['saveBtn','saveBtnTop'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.disabled = disabled;
+    el.textContent = text;
+  });
+}
+
 async function saveRecord() {
   var old_code        = document.getElementById('old_code').value.trim();
   var old_description = document.getElementById('old_description').value.trim();
@@ -161,17 +159,16 @@ async function saveRecord() {
   var pct  = old_price > 0 ? diff / old_price : null;
 
   var record = {
-    old_code: old_code,
-    old_description: old_description,
-    new_code: new_code,
+    old_code: old_code, old_description: old_description, new_code: new_code,
     old_supplier:    document.getElementById('old_supplier').value.trim() || null,
-    old_price:       old_price,
+    old_price: old_price,
     new_description: document.getElementById('new_description').value.trim() || null,
     new_supplier:    document.getElementById('new_supplier').value.trim() || null,
-    new_price:       new_price,
-    price_diff:          diff,
-    price_reduction_pct: pct,
-    is_discontinued:     document.getElementById('is_discontinued').checked,
+    new_price: new_price,
+    price_diff: diff, price_reduction_pct: pct,
+    is_discontinued: document.getElementById('is_discontinued').checked,
+    purchases_2024:      g('purchases_2024'),
+    purchases_2025_old:  g('purchases_2025_old'),
     consumption_2024:    g('consumption_2024'),
     consumption_2025:    g('consumption_2025'),
     consumption_2026_h1: g('consumption_2026_h1'),
@@ -183,10 +180,7 @@ async function saveRecord() {
     updated_at:  new Date().toISOString(),
   };
 
-  document.getElementById('saveBtn').disabled = true;
-  document.getElementById('saveBtn').textContent = '⏳ Αποθήκευση...';
-  document.getElementById('saveBtnTop').disabled = true;
-  document.getElementById('saveBtnTop').textContent = '⏳ Αποθήκευση...';
+  setBtns(true, '⏳ Αποθήκευση...');
 
   var changeId = editId;
   var saveError;
@@ -202,26 +196,15 @@ async function saveRecord() {
 
   if (saveError) {
     showToast('Σφάλμα: ' + saveError.message, 'error');
-    document.getElementById('saveBtn').disabled = false;
-    document.getElementById('saveBtn').textContent = '💾 Αποθήκευση';
-    document.getElementById('saveBtnTop').disabled = false;
-    document.getElementById('saveBtnTop').textContent = '💾 Αποθήκευση';
+    setBtns(false, '💾 Αποθήκευση');
     return;
   }
 
-  // Αποθήκευση περιόδων
   var periods = getPeriods();
   for (var i = 0; i < periods.length; i++) {
     var p = periods[i];
-    var pRecord = {
-      change_id:    changeId,
-      period:       p.period,
-      purchases:    p.purchases,
-      price_used:   p.price_used,
-      saving:       p.saving,
-      saving_manual:p.saving_manual,
-      notes:        p.notes
-    };
+    var pRecord = { change_id: changeId, period: p.period, purchases: p.purchases,
+      price_used: p.price_used, saving: p.saving, saving_manual: p.saving_manual, notes: p.notes };
     if (p.id) {
       await db.from('material_periods').update(pRecord).eq('id', p.id);
     } else {
@@ -233,15 +216,13 @@ async function saveRecord() {
   setTimeout(function() { window.location.href = 'index.html'; }, 1200);
 }
 
-// ── Init ─────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('addPeriodBtn').addEventListener('click', function() { addPeriod(); });
   document.getElementById('saveBtn').addEventListener('click', saveRecord);
   document.getElementById('saveBtnTop').addEventListener('click', saveRecord);
   document.getElementById('old_price').addEventListener('input', function() {
     document.querySelectorAll('[id^="period_"]').forEach(function(row) {
-      var idx = row.id.replace('period_', '');
-      calcPeriodSaving(idx);
+      calcPeriodSaving(row.id.replace('period_', ''));
     });
   });
 

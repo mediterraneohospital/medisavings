@@ -8,7 +8,7 @@
   <style>
     .period-row {
       display: grid;
-      grid-template-columns: 130px 120px 140px 140px 1fr 32px;
+      grid-template-columns: 130px 120px 140px 130px 36px 1fr 36px;
       gap: 8px;
       align-items: end;
       padding: 10px 12px;
@@ -19,9 +19,11 @@
     }
     .period-row .form-group { margin: 0; }
     .period-row label { font-size: 11px; color: var(--gray-600); font-weight: 600; display: block; margin-bottom: 3px; }
+    .manual-col { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 6px; gap: 3px; }
+    .manual-col label { font-size: 10px; color: var(--yellow); font-weight: 600; margin: 0; text-align: center; cursor: pointer; }
     .periods-header {
       display: grid;
-      grid-template-columns: 130px 120px 140px 140px 1fr 32px;
+      grid-template-columns: 130px 120px 140px 130px 36px 1fr 36px;
       gap: 8px;
       padding: 0 12px 6px;
     }
@@ -51,8 +53,6 @@
       height: 36px;
     }
     .del-period:hover { color: var(--red); border-color: var(--red); }
-    .manual-row { display: flex; align-items: center; gap: 5px; margin-top: 4px; }
-    .manual-row label { font-size: 10px; color: var(--yellow); font-weight: 600; margin: 0; }
     .saving-input { color: var(--green) !important; font-weight: 700 !important; }
   </style>
 </head>
@@ -107,6 +107,7 @@
       <span>Αγορές (τεμ.)</span>
       <span>Τιμή που ίσχυε (€)</span>
       <span>Όφελος (€)</span>
+      <span title="Χειροκίνητο">✏️</span>
       <span>Σημειώσεις</span>
       <span></span>
     </div>
@@ -114,7 +115,16 @@
     <button type="button" class="add-period-btn" id="addPeriodBtn">+ Προσθήκη Περιόδου</button>
   </div>
 
-  <!-- Κατανάλωση -->
+  <!-- Αγορές (πληροφοριακό) -->
+  <div class="form-card">
+    <div class="form-section-title">🛒 Αγορές <span style="font-size:11px;color:var(--gray-400);font-weight:400">(πληροφοριακό)</span></div>
+    <div class="form-grid">
+      <div class="form-group"><label>Αγορές 2024</label><input type="number" id="purchases_2024" placeholder="τεμάχια"></div>
+      <div class="form-group"><label>Αγορές 2025 (Παλιό)</label><input type="number" id="purchases_2025_old" placeholder="τεμάχια"></div>
+    </div>
+  </div>
+
+  <!-- Κατανάλωση (πληροφοριακό) -->
   <div class="form-card">
     <div class="form-section-title">📋 Κατανάλωση <span style="font-size:11px;color:var(--gray-400);font-weight:400">(πληροφοριακό)</span></div>
     <div class="form-grid">
