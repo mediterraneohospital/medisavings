@@ -25,28 +25,12 @@
 
   <!-- Preview Bar -->
   <div class="saving-preview" id="savingPreview" style="display:none">
-    <div class="preview-item" id="prev_diff"><span class="preview-label">Διαφορά Τιμής</span><span class="preview-value" id="prevDiff">—</span></div>
-    <div class="preview-item" id="prev_pct"><span class="preview-label">Μείωση %</span><span class="preview-value" id="prevPct">—</span></div>
-    <div class="preview-item" id="prev_s2025"><span class="preview-label">Όφελος Αγορών 2025</span><span class="preview-value" id="prevSaving2025">—</span></div>
-    <div class="preview-item" id="prev_s2026"><span class="preview-label">Όφελος Αγορών 2026 Α΄εξ.</span><span class="preview-value" id="prevSaving2026">—</span></div>
-    <div class="preview-item" id="prev_total"><span class="preview-label">Συνολική Εξοικονόμηση</span><span class="preview-value big" id="prevSaving">—</span></div>
+    <div class="preview-item"><span class="preview-label">Διαφορά Τιμής</span><span class="preview-value" id="prevDiff">—</span></div>
+    <div class="preview-item"><span class="preview-label">Μείωση %</span><span class="preview-value" id="prevPct">—</span></div>
+    <div class="preview-item"><span class="preview-label">Όφελος Αγορών 2025</span><span class="preview-value" id="prevSaving2025">—</span></div>
+    <div class="preview-item"><span class="preview-label">Όφελος 2026 Α΄εξ.</span><span class="preview-value" id="prevSaving2026">—</span></div>
+    <div class="preview-item"><span class="preview-label">Συνολική Εξοικονόμηση</span><span class="preview-value big" id="prevSaving">—</span></div>
     <div class="preview-item" id="prev_proj"><span class="preview-label">Projected 2026</span><span class="preview-value" id="prevProjected" style="color:var(--yellow)">—</span></div>
-    <div class="preview-item" id="prev_elim" style="display:none"><span class="preview-label">Ετήσιο Όφελος Κατάργησης</span><span class="preview-value big" style="color:var(--green)" id="prevElimSaving">—</span></div>
-  </div>
-
-  <!-- Τύπος Αλλαγής -->
-  <div class="form-card" style="margin-bottom:16px">
-    <div class="form-section-title">🔀 Τύπος Αλλαγής</div>
-    <div style="display:flex;gap:12px;flex-wrap:wrap">
-      <label id="lbl_substitution" style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px 20px;border-radius:8px;border:2px solid var(--teal);background:var(--teal-subtle);font-weight:600;font-size:13px">
-        <input type="radio" name="change_type" id="type_substitution" value="substitution" checked onchange="onTypeChange()">
-        🔄 Αντικατάσταση
-      </label>
-      <label id="lbl_elimination" style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px 20px;border-radius:8px;border:2px solid var(--gray-200);background:white;font-weight:600;font-size:13px">
-        <input type="radio" name="change_type" id="type_elimination" value="elimination" onchange="onTypeChange()">
-        🚫 Κατάργηση
-      </label>
-    </div>
   </div>
 
   <!-- Παλιό / Νέο Υλικό -->
@@ -66,37 +50,27 @@
         <div class="form-group"><label>Κωδικός *</label><input type="text" id="new_code" placeholder="π.χ. 11000032"></div>
         <div class="form-group"><label>Εταιρεία</label><input type="text" id="new_supplier" placeholder="π.χ. ΤΑΜΠΟΥ"></div>
         <div class="form-group" style="grid-column:1/-1"><label>Περιγραφή</label><input type="text" id="new_description" placeholder="Περιγραφή νέου υλικού"></div>
-        <div class="form-group"><label>Νέα Τιμή (€) *</label><input type="number" id="new_price" step="0.0001" placeholder="0.0000"></div>
+        <div class="form-group"><label>Νέα Τιμή (€)</label><input type="number" id="new_price" step="0.0001" placeholder="0.0000 (0 αν καταργήθηκε)"></div>
       </div>
     </div>
   </div>
 
-  <!-- Ποσότητες & Κατανάλωση (Αντικατάσταση) -->
-  <div class="form-card" id="section_substitution">
+  <!-- Ποσότητες & Κατανάλωση -->
+  <div class="form-card">
     <div class="form-section-title">📊 Ποσότητες & Κατανάλωση</div>
     <div class="form-grid">
       <div class="form-group"><label>Αγορές 2024</label><input type="number" id="purchases_2024" placeholder="τεμάχια"></div>
       <div class="form-group"><label>Αγορές 2025 (Παλιό)</label><input type="number" id="purchases_2025_old" placeholder="τεμάχια"></div>
       <div class="form-group"><label>Αγορές 2025 (Νέο)</label><input type="number" id="purchases_2025_new" placeholder="τεμάχια"><span class="hint">Για υπολογισμό οφέλους 2025</span></div>
-      <div class="form-group"><label>Αγορές 2026 Α΄ εξάμηνο</label><input type="number" id="purchases_2026_h1" placeholder="τεμάχια"><span class="hint">Για υπολογισμό οφέλους 2026</span></div>
+      <div class="form-group">
+        <label>Αγορές 2026 Α΄ εξάμηνο</label>
+        <input type="number" id="purchases_2026_h1" placeholder="τεμάχια (0 = καταργήθηκε)">
+        <span class="hint">Βάλε 0 αν καταργήθηκε — υπολογίζεται αυτόματα το όφελος</span>
+      </div>
       <div class="form-group"><label>Κατανάλωση 2024</label><input type="number" id="consumption_2024" placeholder="τεμάχια"></div>
       <div class="form-group"><label>Κατανάλωση 2025</label><input type="number" id="consumption_2025" placeholder="τεμάχια"></div>
       <div class="form-group"><label>Κατανάλωση 2026 Α΄ Εξάμηνο</label><input type="number" id="consumption_2026_h1" placeholder="τεμάχια"><span class="hint">Πληροφοριακό</span></div>
       <div class="form-group"><label>Κατανάλωση 2026</label><input type="number" id="consumption_2026" placeholder="τεμάχια"></div>
-    </div>
-  </div>
-
-  <!-- Κατάργηση -->
-  <div class="form-card" id="section_elimination" style="display:none">
-    <div class="form-section-title">🚫 Στοιχεία Κατάργησης</div>
-    <div class="form-grid">
-      <div class="form-group"><label>Κατανάλωση 2024</label><input type="number" id="consumption_2024_elim" placeholder="τεμάχια"></div>
-      <div class="form-group"><label>Κατανάλωση 2025</label><input type="number" id="consumption_2025_elim" placeholder="τεμάχια"></div>
-      <div class="form-group" style="grid-column:1/-1;background:var(--green-light);border:1px solid var(--green);border-radius:8px;padding:16px">
-        <label style="color:var(--green);font-weight:700">Ετήσιο Όφελος Κατάργησης (€) *</label>
-        <input type="number" id="annual_elimination_saving" step="0.01" placeholder="π.χ. 4400.00" style="border-color:var(--green)">
-        <span class="hint">Υπολόγισε χειροκίνητα: κατανάλωση × τελευταία τιμή. Προστίθεται αυτόματα στο συνολικό όφελος.</span>
-      </div>
     </div>
   </div>
 
@@ -126,6 +100,11 @@
       <div class="form-group">
         <label>Ημερομηνία Αλλαγής</label>
         <input type="date" id="change_date">
+      </div>
+      <!-- Σήμανση κατάργησης -->
+      <div class="form-group" style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--red-light);border:1px solid var(--red);border-radius:8px">
+        <input type="checkbox" id="is_discontinued" style="width:18px;height:18px;accent-color:var(--red);cursor:pointer">
+        <label for="is_discontinued" style="cursor:pointer;color:var(--red);font-weight:600;margin:0">🚫 Καταργημένο υλικό</label>
       </div>
       <div class="form-group" style="grid-column:1/-1">
         <label>Σημειώσεις</label>

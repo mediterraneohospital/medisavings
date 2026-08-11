@@ -189,20 +189,38 @@ async function load() {
 
   // Εξοικονόμηση
   const diff   = r.price_diff || 0;
-  const isElim = r.change_type === 'elimination';
-  const sfp    = (r.purchases_2025_new || 0) * diff;
-  const sfp26  = isElim
-    ? (r.annual_elimination_saving || 0)
-    : (r.purchases_2026_h1 || 0) * diff;
-  const total     = isElim ? sfp + sfp26 : sfp + sfp26;
-  const projected = isElim ? sfp26 : sfp26 * 2;
+  const np     = r.new_price  || 0;
+  const op     = r.old_price  || 0;
+  const p2025n = r.purchases_2025_new || 0;
+  const p2026  = r.purchases_2026_h1;
+  const sfp    = p2025n * diff;
 
-  document.getElementById('d_sfp').textContent            = formatEuro(sfp);
-  document.getElementById('d_saving_2026h1_label').textContent = isElim
-    ? 'Ετήσιο Όφελος Κατάργησης' : 'Όφελος Αγορών 2026 Α΄εξ.';
+  let sfp26 = 0;
+  let isDisc = r.is_discontinued || p2026 === 0;
+  if (p2026 !== null && p2026 !== undefined) {
+    if (p2026 === 0) {
+      const totalPurch2025 = (r.purchases_2025_new || 0) + (r.purchases_2025_old || 0);
+      const price = np > 0 ? np : op;
+      sfp26 = Math.round((totalPurch2025 / 2) * price * 100) / 100;
+    } else {
+      sfp26 = p2026 * diff;
+    }
+  }
+
+  const total = sfp + sfp26;
+
+  document.getElementById('d_sfp').textContent           = formatEuro(sfp);
+  document.getElementById('d_saving_2026h1_label').textContent = isDisc ? 'Εξοικονόμηση Κατάργησης 2026' : 'Όφελος Αγορών 2026 Α΄εξ.';
   document.getElementById('d_saving_2026h1').textContent  = formatEuro(sfp26);
   document.getElementById('d_total_saving').textContent   = formatEuro(total);
-  document.getElementById('d_projected').textContent      = (!isElim && sfp26 > 0) ? formatEuro(projected) : (isElim ? '—' : '—');
+  document.getElementById('d_projected').textContent      = (!isDisc && sfp26 > 0) ? formatEuro(sfp26 * 2) : '—';
+
+  // Σήμανση κατάργησης
+  if (isDisc) {
+    const badge = document.createElement('span');
+    badge.innerHTML = ' 🚫 <span style="color:var(--red);font-weight:600;font-size:13px">Καταργημένο υλικό</span>';
+    document.getElementById('pageTitle').appendChild(badge);
+  }
 
   if (r.notes) {
     document.getElementById('notesCard').style.display = 'block';

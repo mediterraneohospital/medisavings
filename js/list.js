@@ -26,13 +26,17 @@ function saving2025(r) {
 }
 
 function saving2026h1(r) {
-  return (r.purchases_2026_h1 || 0) * (r.price_diff || 0);
+  const p2026 = r.purchases_2026_h1;
+  if (p2026 === null || p2026 === undefined) return 0;
+  if (p2026 === 0) {
+    const totalPurch2025 = (r.purchases_2025_new || 0) + (r.purchases_2025_old || 0);
+    const price = (r.new_price > 0) ? r.new_price : (r.old_price || 0);
+    return Math.round((totalPurch2025 / 2) * price * 100) / 100;
+  }
+  return p2026 * (r.price_diff || 0);
 }
 
 function totalSaving(r) {
-  if (r.change_type === 'elimination') {
-    return (r.saving_from_purchases || 0) + (r.annual_elimination_saving || 0);
-  }
   return saving2025(r) + saving2026h1(r);
 }
 
@@ -110,8 +114,8 @@ function renderTable(data) {
   tbody.innerHTML = sorted.map((r, idx) => {
     const aa      = idx + 1;
     const saving  = totalSaving(r);
-    const isElim  = r.change_type === 'elimination';
-    const savingHtml = `<span class="saving-pill ${saving < 0 ? 'negative' : ''}">${saving >= 0 ? '▼' : '▲'} ${formatEuro(Math.abs(saving))}</span>${isElim ? ' <span title="Κατάργηση" style="font-size:11px">🚫</span>' : ''}`;
+    const isDisc  = r.is_discontinued || r.purchases_2026_h1 === 0;
+    const savingHtml = `<span class="saving-pill ${saving < 0 ? 'negative' : ''}">${saving >= 0 ? '▼' : '▲'} ${formatEuro(Math.abs(saving))}</span>${isDisc ? ' <span title="Καταργημένο" style="font-size:11px">🚫</span>' : ''}`;
 
     return `<tr>
       <td style="text-align:center;color:var(--gray-400);font-size:12px;font-weight:600">${aa}</td>
