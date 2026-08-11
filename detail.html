@@ -197,7 +197,10 @@ async function load() {
 
   let sfp26 = 0;
   let isDisc = r.is_discontinued || p2026 === 0;
-  if (p2026 !== null && p2026 !== undefined) {
+  if (r.manual_saving_2026_h1 != null) {
+    sfp26 = r.manual_saving_2026_h1;
+    isDisc = false; // manual override — δεν το θεωρούμε κατάργηση
+  } else if (p2026 !== null && p2026 !== undefined) {
     if (p2026 === 0) {
       const totalPurch2025 = (r.purchases_2025_new || 0) + (r.purchases_2025_old || 0);
       const price = np > 0 ? np : op;

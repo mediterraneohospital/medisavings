@@ -26,6 +26,8 @@ function saving2025(r) {
 }
 
 function saving2026h1(r) {
+  // Χειροκίνητο παρακάμπτει αυτόματο
+  if (r.manual_saving_2026_h1 != null) return r.manual_saving_2026_h1;
   const p2026 = r.purchases_2026_h1;
   if (p2026 === null || p2026 === undefined) return 0;
   if (p2026 === 0) {

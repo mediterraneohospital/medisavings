@@ -38,10 +38,13 @@ function recalc() {
     const sfp = p2025n * diff;
     document.getElementById('prevSaving2025').textContent = formatEuro(sfp);
 
-    // Όφελος 2026
+    // Όφελος 2026 — χειροκίνητο παρακάμπτει αυτόματο
     let sfp26 = null;
     let isDiscontinued = false;
-    if (p2026 !== null) {
+    const manualVal = parseFloat(document.getElementById('manual_saving_2026_h1').value);
+    if (!isNaN(manualVal)) {
+      sfp26 = manualVal;
+    } else if (p2026 !== null) {
       sfp26 = calc2026(p2026, p2025n, p2025old, diff, np, op);
       isDiscontinued = p2026 === 0;
     }
@@ -64,7 +67,7 @@ function recalc() {
   }
 }
 
-['old_price','new_price','purchases_2025_new','purchases_2026_h1'].forEach(id => {
+['old_price','new_price','purchases_2025_new','purchases_2025_old','purchases_2026_h1','manual_saving_2026_h1'].forEach(id => {
   document.getElementById(id)?.addEventListener('input', recalc);
 });
 
@@ -81,7 +84,7 @@ async function loadForEdit(id) {
     'new_code','new_description','new_supplier','new_price',
     'purchases_2024','purchases_2025_old','purchases_2025_new','purchases_2026_h1',
     'consumption_2024','consumption_2025','consumption_2026','consumption_2026_h1',
-    'category','status','change_date','notes'
+    'manual_saving_2026_h1','category','status','change_date','notes'
   ];
 
   fields.forEach(f => {
@@ -127,7 +130,10 @@ async function saveRecord() {
 
   const p2025old = g('purchases_2025_old') || 0;
   const sfp   = p2025n != null ? p2025n * diff : null;
-  const sfp26 = p2026  != null ? calc2026(p2026, p2025n || 0, p2025old, diff, new_price, old_price) : null;
+  const manualSaving26 = g('manual_saving_2026_h1');
+  const sfp26 = manualSaving26 !== null
+    ? manualSaving26
+    : (p2026 != null ? calc2026(p2026, p2025n || 0, p2025old, diff, new_price, old_price) : null);
 
   const record = {
     old_code, old_description, new_code,
@@ -149,6 +155,7 @@ async function saveRecord() {
     consumption_2026_h1: g('consumption_2026_h1'),
     saving_from_purchases: sfp,
     saving_2026_h1:        sfp26,
+    manual_saving_2026_h1: manualSaving26,
     category:    document.getElementById('category').value || null,
     status:      document.getElementById('status').value || 'active',
     change_date: document.getElementById('change_date').value || null,
