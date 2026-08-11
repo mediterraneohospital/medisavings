@@ -69,6 +69,7 @@
   <div class="page-header">
     <div class="page-title" id="pageTitle">➕ Νέα Αλλαγή Υλικού</div>
     <div style="display:flex;gap:10px">
+      <button type="button" class="btn" style="background:var(--red);color:white;display:none" id="deleteBtn">🗑️ Διαγραφή</button>
       <a href="index.html" class="btn btn-outline">← Πίσω στη Λίστα</a>
       <button type="button" class="btn btn-primary" id="saveBtnTop">💾 Αποθήκευση</button>
     </div>
@@ -118,9 +119,34 @@
   <!-- Αγορές (πληροφοριακό) -->
   <div class="form-card">
     <div class="form-section-title">🛒 Αγορές <span style="font-size:11px;color:var(--gray-400);font-weight:400">(πληροφοριακό)</span></div>
-    <div class="form-grid">
-      <div class="form-group"><label>Αγορές 2024</label><input type="number" id="purchases_2024" placeholder="τεμάχια"></div>
-      <div class="form-group"><label>Αγορές 2025 (Παλιό)</label><input type="number" id="purchases_2025_old" placeholder="τεμάχια"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div>
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead>
+            <tr style="background:var(--gray-50);border-bottom:2px solid var(--gray-200)">
+              <th style="padding:8px 12px;text-align:left;font-size:11px;color:var(--gray-600);text-transform:uppercase">Περίοδος</th>
+              <th style="padding:8px 12px;text-align:left;font-size:11px;color:var(--gray-600);text-transform:uppercase">Αγορές (τεμ.)</th>
+              <th style="padding:8px 12px;text-align:left;font-size:11px;color:var(--gray-600);text-transform:uppercase">Τιμή</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--gray-100)">
+              <td style="padding:8px 12px;color:var(--gray-600)">2024</td>
+              <td style="padding:8px 12px"><input type="number" id="purchases_2024" placeholder="τεμάχια" style="width:100%;border:1px solid var(--gray-200);border-radius:6px;padding:5px 8px;font-size:13px"></td>
+              <td style="padding:8px 12px;color:var(--gray-400);font-size:12px" id="old_price_display_2024">—</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 12px;color:var(--gray-600)">2025 (Παλιό)</td>
+              <td style="padding:8px 12px"><input type="number" id="purchases_2025_old" placeholder="τεμάχια" style="width:100%;border:1px solid var(--gray-200);border-radius:6px;padding:5px 8px;font-size:13px"></td>
+              <td style="padding:8px 12px;color:var(--gray-400);font-size:12px" id="old_price_display_2025">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="color:var(--gray-400);font-size:12px;padding:12px;line-height:1.8">
+        Αυτές οι αγορές <strong>δεν μετρούν</strong> στο υπολογισμό του οφέλους.<br>
+        Καταχωρούνται για πληρότητα του ιστορικού.
+      </div>
     </div>
   </div>
 

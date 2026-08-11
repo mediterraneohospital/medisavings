@@ -119,7 +119,7 @@ function renderTable(data) {
       `<span style="font-size:10px;background:var(--gray-100);padding:1px 5px;border-radius:4px;margin-right:2px">${p.period}</span>`
     ).join('');
 
-    const savingHtml = `<span class="saving-pill">${saving >= 0 ? '▼' : '▲'} ${formatEuro(Math.abs(saving))}</span>${isDisc ? ' <span title="Καταργημένο">🚫</span>' : ''}`;
+    const savingHtml = `<span class="saving-pill">${saving >= 0 ? '▼' : '▲'} ${formatEuro(Math.abs(saving))}</span>`;
 
     return `<tr>
       <td style="text-align:center;color:var(--gray-400);font-size:12px;font-weight:600">${aa}</td>
@@ -139,7 +139,7 @@ function renderTable(data) {
       <td><span class="price-new">${formatEuro(r.new_price)}</span></td>
       <td>${r.price_reduction_pct != null ? `<strong style="color:var(--green)">${formatPct(r.price_reduction_pct)}</strong>` : '—'}</td>
       <td>${savingHtml}</td>
-      <td>${isDisc ? '<span class="badge badge-discontinued">Καταργημένο 🚫</span>' : statusBadge(r.status || 'active')}</td>
+      <td>${isDisc ? '<span class="badge badge-discontinued">Καταργημένο</span>' : statusBadge(r.status || 'active')}</td>
       <td>
         <button class="btn btn-outline btn-sm btn-icon" onclick="openDetail('${r.id}')" title="Λεπτομέρειες">🔍</button>
         <button class="btn btn-outline btn-sm btn-icon" onclick="editRecord('${r.id}')"  title="Επεξεργασία">✏️</button>

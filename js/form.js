@@ -112,6 +112,19 @@ async function loadForEdit(id) {
 
   if (error || !rec) { showToast('Σφάλμα φόρτωσης', 'error'); return; }
 
+  // Εμφάνιση κουμπιού Διαγραφή
+  var delBtn = document.getElementById('deleteBtn');
+  if (delBtn) {
+    delBtn.style.display = '';
+    delBtn.onclick = async function() {
+      if (!confirm('Διαγραφή αυτής της εγγραφής; Η ενέργεια δεν αναιρείται.')) return;
+      await db.from('material_periods').delete().eq('change_id', id);
+      var res = await db.from('material_changes').delete().eq('id', id);
+      if (res.error) { alert('Σφάλμα διαγραφής: ' + res.error.message); return; }
+      window.location.href = 'index.html';
+    };
+  }
+
   var fields = [
     'old_code','old_description','old_supplier','old_price',
     'new_code','new_description','new_supplier','new_price',
@@ -123,6 +136,13 @@ async function loadForEdit(id) {
     var el = document.getElementById(f);
     if (el && rec[f] != null) el.value = rec[f];
   });
+
+  // Εμφάνιση παλιάς τιμής στον πίνακα αγορών
+  var priceStr = formatEuro(rec.old_price);
+  var el2024 = document.getElementById('old_price_display_2024');
+  var el2025 = document.getElementById('old_price_display_2025');
+  if (el2024) el2024.textContent = priceStr;
+  if (el2025) el2025.textContent = priceStr;
   if (rec.is_discontinued) document.getElementById('is_discontinued').checked = true;
 
   (periods || []).forEach(function(p) { addPeriod(p); });
@@ -221,6 +241,11 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('saveBtn').addEventListener('click', saveRecord);
   document.getElementById('saveBtnTop').addEventListener('click', saveRecord);
   document.getElementById('old_price').addEventListener('input', function() {
+    var val = formatEuro(parseFloat(this.value));
+    var el2024 = document.getElementById('old_price_display_2024');
+    var el2025 = document.getElementById('old_price_display_2025');
+    if (el2024) el2024.textContent = val;
+    if (el2025) el2025.textContent = val;
     document.querySelectorAll('[id^="period_"]').forEach(function(row) {
       calcPeriodSaving(row.id.replace('period_', ''));
     });
