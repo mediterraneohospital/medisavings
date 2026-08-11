@@ -6,22 +6,22 @@
   <title>MediSavings – Λεπτομέρειες</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-    .detail-card { background: white; border-radius: 8px; box-shadow: var(--shadow); padding: 20px; }
-    .detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--gray-100); font-size: 13px; }
-    .detail-row:last-child { border-bottom: none; }
-    .detail-row .lbl { color: var(--gray-600); }
-    .detail-row .val { font-weight: 500; text-align: right; max-width: 60%; }
-    .numbers-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
-    .num-card { background: var(--gray-50); border-radius: 8px; padding: 14px; text-align: center; }
-    .num-card .year { font-size: 11px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px; }
-    .num-card .qty  { font-size: 20px; font-weight: 700; color: var(--gray-800); margin: 4px 0; }
-    .num-card .sub  { font-size: 11px; color: var(--gray-400); }
-    @media(max-width:768px) { .detail-grid { grid-template-columns: 1fr; } .numbers-grid { grid-template-columns: 1fr 1fr; } }
+    .detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px; }
+    .detail-card { background:white; border-radius:8px; box-shadow:var(--shadow); padding:20px; }
+    .detail-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--gray-100); font-size:13px; }
+    .detail-row:last-child { border-bottom:none; }
+    .detail-row .lbl { color:var(--gray-600); }
+    .detail-row .val { font-weight:500; }
+    .periods-table { width:100%; border-collapse:collapse; }
+    .periods-table th { padding:8px 12px; text-align:left; font-size:11px; font-weight:600; color:var(--gray-600); text-transform:uppercase; background:var(--gray-50); border-bottom:2px solid var(--gray-200); }
+    .periods-table td { padding:10px 12px; border-bottom:1px solid var(--gray-100); font-size:13px; }
+    .periods-table tr:last-child td { border-bottom:none; }
+    .periods-table .total-row td { font-weight:700; background:var(--teal-subtle); color:var(--teal-dark); }
+    .manual-tag { font-size:10px; color:var(--yellow); margin-left:4px; }
+    @media(max-width:768px) { .detail-grid { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
-
 <nav>
   <span class="logo">Medi<span>Savings</span></span>
   <a href="index.html">📋 Λίστα</a>
@@ -42,29 +42,28 @@
   <div id="loadingState" class="loading"><div class="spinner"></div><p>Φόρτωση...</p></div>
   <div id="content" style="display:none">
 
-    <!-- Εξοικονόμηση -->
+    <!-- Σύνολο εξοικονόμησης -->
     <div class="form-card" style="margin-bottom:20px">
-      <div class="form-section-title">💰 Εξοικονόμηση (βάσει αγορών)</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
-        <div class="num-card">
-          <div class="year">Όφελος Αγορών 2025</div>
-          <div class="qty" style="color:var(--green)" id="d_sfp">—</div>
-          <div class="sub">Αγορές νέου × διαφορά τιμής</div>
-        </div>
-        <div class="num-card">
-          <div class="year" id="d_saving_2026h1_label">Όφελος Αγορών 2026 Α΄εξ.</div>
-          <div class="qty" style="color:var(--green)" id="d_saving_2026h1">—</div>
-          <div class="sub">πραγματικό / εκτιμώμενο</div>
-        </div>
+      <div class="form-section-title">💰 Συνολική Εξοικονόμηση</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
         <div class="num-card" style="background:var(--green-light);border:1px solid var(--green)">
-          <div class="year" style="color:var(--green)">Συνολική Εξοικονόμηση</div>
-          <div class="qty" style="color:var(--green);font-size:24px" id="d_total_saving">—</div>
-          <div class="sub">2025 + 2026 Α΄εξ.</div>
+          <div class="year" style="color:var(--green)">Συνολικό Όφελος</div>
+          <div class="qty" style="color:var(--green);font-size:28px" id="d_total">—</div>
+          <div class="sub">όλες οι περίοδοι</div>
         </div>
-        <div class="num-card" style="background:var(--yellow-light)">
-          <div class="year" style="color:var(--yellow)">Projected 2026</div>
-          <div class="qty" style="color:var(--yellow)" id="d_projected">—</div>
-          <div class="sub">Αγορές 2026 Α΄εξ. × 2 (εκτίμηση)</div>
+        <div class="num-card">
+          <div class="year">Μείωση Τιμής</div>
+          <div class="qty" id="d_diff">—</div>
+          <div class="sub" id="d_pct">—</div>
+        </div>
+        <div class="num-card">
+          <div class="year">Κατάσταση</div>
+          <div style="margin:8px 0" id="d_status">—</div>
+          <div class="sub" id="d_disc"></div>
+        </div>
+        <div class="num-card">
+          <div class="year">Κατηγορία</div>
+          <div class="qty" style="font-size:14px;color:var(--gray-600)" id="d_cat">—</div>
         </div>
       </div>
     </div>
@@ -83,60 +82,35 @@
         <div class="detail-row"><span class="lbl">Κωδικός</span><span class="val" id="d_new_code">—</span></div>
         <div class="detail-row"><span class="lbl">Περιγραφή</span><span class="val" id="d_new_desc">—</span></div>
         <div class="detail-row"><span class="lbl">Εταιρεία</span><span class="val" id="d_new_sup">—</span></div>
-        <div class="detail-row"><span class="lbl">Τιμή</span><span class="val" id="d_new_price">—</span></div>
+        <div class="detail-row"><span class="lbl">Τρέχουσα Τιμή</span><span class="val" id="d_new_price">—</span></div>
       </div>
     </div>
 
-    <!-- Σύγκριση Τιμών -->
+    <!-- Ιστορικό Περιόδων -->
     <div class="form-card" style="margin-bottom:20px">
-      <div class="form-section-title">📊 Σύγκριση Τιμών</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
-        <div class="num-card">
-          <div class="year">Διαφορά Τιμής</div>
-          <div class="qty" style="color:var(--teal-dark)" id="d_diff">—</div>
-          <div class="sub">ανά τεμάχιο</div>
-        </div>
-        <div class="num-card">
-          <div class="year">Μείωση %</div>
-          <div class="qty" style="color:var(--green)" id="d_pct">—</div>
-          <div class="sub">επί της παλιάς τιμής</div>
-        </div>
-        <div class="num-card">
-          <div class="year">Κατηγορία</div>
-          <div class="qty" style="font-size:14px;color:var(--gray-600)" id="d_cat">—</div>
-          <div class="sub">&nbsp;</div>
-        </div>
-        <div class="num-card">
-          <div class="year">Κατάσταση</div>
-          <div style="margin:8px 0" id="d_status">—</div>
-          <div class="sub">&nbsp;</div>
-        </div>
-      </div>
+      <div class="form-section-title">📊 Ιστορικό Περιόδων</div>
+      <table class="periods-table">
+        <thead>
+          <tr>
+            <th>Περίοδος</th>
+            <th>Αγορές</th>
+            <th>Τιμή που ίσχυε</th>
+            <th>Όφελος</th>
+            <th>Σημειώσεις</th>
+          </tr>
+        </thead>
+        <tbody id="periodsBody"></tbody>
+        <tfoot>
+          <tr class="total-row">
+            <td colspan="3">Σύνολο</td>
+            <td id="d_periods_total">—</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
     </div>
 
-    <!-- Αγορές -->
-    <div class="form-card" style="margin-bottom:20px">
-      <div class="form-section-title">🛒 Αγορές</div>
-      <div class="numbers-grid">
-        <div class="num-card"><div class="year">Αγορές 2024</div><div class="qty" id="d_p2024">—</div><div class="sub">τεμάχια</div></div>
-        <div class="num-card"><div class="year">Αγορές 2025 (παλιό)</div><div class="qty" id="d_p2025o">—</div><div class="sub">τεμάχια</div></div>
-        <div class="num-card" style="background:var(--teal-subtle)"><div class="year">Αγορές 2025 (νέο)</div><div class="qty" id="d_p2025n">—</div><div class="sub">τεμάχια</div></div>
-        <div class="num-card" style="background:var(--teal-subtle)"><div class="year">Αγορές 2026 Α΄εξ.</div><div class="qty" id="d_p2026h1">—</div><div class="sub">τεμάχια</div></div>
-      </div>
-    </div>
-
-    <!-- Κατανάλωση (πληροφοριακό) -->
-    <div class="form-card" style="margin-bottom:20px">
-      <div class="form-section-title">📋 Κατανάλωση <span style="font-size:11px;color:var(--gray-400);font-weight:400">(πληροφοριακό)</span></div>
-      <div class="numbers-grid">
-        <div class="num-card"><div class="year">Κατανάλωση 2024</div><div class="qty" id="d_c2024">—</div><div class="sub">τεμάχια</div></div>
-        <div class="num-card"><div class="year">Κατανάλωση 2025</div><div class="qty" id="d_c2025">—</div><div class="sub">τεμάχια</div></div>
-        <div class="num-card"><div class="year">Κατανάλωση 2026 Α΄εξ.</div><div class="qty" id="d_c2026h1">—</div><div class="sub">τεμάχια</div></div>
-        <div class="num-card"><div class="year">Κατανάλωση 2026</div><div class="qty" id="d_c2026">—</div><div class="sub">τεμάχια</div></div>
-      </div>
-    </div>
-
-    <!-- Notes -->
+    <!-- Σημειώσεις -->
     <div class="form-card" id="notesCard" style="display:none;margin-bottom:40px">
       <div class="form-section-title">📝 Σημειώσεις</div>
       <p id="d_notes" style="font-size:13px;color:var(--gray-600);line-height:1.6"></p>
@@ -150,16 +124,22 @@
 <script>
 const id = new URLSearchParams(window.location.search).get('id');
 if (!id) window.location.href = 'index.html';
-
 document.getElementById('editBtn').onclick = () => window.location.href = `add.html?id=${id}`;
 
 async function load() {
-  const { data: r, error } = await db.from('material_changes').select('*').eq('id', id).single();
+  const [{ data: r, error }, { data: periods }] = await Promise.all([
+    db.from('material_changes').select('*').eq('id', id).single(),
+    db.from('material_periods').select('*').eq('change_id', id).order('period')
+  ]);
+
   document.getElementById('loadingState').style.display = 'none';
   if (error || !r) { alert('Δεν βρέθηκε εγγραφή'); history.back(); return; }
-
   document.getElementById('content').style.display = 'block';
-  document.getElementById('pageTitle').textContent = r.old_description || 'Λεπτομέρειες';
+
+  // Header
+  let title = r.old_description || 'Λεπτομέρειες';
+  if (r.is_discontinued) title += ' 🚫';
+  document.getElementById('pageTitle').textContent = title;
 
   // Τιμές
   document.getElementById('d_old_code').textContent  = r.old_code || '—';
@@ -174,63 +154,32 @@ async function load() {
   document.getElementById('d_pct').textContent       = formatPct(r.price_reduction_pct);
   document.getElementById('d_cat').textContent       = r.category || '—';
   document.getElementById('d_status').innerHTML      = statusBadge(r.status || 'active');
+  if (r.is_discontinued) document.getElementById('d_disc').innerHTML = '<span style="color:var(--red);font-size:11px">Καταργημένο</span>';
 
-  // Αγορές
-  document.getElementById('d_p2024').textContent   = formatNum(r.purchases_2024);
-  document.getElementById('d_p2025o').textContent  = formatNum(r.purchases_2025_old);
-  document.getElementById('d_p2025n').textContent  = formatNum(r.purchases_2025_new);
-  document.getElementById('d_p2026h1').textContent = formatNum(r.purchases_2026_h1);
+  // Περίοδοι
+  const tbody = document.getElementById('periodsBody');
+  let totalSaving = 0;
+  (periods || []).forEach(p => {
+    totalSaving += p.saving || 0;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${p.period}</strong></td>
+      <td>${formatNum(p.purchases)}</td>
+      <td>${formatEuro(p.price_used)}</td>
+      <td style="color:var(--green);font-weight:600">${formatEuro(p.saving)}${p.saving_manual ? '<span class="manual-tag">✏️χειροκίνητο</span>' : ''}</td>
+      <td style="color:var(--gray-400);font-size:12px">${p.notes || ''}</td>
+    `;
+    tbody.appendChild(tr);
+  });
 
-  // Κατανάλωση
-  document.getElementById('d_c2024').textContent   = formatNum(r.consumption_2024);
-  document.getElementById('d_c2025').textContent   = formatNum(r.consumption_2025);
-  document.getElementById('d_c2026h1').textContent = formatNum(r.consumption_2026_h1);
-  document.getElementById('d_c2026').textContent   = formatNum(r.consumption_2026);
-
-  // Εξοικονόμηση
-  const diff   = r.price_diff || 0;
-  const np     = r.new_price  || 0;
-  const op     = r.old_price  || 0;
-  const p2025n = r.purchases_2025_new || 0;
-  const p2026  = r.purchases_2026_h1;
-  const sfp    = p2025n * diff;
-
-  let sfp26 = 0;
-  let isDisc = r.is_discontinued || p2026 === 0;
-  if (r.manual_saving_2026_h1 != null) {
-    sfp26 = r.manual_saving_2026_h1;
-    isDisc = false; // manual override — δεν το θεωρούμε κατάργηση
-  } else if (p2026 !== null && p2026 !== undefined) {
-    if (p2026 === 0) {
-      const totalPurch2025 = (r.purchases_2025_new || 0) + (r.purchases_2025_old || 0);
-      const price = np > 0 ? np : op;
-      sfp26 = Math.round((totalPurch2025 / 2) * price * 100) / 100;
-    } else {
-      sfp26 = p2026 * diff;
-    }
-  }
-
-  const total = sfp + sfp26;
-
-  document.getElementById('d_sfp').textContent           = formatEuro(sfp);
-  document.getElementById('d_saving_2026h1_label').textContent = isDisc ? 'Εξοικονόμηση Κατάργησης 2026' : 'Όφελος Αγορών 2026 Α΄εξ.';
-  document.getElementById('d_saving_2026h1').textContent  = formatEuro(sfp26);
-  document.getElementById('d_total_saving').textContent   = formatEuro(total);
-  document.getElementById('d_projected').textContent      = (!isDisc && sfp26 > 0) ? formatEuro(sfp26 * 2) : '—';
-
-  // Σήμανση κατάργησης
-  if (isDisc) {
-    const badge = document.createElement('span');
-    badge.innerHTML = ' 🚫 <span style="color:var(--red);font-weight:600;font-size:13px">Καταργημένο υλικό</span>';
-    document.getElementById('pageTitle').appendChild(badge);
-  }
+  document.getElementById('d_total').textContent         = formatEuro(totalSaving);
+  document.getElementById('d_periods_total').textContent = formatEuro(totalSaving);
 
   if (r.notes) {
     document.getElementById('notesCard').style.display = 'block';
     document.getElementById('d_notes').textContent = r.notes;
   }
 }
-
 load();
 </script>
 </body>

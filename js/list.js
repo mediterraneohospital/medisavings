@@ -1,13 +1,14 @@
-// MediSavings - List Logic
+// MediSavings - List Logic v2 (periods)
 let allData = [];
+let periodsMap = {}; // change_id → [periods]
 let sortCol = 'sort_order';
 let sortDir = 'asc';
 
 async function loadData() {
-  const { data, error } = await db
-    .from('material_changes')
-    .select('*')
-    .order('sort_order', { ascending: true, nullsFirst: false });
+  const [{ data, error }, { data: periods }] = await Promise.all([
+    db.from('material_changes').select('*').order('sort_order', { ascending: true, nullsFirst: false }),
+    db.from('material_periods').select('*')
+  ]);
 
   if (error) {
     document.getElementById('loadingState').innerHTML =
@@ -16,42 +17,39 @@ async function loadData() {
   }
 
   allData = data || [];
+  periodsMap = {};
+  (periods || []).forEach(p => {
+    if (!periodsMap[p.change_id]) periodsMap[p.change_id] = [];
+    periodsMap[p.change_id].push(p);
+  });
+
   renderStats(allData);
   populateSupplierFilter(allData);
   renderTable(allData);
 }
 
-function saving2025(r) {
-  return (r.purchases_2025_new || 0) * (r.price_diff || 0);
-}
-
-function saving2026h1(r) {
-  // Χειροκίνητο παρακάμπτει αυτόματο
-  if (r.manual_saving_2026_h1 != null) return r.manual_saving_2026_h1;
-  const p2026 = r.purchases_2026_h1;
-  if (p2026 === null || p2026 === undefined) return 0;
-  if (p2026 === 0) {
-    const totalPurch2025 = (r.purchases_2025_new || 0) + (r.purchases_2025_old || 0);
-    const price = (r.new_price > 0) ? r.new_price : (r.old_price || 0);
-    return Math.round((totalPurch2025 / 2) * price * 100) / 100;
-  }
-  return p2026 * (r.price_diff || 0);
-}
-
 function totalSaving(r) {
-  return saving2025(r) + saving2026h1(r);
+  const periods = periodsMap[r.id] || [];
+  if (periods.length > 0) {
+    return periods.reduce((s, p) => s + (p.saving || 0), 0);
+  }
+  // Fallback για παλιές εγγραφές χωρίς περιόδους
+  return (r.saving_from_purchases || 0) + (r.saving_2026_h1 || 0);
 }
 
 function renderStats(data) {
   const active = data.filter(r => r.status === 'active');
   const total  = active.reduce((s, r) => s + totalSaving(r), 0);
-  const tot25  = active.reduce((s, r) => s + saving2025(r), 0);
   const pcts   = active.filter(r => r.price_reduction_pct).map(r => r.price_reduction_pct);
   const avgPct = pcts.length ? pcts.reduce((a, b) => a + b, 0) / pcts.length : 0;
+  const count2025 = active.reduce((s, r) => {
+    const p = (periodsMap[r.id] || []).find(p => p.period === '2025');
+    return s + (p?.saving || 0);
+  }, 0);
 
   document.getElementById('statTotal').textContent     = data.length;
   document.getElementById('statSaving').textContent    = formatEuro(total);
-  document.getElementById('statPurchases').textContent = formatEuro(tot25);
+  document.getElementById('statPurchases').textContent = formatEuro(count2025);
   document.getElementById('statAvgPct').textContent    = formatPct(avgPct);
 }
 
@@ -69,10 +67,9 @@ function getFiltered() {
   const search   = document.getElementById('searchInput').value.toLowerCase();
   const status   = document.getElementById('filterStatus').value;
   const supplier = document.getElementById('filterSupplier').value;
-
   return allData.filter(r => {
-    if (status   && r.status       !== status)   return false;
-    if (supplier && r.old_supplier !== supplier)  return false;
+    if (status   && r.status       !== status)  return false;
+    if (supplier && r.old_supplier !== supplier) return false;
     if (search) {
       const hay = [r.old_code, r.old_description, r.new_code, r.new_description,
                    r.old_supplier, r.new_supplier].join(' ').toLowerCase();
@@ -116,8 +113,13 @@ function renderTable(data) {
   tbody.innerHTML = sorted.map((r, idx) => {
     const aa      = idx + 1;
     const saving  = totalSaving(r);
-    const isDisc  = r.is_discontinued || r.purchases_2026_h1 === 0;
-    const savingHtml = `<span class="saving-pill ${saving < 0 ? 'negative' : ''}">${saving >= 0 ? '▼' : '▲'} ${formatEuro(Math.abs(saving))}</span>${isDisc ? ' <span title="Καταργημένο" style="font-size:11px">🚫</span>' : ''}`;
+    const isDisc  = r.is_discontinued;
+    const periods = periodsMap[r.id] || [];
+    const periodBadges = periods.map(p =>
+      `<span style="font-size:10px;background:var(--gray-100);padding:1px 5px;border-radius:4px;margin-right:2px">${p.period}</span>`
+    ).join('');
+
+    const savingHtml = `<span class="saving-pill">${saving >= 0 ? '▼' : '▲'} ${formatEuro(Math.abs(saving))}</span>${isDisc ? ' <span title="Καταργημένο">🚫</span>' : ''}`;
 
     return `<tr>
       <td style="text-align:center;color:var(--gray-400);font-size:12px;font-weight:600">${aa}</td>
@@ -131,12 +133,11 @@ function renderTable(data) {
         <div class="item-code">${esc(r.new_code)}</div>
         <div class="item-desc">${esc(r.new_description || '')}</div>
         <div class="item-supplier">${esc(r.new_supplier || '')}</div>
+        <div style="margin-top:4px">${periodBadges}</div>
       </td>
       <td><span class="price-old">${formatEuro(r.old_price)}</span></td>
       <td><span class="price-new">${formatEuro(r.new_price)}</span></td>
-      <td>${r.price_reduction_pct != null
-        ? `<strong style="color:var(--green)">${formatPct(r.price_reduction_pct)}</strong>`
-        : '—'}</td>
+      <td>${r.price_reduction_pct != null ? `<strong style="color:var(--green)">${formatPct(r.price_reduction_pct)}</strong>` : '—'}</td>
       <td>${savingHtml}</td>
       <td>${statusBadge(r.status || 'active')}</td>
       <td>
@@ -147,15 +148,12 @@ function renderTable(data) {
   }).join('');
 }
 
-function esc(s) {
-  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function openDetail(id) { window.location.href = `detail.html?id=${id}`; }
 function editRecord(id)  { window.location.href = `add.html?id=${id}`; }
 
-// ── Event Listeners ──────────────────────────────────────
-document.getElementById('searchInput').addEventListener('input',  () => renderTable(allData));
-document.getElementById('filterStatus').addEventListener('change', () => renderTable(allData));
+document.getElementById('searchInput').addEventListener('input',   () => renderTable(allData));
+document.getElementById('filterStatus').addEventListener('change',  () => renderTable(allData));
 document.getElementById('filterSupplier').addEventListener('change',() => renderTable(allData));
 document.getElementById('clearFilters').addEventListener('click', () => {
   document.getElementById('searchInput').value    = '';

@@ -5,9 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MediSavings – Καταχώρηση Αλλαγής</title>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    .period-row { display:grid; grid-template-columns:120px 1fr 1fr 1fr 1fr auto; gap:8px; align-items:start; padding:12px; background:var(--gray-50); border-radius:8px; margin-bottom:8px; }
+    .period-row .form-group { margin:0; }
+    .period-row label { font-size:11px; }
+    .periods-header { display:grid; grid-template-columns:120px 1fr 1fr 1fr 1fr auto; gap:8px; padding:0 12px; margin-bottom:4px; }
+    .periods-header span { font-size:11px; font-weight:600; color:var(--gray-600); text-transform:uppercase; }
+    .add-period-btn { background:var(--teal-subtle); border:1px dashed var(--teal); color:var(--teal); border-radius:8px; padding:10px; width:100%; cursor:pointer; font-size:13px; font-weight:600; margin-top:8px; }
+    .add-period-btn:hover { background:var(--teal-light); }
+    .del-period { background:none; border:none; color:var(--gray-400); cursor:pointer; font-size:16px; padding:4px; }
+    .del-period:hover { color:var(--red); }
+    .manual-badge { font-size:10px; color:var(--yellow); font-weight:600; }
+  </style>
 </head>
 <body>
-
 <nav>
   <span class="logo">Medi<span>Savings</span></span>
   <a href="index.html">📋 Λίστα</a>
@@ -17,20 +28,9 @@
 </nav>
 
 <div class="container">
-
   <div class="page-header">
     <div class="page-title" id="pageTitle">➕ Νέα Αλλαγή Υλικού</div>
     <a href="index.html" class="btn btn-outline">← Πίσω στη Λίστα</a>
-  </div>
-
-  <!-- Preview Bar -->
-  <div class="saving-preview" id="savingPreview" style="display:none">
-    <div class="preview-item"><span class="preview-label">Διαφορά Τιμής</span><span class="preview-value" id="prevDiff">—</span></div>
-    <div class="preview-item"><span class="preview-label">Μείωση %</span><span class="preview-value" id="prevPct">—</span></div>
-    <div class="preview-item"><span class="preview-label">Όφελος Αγορών 2025</span><span class="preview-value" id="prevSaving2025">—</span></div>
-    <div class="preview-item"><span class="preview-label">Όφελος 2026 Α΄εξ.</span><span class="preview-value" id="prevSaving2026">—</span></div>
-    <div class="preview-item"><span class="preview-label">Συνολική Εξοικονόμηση</span><span class="preview-value big" id="prevSaving">—</span></div>
-    <div class="preview-item" id="prev_proj"><span class="preview-label">Projected 2026</span><span class="preview-value" id="prevProjected" style="color:var(--yellow)">—</span></div>
   </div>
 
   <!-- Παλιό / Νέο Υλικό -->
@@ -40,7 +40,7 @@
       <div class="form-grid">
         <div class="form-group"><label>Κωδικός *</label><input type="text" id="old_code" placeholder="π.χ. 11000032-1"></div>
         <div class="form-group"><label>Εταιρεία</label><input type="text" id="old_supplier" placeholder="π.χ. Paul Hartmann"></div>
-        <div class="form-group" style="grid-column:1/-1"><label>Περιγραφή *</label><input type="text" id="old_description" placeholder="Περιγραφή υλικού"></div>
+        <div class="form-group" style="grid-column:1/-1"><label>Περιγραφή *</label><input type="text" id="old_description"></div>
         <div class="form-group"><label>Παλιά Τιμή (€) *</label><input type="number" id="old_price" step="0.0001" placeholder="0.0000"></div>
       </div>
     </div>
@@ -49,34 +49,25 @@
       <div class="form-grid">
         <div class="form-group"><label>Κωδικός *</label><input type="text" id="new_code" placeholder="π.χ. 11000032"></div>
         <div class="form-group"><label>Εταιρεία</label><input type="text" id="new_supplier" placeholder="π.χ. ΤΑΜΠΟΥ"></div>
-        <div class="form-group" style="grid-column:1/-1"><label>Περιγραφή</label><input type="text" id="new_description" placeholder="Περιγραφή νέου υλικού"></div>
-        <div class="form-group"><label>Νέα Τιμή (€)</label><input type="number" id="new_price" step="0.0001" placeholder="0.0000 (0 αν καταργήθηκε)"></div>
+        <div class="form-group" style="grid-column:1/-1"><label>Περιγραφή</label><input type="text" id="new_description"></div>
+        <div class="form-group"><label>Τρέχουσα Τιμή (€) *</label><input type="number" id="new_price" step="0.0001" placeholder="0.0000"><span class="hint">Πάντα η τελευταία τιμή</span></div>
       </div>
     </div>
   </div>
 
-  <!-- Ποσότητες & Κατανάλωση -->
+  <!-- Περίοδοι -->
   <div class="form-card">
-    <div class="form-section-title">📊 Ποσότητες & Κατανάλωση</div>
-    <div class="form-grid">
-      <div class="form-group"><label>Αγορές 2024</label><input type="number" id="purchases_2024" placeholder="τεμάχια"></div>
-      <div class="form-group"><label>Αγορές 2025 (Παλιό)</label><input type="number" id="purchases_2025_old" placeholder="τεμάχια"></div>
-      <div class="form-group"><label>Αγορές 2025 (Νέο)</label><input type="number" id="purchases_2025_new" placeholder="τεμάχια"><span class="hint">Για υπολογισμό οφέλους 2025</span></div>
-      <div class="form-group">
-        <label>Αγορές 2026 Α΄ εξάμηνο</label>
-        <input type="number" id="purchases_2026_h1" placeholder="τεμάχια (0 = καταργήθηκε)">
-        <span class="hint">Βάλε 0 αν καταργήθηκε — υπολογίζεται αυτόματα το όφελος</span>
-      </div>
-      <div class="form-group">
-        <label>Όφελος 2026 Α΄εξ. (χειροκίνητο) €</label>
-        <input type="number" id="manual_saving_2026_h1" step="0.01" placeholder="Προαιρετικό — παρακάμπτει τον αυτόματο υπολογισμό">
-        <span class="hint">Χρήσιμο αν υπήρξαν αλλαγές τιμών μέσα στο εξάμηνο</span>
-      </div>
-      <div class="form-group"><label>Κατανάλωση 2024</label><input type="number" id="consumption_2024" placeholder="τεμάχια"></div>
-      <div class="form-group"><label>Κατανάλωση 2025</label><input type="number" id="consumption_2025" placeholder="τεμάχια"></div>
-      <div class="form-group"><label>Κατανάλωση 2026 Α΄ Εξάμηνο</label><input type="number" id="consumption_2026_h1" placeholder="τεμάχια"><span class="hint">Πληροφοριακό</span></div>
-      <div class="form-group"><label>Κατανάλωση 2026</label><input type="number" id="consumption_2026" placeholder="τεμάχια"></div>
+    <div class="form-section-title">📊 Ιστορικό Περιόδων</div>
+    <div class="periods-header">
+      <span>Περίοδος</span>
+      <span>Αγορές (τεμ.)</span>
+      <span>Τιμή που ίσχυε (€)</span>
+      <span>Όφελος (€)</span>
+      <span>Σημειώσεις</span>
+      <span></span>
     </div>
+    <div id="periodsContainer"></div>
+    <button class="add-period-btn" onclick="addPeriod()">+ Προσθήκη Περιόδου</button>
   </div>
 
   <!-- Metadata -->
@@ -106,7 +97,6 @@
         <label>Ημερομηνία Αλλαγής</label>
         <input type="date" id="change_date">
       </div>
-      <!-- Σήμανση κατάργησης -->
       <div class="form-group" style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--red-light);border:1px solid var(--red);border-radius:8px">
         <input type="checkbox" id="is_discontinued" style="width:18px;height:18px;accent-color:var(--red);cursor:pointer">
         <label for="is_discontinued" style="cursor:pointer;color:var(--red);font-weight:600;margin:0">🚫 Καταργημένο υλικό</label>
@@ -118,11 +108,10 @@
     </div>
   </div>
 
-  <div style="display:flex; gap:12px; justify-content:flex-end; margin-bottom:40px;">
+  <div style="display:flex;gap:12px;justify-content:flex-end;margin-bottom:40px;">
     <a href="index.html" class="btn btn-outline">Ακύρωση</a>
     <button class="btn btn-primary" id="saveBtn" onclick="saveRecord()">💾 Αποθήκευση</button>
   </div>
-
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
