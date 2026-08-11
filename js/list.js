@@ -119,7 +119,7 @@ function renderTable(data) {
       `<span style="font-size:10px;background:var(--gray-100);padding:1px 5px;border-radius:4px;margin-right:2px">${p.period}</span>`
     ).join('');
 
-    const savingHtml = `<span class="saving-pill">${saving >= 0 ? '▼' : '▲'} ${formatEuro(Math.abs(saving))}</span>`;
+    const savingHtml = `<span class="saving-pill">&#9660; ${formatEuro(Math.abs(saving))}</span>`;
 
     return `<tr>
       <td style="text-align:center;color:var(--gray-400);font-size:12px;font-weight:600">${aa}</td>
