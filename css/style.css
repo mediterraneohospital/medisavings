@@ -333,3 +333,12 @@ tr:hover td { background: var(--teal-subtle); }
 .toast.show { opacity: 1; transform: translateY(0); }
 .toast.success { background: var(--green); }
 .toast.error { background: var(--red); }
+
+/* Clickable table rows */
+tr.clickable-row { cursor: pointer; }
+tr.clickable-row:hover td { background: var(--teal-subtle); }
+
+/* Darker table headers */
+th { color: var(--gray-800) !important; font-weight: 700 !important; }
+.num-card .year { color: var(--gray-700); font-weight: 600; }
+.preview-label { color: var(--gray-700); font-weight: 600; }

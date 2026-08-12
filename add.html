@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.x/dist/tabler-icons.min.css">
   <title>MediSavings – Καταχώρηση Αλλαγής</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
@@ -59,8 +60,8 @@
 <body>
 <nav>
   <span class="logo">Medi<span>Savings</span></span>
-  <a href="index.html">📋 Λίστα</a>
-  <a href="add.html" class="active">➕ Νέα Αλλαγή</a>
+  <a href="index.html"><i class="ti ti-list" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Λίστα</a>
+  <a href="add.html" class="active"><i class="ti ti-plus" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Νέα Αλλαγή</a>
   <span class="spacer"></span>
   <span class="hospital">Mediterraneo Hospital</span>
 </nav>
@@ -69,16 +70,16 @@
   <div class="page-header">
     <div class="page-title" id="pageTitle">➕ Νέα Αλλαγή Υλικού</div>
     <div style="display:flex;gap:10px">
-      <button type="button" class="btn" style="background:var(--red);color:white;display:none" id="deleteBtn">🗑️ Διαγραφή</button>
-      <a href="index.html" class="btn btn-outline">← Πίσω στη Λίστα</a>
-      <button type="button" class="btn btn-primary" id="saveBtnTop">💾 Αποθήκευση</button>
+      <button type="button" class="btn" style="background:var(--red);color:white;display:none" id="deleteBtn"><i class="ti ti-trash" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Διαγραφή</button>
+      <a href="index.html" class="btn btn-outline"><i class="ti ti-arrow-left" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Πίσω στη Λίστα</a>
+      <button type="button" class="btn btn-primary" id="saveBtnTop"><i class="ti ti-device-floppy" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Αποθήκευση</button>
     </div>
   </div>
 
   <!-- Παλιό / Νέο Υλικό -->
   <div class="two-sections">
     <div class="form-card">
-      <div class="form-section-title">📦 Παλιό Υλικό</div>
+      <div class="form-section-title"><i class="ti ti-package" style="margin-right:6px"></i>Παλιό Υλικό</div>
       <div class="form-grid">
         <div class="form-group"><label>Κωδικός *</label><input type="text" id="old_code" placeholder="π.χ. 11000032-1"></div>
         <div class="form-group"><label>Εταιρεία</label><input type="text" id="old_supplier" placeholder="π.χ. Paul Hartmann"></div>
@@ -87,7 +88,7 @@
       </div>
     </div>
     <div class="form-card">
-      <div class="form-section-title">✅ Νέο Υλικό</div>
+      <div class="form-section-title"><i class="ti ti-package-import" style="margin-right:6px"></i>Νέο Υλικό</div>
       <div class="form-grid">
         <div class="form-group"><label>Κωδικός *</label><input type="text" id="new_code" placeholder="π.χ. 11000032"></div>
         <div class="form-group"><label>Εταιρεία</label><input type="text" id="new_supplier" placeholder="π.χ. ΤΑΜΠΟΥ"></div>
@@ -102,7 +103,7 @@
 
   <!-- Ιστορικό Περιόδων -->
   <div class="form-card">
-    <div class="form-section-title">📊 Ιστορικό Περιόδων</div>
+    <div class="form-section-title"><i class="ti ti-chart-bar" style="margin-right:6px"></i>Ιστορικό Περιόδων</div>
     <!-- Πληροφοριακές γραμμές: 2024 και 2025 παλιό -->
     <div style="display:grid;grid-template-columns:130px 120px 140px 1fr;gap:8px;padding:8px 12px;background:var(--gray-100);border-radius:8px;margin-bottom:8px;border:1px dashed var(--gray-300)">
       <div style="font-size:11px;color:var(--gray-500);font-weight:600;display:flex;align-items:center">2024 <span style="font-size:10px;margin-left:4px">(πληρ.)</span></div>
@@ -131,7 +132,7 @@
 
   <!-- Κατανάλωση (πληροφοριακό) -->
   <div class="form-card">
-    <div class="form-section-title">📋 Κατανάλωση <span style="font-size:11px;color:var(--gray-400);font-weight:400">(πληροφοριακό)</span></div>
+    <div class="form-section-title"><i class="ti ti-clipboard-data" style="margin-right:6px"></i>Κατανάλωση <span style="font-size:11px;color:var(--gray-400);font-weight:400">(πληροφοριακό)</span></div>
     <div class="form-grid">
       <div class="form-group"><label>Κατανάλωση 2024</label><input type="number" id="consumption_2024" placeholder="τεμάχια"></div>
       <div class="form-group"><label>Κατανάλωση 2025</label><input type="number" id="consumption_2025" placeholder="τεμάχια"></div>
@@ -142,7 +143,7 @@
 
   <!-- Metadata -->
   <div class="form-card">
-    <div class="form-section-title">🏷️ Πρόσθετα Στοιχεία</div>
+    <div class="form-section-title"><i class="ti ti-tag" style="margin-right:6px"></i>Πρόσθετα Στοιχεία</div>
     <div class="form-grid">
       <div class="form-group">
         <label>Κατηγορία</label>
@@ -179,8 +180,8 @@
   </div>
 
   <div style="display:flex;gap:12px;justify-content:flex-end;margin-bottom:40px;">
-    <a href="index.html" class="btn btn-outline">Ακύρωση</a>
-    <button type="button" class="btn btn-primary" id="saveBtn">💾 Αποθήκευση</button>
+    <a href="index.html" class="btn btn-outline"><i class="ti ti-x" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Ακύρωση</a>
+    <button type="button" class="btn btn-primary" id="saveBtn"><i class="ti ti-device-floppy" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Αποθήκευση</button>
   </div>
 </div>
 

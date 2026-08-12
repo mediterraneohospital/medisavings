@@ -122,8 +122,8 @@ function renderTable(data) {
 
     const savingHtml = `<span class="saving-pill">&#9660; ${formatEuro(Math.abs(saving))}</span>`;
 
-    return `<tr>
-      <td style="text-align:center;color:var(--gray-400);font-size:12px;font-weight:600">${aa}</td>
+    return `<tr class="clickable-row" onclick="openDetail('${r.id}')">
+      <td style="text-align:center;color:var(--gray-600);font-size:12px;font-weight:600">${aa}</td>
       <td>
         <div class="item-code">${esc(r.old_code)}</div>
         <div class="item-desc">${esc(r.old_description)}</div>
@@ -141,9 +141,8 @@ function renderTable(data) {
       <td>${r.price_reduction_pct != null ? `<strong style="color:var(--green)">${formatPct(r.price_reduction_pct)}</strong>` : '—'}</td>
       <td>${savingHtml}</td>
       <td>${isDisc ? '<span class="badge badge-discontinued">Καταργημένο</span>' : statusBadge(r.status || 'active')}</td>
-      <td>
-        <button class="btn btn-outline btn-sm btn-icon" onclick="openDetail('${r.id}')" title="Λεπτομέρειες">🔍</button>
-        <button class="btn btn-outline btn-sm btn-icon" onclick="editRecord('${r.id}')"  title="Επεξεργασία">✏️</button>
+      <td onclick="event.stopPropagation()">
+        <button class="btn btn-outline btn-sm btn-icon" onclick="editRecord('${r.id}')" title="Επεξεργασία"><i class="ti ti-pencil"></i></button>
       </td>
     </tr>`;
   }).join('');
