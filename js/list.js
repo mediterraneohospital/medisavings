@@ -114,9 +114,10 @@ function renderTable(data) {
     const aa      = idx + 1;
     const saving  = totalSaving(r);
     const isDisc  = r.is_discontinued;
-    const periods = periodsMap[r.id] || [];
-    const periodBadges = periods.map(p =>
-      `<span style="font-size:10px;background:var(--gray-100);padding:1px 5px;border-radius:4px;margin-right:2px">${p.period}</span>`
+    const rPeriods = periodsMap[r.id] || [];
+    const uniquePeriods = [...new Set(rPeriods.map(p => p.period))];
+    const periodBadges = uniquePeriods.map(p =>
+      `<span style="font-size:10px;background:var(--gray-100);padding:1px 5px;border-radius:4px;margin-right:2px">${p}</span>`
     ).join('');
 
     const savingHtml = `<span class="saving-pill">&#9660; ${formatEuro(Math.abs(saving))}</span>`;

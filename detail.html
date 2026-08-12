@@ -99,7 +99,7 @@
 
     <!-- Ιστορικό Περιόδων -->
     <div class="form-card" style="margin-bottom:20px">
-      <div class="form-section-title">📊 Ιστορικό Περιόδων</div>
+      <div class="form-section-title">📊 Ιστορικό Αγορών</div>
       <table class="periods-table">
         <thead>
           <tr>
@@ -123,20 +123,21 @@
 
     <!-- Κατανάλωση -->
     <div class="form-card" style="margin-bottom:20px">
-      <div class="form-section-title">📋 Κατανάλωση <span style="font-size:11px;color:var(--gray-400);font-weight:400">(πληροφοριακό)</span></div>
+      <div class="form-section-title">📋 Κατανάλωση</div>
       <table class="periods-table">
         <thead>
           <tr>
             <th>Περίοδος</th>
             <th>Κατανάλωση (τεμ.)</th>
-            <th colspan="3"></th>
+            <th>Μεταβολή %</th>
+            <th colspan="2"></th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>2024</td><td id="d_c2024">—</td><td colspan="3"></td></tr>
-          <tr><td>2025</td><td id="d_c2025">—</td><td colspan="3"></td></tr>
-          <tr><td>2026 Α΄ Εξ.</td><td id="d_c2026h1">—</td><td colspan="3"></td></tr>
-          <tr><td>2026 Β΄ Εξ.</td><td id="d_c2026">—</td><td colspan="3"></td></tr>
+          <tr><td>2024</td><td id="d_c2024">—</td><td id="d_c2024_pct">—</td><td colspan="2"></td></tr>
+          <tr><td>2025</td><td id="d_c2025">—</td><td id="d_c2025_pct">—</td><td colspan="2"></td></tr>
+          <tr><td>2026 Α΄ Εξ.</td><td id="d_c2026h1">—</td><td id="d_c2026h1_pct">—</td><td colspan="2"></td></tr>
+          <tr><td>2026 Β΄ Εξ.</td><td id="d_c2026">—</td><td id="d_c2026_pct">—</td><td colspan="2"></td></tr>
         </tbody>
       </table>
     </div>
@@ -204,11 +205,30 @@ async function load() {
   }
   document.getElementById('d_disc').textContent = '';
 
-  // Κατανάλωση
-  document.getElementById('d_c2024').textContent   = formatNum(r.consumption_2024);
-  document.getElementById('d_c2025').textContent   = formatNum(r.consumption_2025);
-  document.getElementById('d_c2026h1').textContent = formatNum(r.consumption_2026_h1);
-  document.getElementById('d_c2026').textContent   = formatNum(r.consumption_2026);
+  // Κατανάλωση με % μεταβολής
+  var c2024   = r.consumption_2024;
+  var c2025   = r.consumption_2025;
+  var c2026h1 = r.consumption_2026_h1;
+  var c2026   = r.consumption_2026;
+
+  function pctChange(curr, prev) {
+    if (!curr || !prev) return '—';
+    var pct = ((curr - prev) / prev) * 100;
+    var color = pct < 0 ? 'var(--green)' : pct > 0 ? 'var(--red)' : 'var(--gray-600)';
+    var arrow = pct < 0 ? '▼' : pct > 0 ? '▲' : '=';
+    return '<span style="color:' + color + ';font-weight:600">' + arrow + ' ' + Math.abs(pct).toFixed(1) + '%</span>';
+  }
+
+  document.getElementById('d_c2024').textContent    = formatNum(c2024);
+  document.getElementById('d_c2025').textContent    = formatNum(c2025);
+  document.getElementById('d_c2026h1').textContent  = formatNum(c2026h1);
+  document.getElementById('d_c2026').textContent    = formatNum(c2026);
+
+  // % μεταβολής — για 2026 Α΄εξ. συγκρίνουμε με 6μηνο 2025 (÷2)
+  document.getElementById('d_c2024_pct').innerHTML   = '—';
+  document.getElementById('d_c2025_pct').innerHTML   = pctChange(c2025, c2024);
+  document.getElementById('d_c2026h1_pct').innerHTML = pctChange(c2026h1, c2025 ? c2025 / 2 : null);
+  document.getElementById('d_c2026_pct').innerHTML   = pctChange(c2026, c2025);
 
   // Ιστορικό Περιόδων
   var tbody = document.getElementById('periodsBody');
@@ -220,7 +240,7 @@ async function load() {
     tr0.style.color = 'var(--gray-600)';
     tr0.style.fontStyle = 'italic';
     tr0.innerHTML =
-      '<td>2024 <span style="font-size:10px;color:var(--gray-500)">(πληρ.)</span></td>' +
+      '<td>2024</td>' +
       '<td>' + formatNum(r.purchases_2024) + '</td>' +
       '<td>' + formatEuro(r.old_price) + '</td>' +
       '<td style="color:var(--gray-400)">—</td>' +
@@ -232,7 +252,7 @@ async function load() {
     tr1.style.color = 'var(--gray-600)';
     tr1.style.fontStyle = 'italic';
     tr1.innerHTML =
-      '<td>2025 παλιό <span style="font-size:10px;color:var(--gray-500)">(πληρ.)</span></td>' +
+      '<td>2025 παλιό</td>' +
       '<td>' + formatNum(r.purchases_2025_old) + '</td>' +
       '<td>' + formatEuro(r.old_price) + '</td>' +
       '<td style="color:var(--gray-400)">—</td>' +

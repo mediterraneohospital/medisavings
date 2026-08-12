@@ -103,10 +103,10 @@ nav .hospital {
 }
 .stat-card.green { border-color: var(--green); }
 .stat-card.yellow { border-color: var(--yellow); }
-.stat-label { font-size: 11px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.stat-label { font-size: 11px; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; font-weight: 600; }
 .stat-value { font-size: 22px; font-weight: 700; color: var(--gray-800); }
 .stat-value.green { color: var(--green); }
-.stat-sub { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.stat-sub { font-size: 11px; color: var(--gray-600); margin-top: 2px; font-weight: 500; }
 
 /* ── FILTERS ── */
 .filters {
