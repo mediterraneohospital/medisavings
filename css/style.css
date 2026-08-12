@@ -287,7 +287,7 @@ tr:hover td { background: var(--teal-subtle); }
   flex-wrap: wrap;
 }
 .saving-preview .preview-item { display: flex; flex-direction: column; gap: 2px; }
-.saving-preview .preview-label { font-size: 11px; color: var(--gray-600); }
+.saving-preview .preview-label { font-size: 11px; color: var(--gray-700); font-weight: 600; }
 .saving-preview .preview-value { font-size: 18px; font-weight: 700; color: var(--teal-dark); }
 .saving-preview .preview-value.big { font-size: 22px; color: var(--green); }
 
@@ -336,9 +336,10 @@ tr:hover td { background: var(--teal-subtle); }
 
 /* Clickable table rows */
 tr.clickable-row { cursor: pointer; }
+tr.clickable-row td { cursor: pointer; }
 tr.clickable-row:hover td { background: var(--teal-subtle); }
 
-/* Darker table headers */
+/* Darker headers */
 th { color: var(--gray-800) !important; font-weight: 700 !important; }
-.num-card .year { color: var(--gray-700); font-weight: 600; }
-.preview-label { color: var(--gray-700); font-weight: 600; }
+.num-card .year { color: var(--gray-700) !important; font-weight: 700 !important; }
+.preview-label { color: var(--gray-700) !important; font-weight: 700 !important; }
