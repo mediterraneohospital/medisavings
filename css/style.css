@@ -359,3 +359,8 @@ th { color: var(--gray-800) !important; font-weight: 700 !important; }
 .num-card .year { color: var(--gray-700) !important; font-weight: 700 !important; }
 .preview-label { color: var(--gray-700) !important; font-weight: 700 !important; }
 .saving-preview .preview-label { color: var(--gray-700) !important; font-weight: 700 !important; }
+
+/* Αφαίρεση spinners number inputs */
+input[type=number] { -moz-appearance: textfield !important; }
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none !important; margin: 0 !important; }

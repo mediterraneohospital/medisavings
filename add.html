@@ -20,7 +20,7 @@
     }
     .period-row .form-group { margin: 0; }
     .period-row label { font-size: 11px; color: var(--gray-600); font-weight: 600; display: block; margin-bottom: 3px; }
-    .manual-col { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 6px; gap: 3px; }
+    .manual-col { display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 18px; gap: 3px; }
     .manual-col label { font-size: 10px; color: var(--yellow); font-weight: 600; margin: 0; text-align: center; cursor: pointer; }
     .periods-header {
       display: grid;
@@ -72,6 +72,7 @@
     <div style="display:flex;gap:10px">
       <button type="button" class="btn" style="background:var(--red);color:white;display:none" id="deleteBtn"><i class="ti ti-trash" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Διαγραφή</button>
       <a href="index.html" class="btn btn-outline"><i class="ti ti-arrow-left" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Πίσω στη Λίστα</a>
+      <button type="button" class="btn btn-outline" id="cancelBtnTop" style="display:none"><i class="ti ti-x" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Ακύρωση</button>
       <button type="button" class="btn btn-primary" id="saveBtnTop"><i class="ti ti-device-floppy" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Αποθήκευση</button>
     </div>
   </div>
@@ -122,7 +123,7 @@
       <span>Αγορές (τεμ.)</span>
       <span>Τιμή που ίσχυε (€)</span>
       <span>Όφελος (€)</span>
-      <span title="Χειροκίνητο"><i class="ti ti-pencil" style="font-size:13px;color:var(--yellow)"></i></span>
+      <span></span>
       <span>Σημειώσεις</span>
       <span></span>
     </div>
@@ -137,7 +138,7 @@
       <div class="form-group"><label>Κατανάλωση 2024</label><input type="number" id="consumption_2024" placeholder="τεμάχια"></div>
       <div class="form-group"><label>Κατανάλωση 2025</label><input type="number" id="consumption_2025" placeholder="τεμάχια"></div>
       <div class="form-group"><label>Κατανάλωση 2026 Α΄εξ.</label><input type="number" id="consumption_2026_h1" placeholder="τεμάχια"></div>
-      <div class="form-group"><label>Κατανάλωση 2026</label><input type="number" id="consumption_2026" placeholder="τεμάχια"></div>
+      <div class="form-group"><label>Κατανάλωση 2026 Β΄ Εξ.</label><input type="number" id="consumption_2026" placeholder="τεμάχια"></div>
     </div>
   </div>
 
@@ -180,7 +181,8 @@
   </div>
 
   <div style="display:flex;gap:12px;justify-content:flex-end;margin-bottom:40px;">
-    <a href="index.html" class="btn btn-outline"><i class="ti ti-x" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Ακύρωση</a>
+    <button type="button" class="btn" style="background:var(--red);color:white;display:none" id="deleteBtnBottom"><i class="ti ti-trash" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Διαγραφή</button>
+    <button type="button" class="btn btn-outline" id="cancelBtn"><i class="ti ti-x" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Ακύρωση</button>
     <button type="button" class="btn btn-primary" id="saveBtn"><i class="ti ti-device-floppy" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Αποθήκευση</button>
   </div>
 </div>

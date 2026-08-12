@@ -112,17 +112,24 @@ async function loadForEdit(id) {
 
   if (error || !rec) { showToast('Σφάλμα φόρτωσης', 'error'); return; }
 
-  // Εμφάνιση κουμπιού Διαγραφή
-  var delBtn = document.getElementById('deleteBtn');
-  if (delBtn) {
-    delBtn.style.display = '';
-    delBtn.onclick = async function() {
+  // Εμφάνιση κουμπιών edit mode
+  var cancelBtnTop = document.getElementById('cancelBtnTop');
+  if (cancelBtnTop) cancelBtnTop.style.display = '';
+  var delBtnTop = document.getElementById('deleteBtn');
+  if (delBtnTop) {
+    delBtnTop.style.display = '';
+    delBtnTop.onclick = async function() {
       if (!confirm('Διαγραφή αυτής της εγγραφής; Η ενέργεια δεν αναιρείται.')) return;
       await db.from('material_periods').delete().eq('change_id', id);
       var res = await db.from('material_changes').delete().eq('id', id);
       if (res.error) { alert('Σφάλμα διαγραφής: ' + res.error.message); return; }
       window.location.href = 'index.html';
     };
+  }
+  var deleteBtnBottom = document.getElementById('deleteBtnBottom');
+  if (deleteBtnBottom) {
+    deleteBtnBottom.style.display = '';
+    deleteBtnBottom.onclick = delBtnTop?.onclick;
   }
 
   var fields = [
@@ -240,6 +247,16 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('addPeriodBtn').addEventListener('click', function() { addPeriod(); });
   document.getElementById('saveBtn').addEventListener('click', saveRecord);
   document.getElementById('saveBtnTop').addEventListener('click', saveRecord);
+
+  // Ακύρωση — επαναφορά σελίδας
+  var cancelFn = function() {
+    if (confirm('Να ακυρωθούν οι αλλαγές;')) {
+      if (editId) { loadForEdit(editId); }
+      else { window.location.href = 'index.html'; }
+    }
+  };
+  document.getElementById('cancelBtn')?.addEventListener('click', cancelFn);
+  document.getElementById('cancelBtnTop')?.addEventListener('click', cancelFn);
   document.getElementById('old_price').addEventListener('input', function() {
     var val = formatEuro(parseFloat(this.value));
     var el2024 = document.getElementById('old_price_display_2024');
