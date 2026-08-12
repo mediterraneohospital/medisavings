@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediSavings – Στατιστικά</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.x/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+    .stats-grid.full { grid-template-columns: 1fr; }
+    @media(max-width:900px) { .stats-grid { grid-template-columns: 1fr; } }
+
+    .stat-section { background: white; border-radius: 8px; box-shadow: var(--shadow); padding: 20px; }
+    .stat-section-title {
+      font-size: 12px; font-weight: 700; color: var(--teal-dark);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      margin-bottom: 16px; padding-bottom: 8px;
+      border-bottom: 2px solid var(--teal-light);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .rank-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .rank-table td { padding: 7px 8px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+    .rank-table tr:last-child td { border-bottom: none; }
+    .rank-table tr:hover td { background: var(--teal-subtle); }
+    .rank-num { color: var(--gray-400); font-weight: 700; font-size: 11px; width: 24px; text-align: right; }
+    .rank-desc { color: var(--gray-800); font-weight: 500; }
+    .rank-sub { color: var(--gray-400); font-size: 11px; }
+    .rank-val { text-align: right; font-weight: 700; white-space: nowrap; }
+    .rank-val.green { color: var(--green); }
+    .rank-val.red { color: var(--red); }
+    .rank-val.teal { color: var(--teal-dark); }
+
+    .bar-wrap { background: var(--gray-100); border-radius: 4px; height: 6px; margin-top: 4px; }
+    .bar-fill { background: var(--teal); border-radius: 4px; height: 6px; transition: width 0.4s; }
+    .bar-fill.green { background: var(--green); }
+    .bar-fill.red { background: var(--red); }
+
+    .period-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .period-card { background: var(--gray-50); border-radius: 8px; padding: 14px; text-align: center; border: 1px solid var(--gray-200); }
+    .period-card.highlight { background: var(--green-light); border-color: var(--green); }
+    .period-card .p-label { font-size: 11px; color: var(--gray-600); font-weight: 600; text-transform: uppercase; margin-bottom: 6px; }
+    .period-card .p-val { font-size: 22px; font-weight: 800; color: var(--gray-800); }
+    .period-card.highlight .p-val { color: var(--green); }
+    .period-card .p-sub { font-size: 11px; color: var(--gray-500); margin-top: 4px; }
+
+    .supplier-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--gray-100); }
+    .supplier-row:last-child { border-bottom: none; }
+    .supplier-name { flex: 1; font-size: 13px; font-weight: 500; color: var(--gray-800); }
+    .supplier-val { font-size: 13px; font-weight: 700; color: var(--green); white-space: nowrap; }
+    .supplier-pct { font-size: 11px; color: var(--gray-500); width: 40px; text-align: right; }
+
+    .loading { text-align: center; padding: 40px; color: var(--gray-400); }
+    .spinner { display: inline-block; width: 28px; height: 28px; border: 3px solid var(--gray-200); border-top-color: var(--teal); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 10px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .delta { font-size: 11px; font-weight: 600; margin-left: 4px; }
+    .delta.up { color: var(--green); }
+    .delta.down { color: var(--red); }
+    .empty-msg { color: var(--gray-400); font-size: 13px; text-align: center; padding: 20px; }
+  </style>
+</head>
+<body>
+<nav>
+  <span class="logo">Medi<span>Savings</span></span>
+  <a href="index.html"><i class="ti ti-list" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Λίστα</a>
+  <a href="add.html"><i class="ti ti-plus" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Νέα Αλλαγή</a>
+  <a href="stats.html" class="active"><i class="ti ti-chart-bar" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Στατιστικά</a>
+  <span class="spacer"></span>
+  <span class="hospital">Mediterraneo Hospital</span>
+</nav>
+
+<div class="container">
+  <div class="page-header">
+    <div class="page-title">Στατιστικά <small id="lastUpdate"></small></div>
+    <button class="btn btn-outline" onclick="loadAll()"><i class="ti ti-refresh" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Ανανέωση</button>
+  </div>
+
+  <div id="loadingState" class="loading"><div class="spinner"></div><p>Φόρτωση δεδομένων...</p></div>
+  <div id="content" style="display:none">
+
+    <!-- Εξοικονόμηση ανά Περίοδο -->
+    <div class="stats-grid full" style="margin-bottom:20px">
+      <div class="stat-section">
+        <div class="stat-section-title"><i class="ti ti-pig-money"></i> Εξοικονόμηση ανά Περίοδο</div>
+        <div class="period-cards" id="periodCards"></div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <!-- Top 10 Εξοικονόμηση € -->
+      <div class="stat-section">
+        <div class="stat-section-title"><i class="ti ti-trophy"></i> Top 10 — Μεγαλύτερη Εξοικονόμηση €</div>
+        <table class="rank-table" id="topSaving"></table>
+      </div>
+
+      <!-- Top 10 % Μείωση Τιμής -->
+      <div class="stat-section">
+        <div class="stat-section-title"><i class="ti ti-percentage"></i> Top 10 — Μεγαλύτερη % Μείωση Τιμής</div>
+        <table class="rank-table" id="topPct"></table>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <!-- Εξοικονόμηση ανά Εταιρεία -->
+      <div class="stat-section">
+        <div class="stat-section-title"><i class="ti ti-building"></i> Εξοικονόμηση ανά Εταιρεία (Παλιός Προμηθευτής)</div>
+        <div id="supplierSaving"></div>
+      </div>
+
+      <!-- Μ.Ο. Μείωση Τιμής ανά Εταιρεία -->
+      <div class="stat-section">
+        <div class="stat-section-title"><i class="ti ti-chart-line"></i> Μ.Ο. Μείωση Τιμής ανά Εταιρεία</div>
+        <div id="supplierPct"></div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <!-- Top 20 Αύξηση Κατανάλωσης -->
+      <div class="stat-section">
+        <div class="stat-section-title"><i class="ti ti-trending-up" style="color:var(--red)"></i> Top 20 — Αύξηση Κατανάλωσης 2026 Α΄εξ. vs 2025</div>
+        <table class="rank-table" id="topConsUp"></table>
+      </div>
+
+      <!-- Top 20 Μείωση Κατανάλωσης -->
+      <div class="stat-section">
+        <div class="stat-section-title"><i class="ti ti-trending-down" style="color:var(--green)"></i> Top 20 — Μείωση Κατανάλωσης 2026 Α΄εξ. vs 2025</div>
+        <table class="rank-table" id="topConsDown"></table>
+      </div>
+    </div>
+
+    <!-- Υλικά με Αρνητικό Όφελος -->
+    <div class="stats-grid full">
+      <div class="stat-section">
+        <div class="stat-section-title"><i class="ti ti-alert-triangle" style="color:var(--red)"></i> Υλικά με Αρνητικό Όφελος (Αύξηση Τιμής)</div>
+        <table class="rank-table" id="negSaving"></table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script>
+async function loadAll() {
+  document.getElementById('loadingState').style.display = 'block';
+  document.getElementById('content').style.display = 'none';
+
+  const [{ data: changes }, { data: periods }] = await Promise.all([
+    db.from('material_changes').select('*'),
+    db.from('material_periods').select('*')
+  ]);
+
+  // Map periods by change_id
+  const pMap = {};
+  (periods || []).forEach(p => {
+    if (!pMap[p.change_id]) pMap[p.change_id] = [];
+    pMap[p.change_id].push(p);
+  });
+
+  // Enriched records
+  const data = (changes || []).map(r => {
+    const rp = pMap[r.id] || [];
+    const totalSaving = rp.reduce((s, p) => s + (p.saving || 0), 0);
+    const s2025  = rp.find(p => p.period === '2025')?.saving || 0;
+    const s2026h1 = rp.filter(p => p.period && p.period.includes('2026') && p.period.includes('Α')).reduce((s,p) => s+(p.saving||0),0);
+    return { ...r, totalSaving, s2025, s2026h1, periods: rp };
+  });
+
+  renderPeriodCards(data);
+  renderTopSaving(data);
+  renderTopPct(data);
+  renderSupplierSaving(data);
+  renderSupplierPct(data);
+  renderConsumption(data);
+  renderNegSaving(data);
+
+  document.getElementById('lastUpdate').textContent = 'Ενημέρωση: ' + new Date().toLocaleTimeString('el-GR');
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('content').style.display = 'block';
+}
+
+// ── Περίοδοι ──────────────────────────────────────────────
+function renderPeriodCards(data) {
+  const total2025   = data.reduce((s, r) => s + r.s2025, 0);
+  const total2026h1 = data.reduce((s, r) => s + r.s2026h1, 0);
+  const totalAll    = data.reduce((s, r) => s + r.totalSaving, 0);
+  const delta = total2025 > 0 ? ((total2026h1 - total2025) / total2025 * 100) : 0;
+  const deltaHtml = `<span class="delta ${delta >= 0 ? 'up' : 'down'}">${delta >= 0 ? '▲' : '▼'} ${Math.abs(delta).toFixed(1)}% vs 2025</span>`;
+
+  document.getElementById('periodCards').innerHTML = `
+    <div class="period-card">
+      <div class="p-label">2025</div>
+      <div class="p-val">${formatEuro(total2025)}</div>
+      <div class="p-sub">πραγματικό</div>
+    </div>
+    <div class="period-card highlight">
+      <div class="p-label">2026 Α΄ Εξ.</div>
+      <div class="p-val">${formatEuro(total2026h1)}</div>
+      <div class="p-sub">${deltaHtml}</div>
+    </div>
+    <div class="period-card" style="background:var(--teal-subtle);border-color:var(--teal)">
+      <div class="p-label">Σύνολο</div>
+      <div class="p-val" style="color:var(--teal-dark)">${formatEuro(totalAll)}</div>
+      <div class="p-sub">όλες οι περίοδοι</div>
+    </div>`;
+}
+
+// ── Top 10 Εξοικονόμηση € ────────────────────────────────
+function renderTopSaving(data) {
+  const sorted = [...data].filter(r => r.totalSaving > 0)
+    .sort((a, b) => b.totalSaving - a.totalSaving).slice(0, 10);
+  const max = sorted[0]?.totalSaving || 1;
+  document.getElementById('topSaving').innerHTML = sorted.map((r, i) => `
+    <tr onclick="window.location='detail.html?id=${r.id}'" style="cursor:pointer">
+      <td class="rank-num">${i+1}</td>
+      <td>
+        <div class="rank-desc">${esc(r.old_description)}</div>
+        <div class="rank-sub">${esc(r.old_supplier||'')} → ${esc(r.new_supplier||'')}</div>
+        <div class="bar-wrap"><div class="bar-fill green" style="width:${(r.totalSaving/max*100).toFixed(1)}%"></div></div>
+      </td>
+      <td class="rank-val green">${formatEuro(r.totalSaving)}</td>
+    </tr>`).join('') || `<tr><td colspan="3" class="empty-msg">Δεν βρέθηκαν δεδομένα</td></tr>`;
+}
+
+// ── Top 10 % Μείωση Τιμής ────────────────────────────────
+function renderTopPct(data) {
+  const sorted = [...data].filter(r => r.price_reduction_pct > 0)
+    .sort((a, b) => b.price_reduction_pct - a.price_reduction_pct).slice(0, 10);
+  const max = sorted[0]?.price_reduction_pct || 1;
+  document.getElementById('topPct').innerHTML = sorted.map((r, i) => `
+    <tr onclick="window.location='detail.html?id=${r.id}'" style="cursor:pointer">
+      <td class="rank-num">${i+1}</td>
+      <td>
+        <div class="rank-desc">${esc(r.old_description)}</div>
+        <div class="rank-sub">${formatEuro(r.old_price)} → ${formatEuro(r.new_price)}</div>
+        <div class="bar-wrap"><div class="bar-fill teal" style="width:${(r.price_reduction_pct/max*100).toFixed(1)}%;background:var(--teal)"></div></div>
+      </td>
+      <td class="rank-val teal">${formatPct(r.price_reduction_pct)}</td>
+    </tr>`).join('') || `<tr><td colspan="3" class="empty-msg">Δεν βρέθηκαν δεδομένα</td></tr>`;
+}
+
+// ── Εξοικονόμηση ανά Εταιρεία ────────────────────────────
+function renderSupplierSaving(data) {
+  const map = {};
+  data.forEach(r => {
+    const s = r.old_supplier || '(Άγνωστος)';
+    map[s] = (map[s] || 0) + r.totalSaving;
+  });
+  const sorted = Object.entries(map).filter(([,v]) => v > 0)
+    .sort((a, b) => b[1] - a[1]);
+  const max = sorted[0]?.[1] || 1;
+  const total = sorted.reduce((s, [,v]) => s + v, 0);
+  document.getElementById('supplierSaving').innerHTML = sorted.map(([name, val]) => `
+    <div class="supplier-row">
+      <div class="supplier-name">${esc(name)}</div>
+      <div style="flex:2;padding:0 10px">
+        <div class="bar-wrap"><div class="bar-fill green" style="width:${(val/max*100).toFixed(1)}%"></div></div>
+      </div>
+      <div class="supplier-pct">${(val/total*100).toFixed(1)}%</div>
+      <div class="supplier-val">${formatEuro(val)}</div>
+    </div>`).join('') || `<div class="empty-msg">Δεν βρέθηκαν δεδομένα</div>`;
+}
+
+// ── Μ.Ο. Μείωση % ανά Εταιρεία ───────────────────────────
+function renderSupplierPct(data) {
+  const map = {};
+  const cnt = {};
+  data.filter(r => r.price_reduction_pct != null).forEach(r => {
+    const s = r.old_supplier || '(Άγνωστος)';
+    map[s] = (map[s] || 0) + r.price_reduction_pct;
+    cnt[s] = (cnt[s] || 0) + 1;
+  });
+  const sorted = Object.entries(map)
+    .map(([name, sum]) => [name, sum / cnt[name]])
+    .sort((a, b) => b[1] - a[1]);
+  const max = sorted[0]?.[1] || 1;
+  document.getElementById('supplierPct').innerHTML = sorted.map(([name, avg]) => `
+    <div class="supplier-row">
+      <div class="supplier-name">${esc(name)} <span class="rank-sub">(${cnt[name]} υλικά)</span></div>
+      <div style="flex:2;padding:0 10px">
+        <div class="bar-wrap"><div class="bar-fill" style="width:${(avg/max*100).toFixed(1)}%;background:var(--teal)"></div></div>
+      </div>
+      <div class="supplier-val" style="color:var(--teal-dark)">${formatPct(avg)}</div>
+    </div>`).join('') || `<div class="empty-msg">Δεν βρέθηκαν δεδομένα</div>`;
+}
+
+// ── Κατανάλωση ────────────────────────────────────────────
+function renderConsumption(data) {
+  // Σύγκριση 2026 Α΄εξ. vs 6μηνο 2025 (÷2)
+  const withData = data.filter(r =>
+    r.consumption_2026_h1 != null && r.consumption_2025 != null && r.consumption_2025 > 0
+  ).map(r => {
+    const base = r.consumption_2025 / 2;
+    const pct  = ((r.consumption_2026_h1 - base) / base) * 100;
+    return { ...r, consPct: pct };
+  });
+
+  const up   = [...withData].filter(r => r.consPct > 0).sort((a, b) => b.consPct - a.consPct).slice(0, 20);
+  const down = [...withData].filter(r => r.consPct < 0).sort((a, b) => a.consPct - b.consPct).slice(0, 20);
+
+  const maxUp   = up[0]?.consPct   || 1;
+  const maxDown = Math.abs(down[0]?.consPct || 1);
+
+  document.getElementById('topConsUp').innerHTML = up.length ? up.map((r, i) => `
+    <tr onclick="window.location='detail.html?id=${r.id}'" style="cursor:pointer">
+      <td class="rank-num">${i+1}</td>
+      <td>
+        <div class="rank-desc">${esc(r.old_description)}</div>
+        <div class="rank-sub">${formatNum(Math.round(r.consumption_2025/2))} → ${formatNum(r.consumption_2026_h1)} τεμ.</div>
+        <div class="bar-wrap"><div class="bar-fill red" style="width:${(r.consPct/maxUp*100).toFixed(1)}%"></div></div>
+      </td>
+      <td class="rank-val red">▲ ${r.consPct.toFixed(1)}%</td>
+    </tr>`).join('') : `<tr><td colspan="3" class="empty-msg">Δεν βρέθηκαν δεδομένα</td></tr>`;
+
+  document.getElementById('topConsDown').innerHTML = down.length ? down.map((r, i) => `
+    <tr onclick="window.location='detail.html?id=${r.id}'" style="cursor:pointer">
+      <td class="rank-num">${i+1}</td>
+      <td>
+        <div class="rank-desc">${esc(r.old_description)}</div>
+        <div class="rank-sub">${formatNum(Math.round(r.consumption_2025/2))} → ${formatNum(r.consumption_2026_h1)} τεμ.</div>
+        <div class="bar-wrap"><div class="bar-fill green" style="width:${(Math.abs(r.consPct)/maxDown*100).toFixed(1)}%"></div></div>
+      </td>
+      <td class="rank-val green">▼ ${Math.abs(r.consPct).toFixed(1)}%</td>
+    </tr>`).join('') : `<tr><td colspan="3" class="empty-msg">Δεν βρέθηκαν δεδομένα</td></tr>`;
+}
+
+// ── Αρνητικό Όφελος ───────────────────────────────────────
+function renderNegSaving(data) {
+  const neg = [...data].filter(r => r.price_diff < 0)
+    .sort((a, b) => a.price_diff - b.price_diff);
+  document.getElementById('negSaving').innerHTML = neg.length ? neg.map((r, i) => `
+    <tr onclick="window.location='detail.html?id=${r.id}'" style="cursor:pointer">
+      <td class="rank-num">${i+1}</td>
+      <td>
+        <div class="rank-desc">${esc(r.old_description)}</div>
+        <div class="rank-sub">${esc(r.old_supplier||'')} | ${formatEuro(r.old_price)} → ${formatEuro(r.new_price)}</div>
+      </td>
+      <td class="rank-val red">${formatEuro(r.price_diff)}</td>
+      <td class="rank-val red">${formatPct(r.price_reduction_pct)}</td>
+    </tr>`).join('') : `<tr><td colspan="4" class="empty-msg">✅ Κανένα υλικό με αύξηση τιμής</td></tr>`;
+}
+
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+loadAll();
+</script>
+</body>
+</html>
