@@ -97,9 +97,9 @@ function getPeriods() {
 }
 
 async function loadForEdit(id) {
-  document.getElementById('pageTitle').textContent  = '✏️ Επεξεργασία Αλλαγής';
-  document.getElementById('saveBtn').textContent    = '💾 Αποθήκευση Αλλαγών';
-  document.getElementById('saveBtnTop').textContent = '💾 Αποθήκευση Αλλαγών';
+  document.getElementById('pageTitle').innerHTML  = '<i class="ti ti-pencil" style="margin-right:6px;font-size:18px;vertical-align:-2px"></i>Επεξεργασία Αλλαγής';
+  document.getElementById('saveBtn').textContent    = 'Αποθήκευση Αλλαγών';
+  document.getElementById('saveBtnTop').textContent = 'Αποθήκευση Αλλαγών';
 
   var results = await Promise.all([
     db.from('material_changes').select('*').eq('id', id).single(),

@@ -103,16 +103,16 @@
 
   <!-- Ιστορικό Περιόδων -->
   <div class="form-card">
-    <div class="form-section-title"><i class="ti ti-chart-bar" style="margin-right:6px"></i>Ιστορικό Περιόδων</div>
+    <div class="form-section-title"><i class="ti ti-chart-bar" style="margin-right:6px"></i>Ιστορικό Αγορών</div>
     <!-- Πληροφοριακές γραμμές: 2024 και 2025 παλιό -->
     <div style="display:grid;grid-template-columns:130px 120px 140px 1fr;gap:8px;padding:8px 12px;background:var(--gray-100);border-radius:8px;margin-bottom:8px;border:1px dashed var(--gray-300)">
-      <div style="font-size:11px;color:var(--gray-500);font-weight:600;display:flex;align-items:center">2024 <span style="font-size:10px;margin-left:4px">(πληρ.)</span></div>
+      <div style="font-size:11px;color:var(--gray-700);font-weight:600;display:flex;align-items:center">2024</div>
       <div><input type="number" id="purchases_2024" placeholder="αγορές" style="width:100%;border:1px solid var(--gray-200);border-radius:6px;padding:5px 8px;font-size:12px;color:var(--gray-600)"></div>
       <div style="display:flex;align-items:center;font-size:12px;color:var(--gray-400)" id="old_price_display_2024">παλιά τιμή</div>
       <div style="display:flex;align-items:center;font-size:11px;color:var(--gray-400)">Δεν μετράει στο όφελος</div>
     </div>
     <div style="display:grid;grid-template-columns:130px 120px 140px 1fr;gap:8px;padding:8px 12px;background:var(--gray-100);border-radius:8px;margin-bottom:12px;border:1px dashed var(--gray-300)">
-      <div style="font-size:11px;color:var(--gray-500);font-weight:600;display:flex;align-items:center">2025 Παλιό <span style="font-size:10px;margin-left:4px">(πληρ.)</span></div>
+      <div style="font-size:11px;color:var(--gray-700);font-weight:600;display:flex;align-items:center">2025 Παλιό</div>
       <div><input type="number" id="purchases_2025_old" placeholder="αγορές" style="width:100%;border:1px solid var(--gray-200);border-radius:6px;padding:5px 8px;font-size:12px;color:var(--gray-600)"></div>
       <div style="display:flex;align-items:center;font-size:12px;color:var(--gray-400)" id="old_price_display_2025">παλιά τιμή</div>
       <div style="display:flex;align-items:center;font-size:11px;color:var(--gray-400)">Δεν μετράει στο όφελος</div>
@@ -122,7 +122,7 @@
       <span>Αγορές (τεμ.)</span>
       <span>Τιμή που ίσχυε (€)</span>
       <span>Όφελος (€)</span>
-      <span title="Χειροκίνητο">✏️</span>
+      <span title="Χειροκίνητο"><i class="ti ti-pencil" style="font-size:13px;color:var(--yellow)"></i></span>
       <span>Σημειώσεις</span>
       <span></span>
     </div>
@@ -132,7 +132,7 @@
 
   <!-- Κατανάλωση (πληροφοριακό) -->
   <div class="form-card">
-    <div class="form-section-title"><i class="ti ti-clipboard-data" style="margin-right:6px"></i>Κατανάλωση <span style="font-size:11px;color:var(--gray-400);font-weight:400">(πληροφοριακό)</span></div>
+    <div class="form-section-title"><i class="ti ti-clipboard-data" style="margin-right:6px"></i>Κατανάλωση</div>
     <div class="form-grid">
       <div class="form-group"><label>Κατανάλωση 2024</label><input type="number" id="consumption_2024" placeholder="τεμάχια"></div>
       <div class="form-group"><label>Κατανάλωση 2025</label><input type="number" id="consumption_2025" placeholder="τεμάχια"></div>

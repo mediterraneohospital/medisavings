@@ -343,3 +343,19 @@ tr.clickable-row:hover td { background: var(--teal-subtle); }
 th { color: var(--gray-800) !important; font-weight: 700 !important; }
 .num-card .year { color: var(--gray-700) !important; font-weight: 700 !important; }
 .preview-label { color: var(--gray-700) !important; font-weight: 700 !important; }
+
+/* Αφαίρεση spinner από number inputs */
+input[type=number] { -moz-appearance: textfield; }
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+/* Clickable rows */
+tr.clickable-row { cursor: pointer; }
+tr.clickable-row td { cursor: pointer; }
+tr.clickable-row:hover td { background: var(--teal-subtle); }
+
+/* Darker headers */
+th { color: var(--gray-800) !important; font-weight: 700 !important; }
+.num-card .year { color: var(--gray-700) !important; font-weight: 700 !important; }
+.preview-label { color: var(--gray-700) !important; font-weight: 700 !important; }
+.saving-preview .preview-label { color: var(--gray-700) !important; font-weight: 700 !important; }
