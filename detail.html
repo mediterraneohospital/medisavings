@@ -124,12 +124,21 @@
     <!-- Κατανάλωση -->
     <div class="form-card" style="margin-bottom:20px">
       <div class="form-section-title">📋 Κατανάλωση <span style="font-size:11px;color:var(--gray-400);font-weight:400">(πληροφοριακό)</span></div>
-      <div class="numbers-grid">
-        <div class="num-card"><div class="year">Κατανάλωση 2024</div><div class="qty" id="d_c2024">—</div><div class="sub">τεμάχια</div></div>
-        <div class="num-card"><div class="year">Κατανάλωση 2025</div><div class="qty" id="d_c2025">—</div><div class="sub">τεμάχια</div></div>
-        <div class="num-card"><div class="year">Κατανάλωση 2026 Α΄εξ.</div><div class="qty" id="d_c2026h1">—</div><div class="sub">τεμάχια</div></div>
-        <div class="num-card"><div class="year">Κατανάλωση 2026</div><div class="qty" id="d_c2026">—</div><div class="sub">τεμάχια</div></div>
-      </div>
+      <table class="periods-table">
+        <thead>
+          <tr>
+            <th>Περίοδος</th>
+            <th>Κατανάλωση (τεμ.)</th>
+            <th colspan="3"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>2024</td><td id="d_c2024">—</td><td colspan="3"></td></tr>
+          <tr><td>2025</td><td id="d_c2025">—</td><td colspan="3"></td></tr>
+          <tr><td>2026 Α΄ Εξ.</td><td id="d_c2026h1">—</td><td colspan="3"></td></tr>
+          <tr><td>2026 Β΄ Εξ.</td><td id="d_c2026">—</td><td colspan="3"></td></tr>
+        </tbody>
+      </table>
     </div>
 
     <!-- Σημειώσεις -->
