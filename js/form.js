@@ -248,11 +248,15 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('saveBtn').addEventListener('click', saveRecord);
   document.getElementById('saveBtnTop').addEventListener('click', saveRecord);
 
-  // Ακύρωση — επαναφορά σελίδας
+  // Ακύρωση — επαναφορά χωρίς confirm, καθαρισμός περιόδων πριν
   var cancelFn = function() {
-    if (confirm('Να ακυρωθούν οι αλλαγές;')) {
-      if (editId) { loadForEdit(editId); }
-      else { window.location.href = 'index.html'; }
+    if (editId) {
+      // Καθάρισε τις περιόδους πριν ξαναφορτώσεις
+      document.getElementById('periodsContainer').innerHTML = '';
+      periodCount = 0;
+      loadForEdit(editId);
+    } else {
+      window.location.href = 'index.html';
     }
   };
   document.getElementById('cancelBtn')?.addEventListener('click', cancelFn);
