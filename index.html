@@ -6,6 +6,33 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.x/dist/tabler-icons.min.css">
   <title>MediSavings – Αλλαγές Υλικών</title>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Sticky layers */
+    nav { position: sticky; top: 0; z-index: 300; }
+
+    #stickyStats {
+      position: sticky;
+      top: 56px;
+      z-index: 200;
+      background: var(--gray-50);
+      padding: 12px 24px 0;
+    }
+    #stickyBar {
+      position: sticky;
+      top: calc(56px + 106px); /* nav + stats height */
+      z-index: 199;
+      background: var(--gray-50);
+      padding: 8px 24px;
+    }
+    /* Sticky table header */
+    #mainTable thead tr th {
+      position: sticky;
+      top: calc(56px + 106px + 52px); /* nav + stats + bar */
+      z-index: 100;
+      background: var(--gray-50);
+    }
+    .table-content { padding: 0 24px 24px; }
+  </style>
 </head>
 <body>
 
@@ -18,64 +45,62 @@
   <span class="hospital">Mediterraneo Hospital</span>
 </nav>
 
-<div class="container">
-
-  <!-- Sticky Header -->
-  <div style="position:sticky;top:56px;z-index:100;background:var(--gray-50);padding:12px 0 8px;margin-bottom:0">
-
-    <!-- Stats Bar -->
-    <div class="stats-bar" id="statsBar" style="margin-bottom:10px">
-      <div class="stat-card">
-        <div class="stat-label">Σύνολο Αλλαγών</div>
-        <div class="stat-value" id="statTotal">—</div>
-        <div class="stat-sub">καταχωρημένες</div>
-      </div>
-      <div class="stat-card green">
-        <div class="stat-label">Συνολική Εξοικονόμηση</div>
-        <div class="stat-value green" id="statSaving">—</div>
-        <div class="stat-sub">2025 + Α΄ εξάμηνο 2026</div>
-      </div>
-      <div class="stat-card green">
-        <div class="stat-label">Όφελος Αγορών 2025</div>
-        <div class="stat-value green" id="statPurchases">—</div>
-        <div class="stat-sub">πραγματικό</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Μ.Ο. Μείωση Τιμής</div>
-        <div class="stat-value" id="statAvgPct">—</div>
-        <div class="stat-sub">ανά αλλαγή υλικού</div>
-      </div>
+<!-- Stats Bar — sticky layer 2 -->
+<div id="stickyStats">
+  <div class="stats-bar" id="statsBar">
+    <div class="stat-card">
+      <div class="stat-label">Σύνολο Αλλαγών</div>
+      <div class="stat-value" id="statTotal">—</div>
+      <div class="stat-sub">καταχωρημένες</div>
     </div>
-
-    <!-- Title + Filters σε μία γραμμή -->
-    <div style="display:flex;align-items:center;gap:10px;background:white;border-radius:8px;padding:10px 14px;box-shadow:var(--shadow);flex-wrap:wrap">
-      <span style="font-size:15px;font-weight:700;color:var(--gray-800);white-space:nowrap">
-        Αλλαγές Υλικών <small id="countLabel" style="font-size:12px;font-weight:400;color:var(--gray-400)"></small>
-      </span>
-      <div style="width:1px;height:20px;background:var(--gray-200)"></div>
-      <i class="ti ti-search" style="font-size:15px;color:var(--gray-500)"></i>
-      <input type="search" id="searchInput" placeholder="Αναζήτηση..." style="border:none;outline:none;font-size:13px;width:180px;color:var(--gray-800)">
-      <div style="width:1px;height:20px;background:var(--gray-200)"></div>
-      <select id="filterStatus" style="border:none;outline:none;font-size:13px;color:var(--gray-700);cursor:pointer;background:transparent">
-        <option value="">Κατάσταση: Όλα</option>
-        <option value="active">Ενεργά</option>
-        <option value="discontinued">Ανενεργά</option>
-        <option value="pending">Εκκρεμή</option>
-      </select>
-      <select id="filterCategory" style="border:none;outline:none;font-size:13px;color:var(--gray-700);cursor:pointer;background:transparent">
-        <option value="">Κατηγορία: Όλες</option>
-      </select>
-      <select id="filterSupplier" style="border:none;outline:none;font-size:13px;color:var(--gray-700);cursor:pointer;background:transparent">
-        <option value="">Εταιρεία: Όλες</option>
-      </select>
-      <div style="flex:1"></div>
-      <button class="btn btn-outline btn-sm" id="clearFilters" style="padding:4px 10px;font-size:12px">✕ Καθαρισμός</button>
+    <div class="stat-card green">
+      <div class="stat-label">Συνολική Εξοικονόμηση</div>
+      <div class="stat-value green" id="statSaving">—</div>
+      <div class="stat-sub">2025 + Α΄ εξάμηνο 2026</div>
     </div>
-
+    <div class="stat-card green">
+      <div class="stat-label">Όφελος Αγορών 2025</div>
+      <div class="stat-value green" id="statPurchases">—</div>
+      <div class="stat-sub">πραγματικό</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Μ.Ο. Μείωση Τιμής</div>
+      <div class="stat-value" id="statAvgPct">—</div>
+      <div class="stat-sub">ανά αλλαγή υλικού</div>
+    </div>
   </div>
+</div>
 
-  <!-- Table -->
-  <div class="table-wrap" style="margin-top:10px">
+<!-- Title + Filters — sticky layer 3 -->
+<div id="stickyBar">
+  <div style="display:flex;align-items:center;gap:10px;background:white;border-radius:8px;padding:10px 14px;box-shadow:var(--shadow)">
+    <span style="font-size:15px;font-weight:700;color:var(--gray-800);white-space:nowrap">
+      Αλλαγές Υλικών <small id="countLabel" style="font-size:12px;font-weight:400;color:var(--gray-400)"></small>
+    </span>
+    <div style="width:1px;height:20px;background:var(--gray-200)"></div>
+    <i class="ti ti-search" style="font-size:15px;color:var(--gray-500)"></i>
+    <input type="search" id="searchInput" placeholder="Αναζήτηση..." style="border:none;outline:none;font-size:13px;width:180px;color:var(--gray-800)">
+    <div style="width:1px;height:20px;background:var(--gray-200)"></div>
+    <select id="filterStatus" style="border:none;outline:none;font-size:13px;color:var(--gray-700);cursor:pointer;background:transparent">
+      <option value="">Κατάσταση: Όλα</option>
+      <option value="active">Ενεργά</option>
+      <option value="discontinued">Ανενεργά</option>
+      <option value="pending">Εκκρεμή</option>
+    </select>
+    <select id="filterCategory" style="border:none;outline:none;font-size:13px;color:var(--gray-700);cursor:pointer;background:transparent">
+      <option value="">Κατηγορία: Όλες</option>
+    </select>
+    <select id="filterSupplier" style="border:none;outline:none;font-size:13px;color:var(--gray-700);cursor:pointer;background:transparent">
+      <option value="">Εταιρεία: Όλες</option>
+    </select>
+    <div style="flex:1"></div>
+    <button class="btn btn-outline btn-sm" id="clearFilters" style="padding:4px 10px;font-size:12px">✕ Καθαρισμός</button>
+  </div>
+</div>
+
+<!-- Table -->
+<div class="table-content">
+  <div class="table-wrap">
     <div id="loadingState" class="loading">
       <div class="spinner"></div>
       <p>Φόρτωση δεδομένων...</p>
@@ -108,5 +133,17 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
 <script src="js/list.js"></script>
+
+<script>
+// Μέτρηση πραγματικού ύψους stats για dynamic sticky offset
+window.addEventListener('load', function() {
+  var statsH = document.getElementById('stickyStats').offsetHeight;
+  var barH   = document.getElementById('stickyBar').offsetHeight;
+  document.getElementById('stickyBar').style.top = (56 + statsH) + 'px';
+  document.querySelectorAll('#mainTable thead tr th').forEach(function(th) {
+    th.style.top = (56 + statsH + barH) + 'px';
+  });
+});
+</script>
 </body>
 </html>
