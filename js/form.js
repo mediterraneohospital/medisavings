@@ -245,7 +245,9 @@ async function saveRecord() {
   }
 
   showToast(editId ? 'Αποθηκεύτηκε!' : 'Καταχωρήθηκε!', 'success');
-  setTimeout(function() { window.location.href = 'index.html'; }, 1200);
+  setTimeout(function() {
+    window.location.href = editId ? 'detail.html?id=' + changeId : 'index.html';
+  }, 1200);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
