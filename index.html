@@ -7,20 +7,46 @@
   <title>MediSavings – Αλλαγές Υλικών</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    html { scroll-behavior: smooth; }
-    nav  { position: sticky; top: 0; z-index: 300; }
-
-    .sticky-header {
-      position: sticky;
-      top: 56px;
-      z-index: 200;
+    /* Όλο το top block fixed */
+    #topBlock {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 300;
       background: var(--gray-50);
-      padding-top: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
 
+    /* Nav μέσα στο topBlock */
+    #topBlock nav {
+      position: relative;
+    }
+
+    /* Inner wrapper — ίδιο max-width με container */
+    .top-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 10px 24px 10px;
+    }
+
+    /* Body padding = ύψος topBlock */
+    body {
+      padding-top: 230px;
+    }
+
+    /* Scrollable content */
+    .scroll-content {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px 24px;
+    }
+
+    /* Sticky table headers μέσα στο table-wrap */
+    .table-wrap {
+      overflow: visible;
+    }
     #mainTable thead th {
       position: sticky;
-      top: 0; /* θα οριστεί δυναμικά */
+      top: 230px;
       z-index: 10;
       background: var(--gray-50);
       box-shadow: 0 1px 0 var(--gray-200);
@@ -29,20 +55,20 @@
 </head>
 <body>
 
-<nav>
-  <span class="logo">Medi<span>Savings</span></span>
-  <a href="index.html" class="active"><i class="ti ti-list" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Λίστα</a>
-  <a href="add.html"><i class="ti ti-plus" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Νέα Αλλαγή</a>
-  <a href="stats.html"><i class="ti ti-chart-bar" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Στατιστικά</a>
-  <span class="spacer"></span>
-  <span class="hospital">Mediterraneo Hospital</span>
-</nav>
+<div id="topBlock">
 
-<div class="container">
+  <nav>
+    <span class="logo">Medi<span>Savings</span></span>
+    <a href="index.html" class="active"><i class="ti ti-list" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Λίστα</a>
+    <a href="add.html"><i class="ti ti-plus" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Νέα Αλλαγή</a>
+    <a href="stats.html"><i class="ti ti-chart-bar" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Στατιστικά</a>
+    <span class="spacer"></span>
+    <span class="hospital">Mediterraneo Hospital</span>
+  </nav>
 
-  <!-- Stats + Filters: sticky block -->
-  <div class="sticky-header" id="stickyHeader">
+  <div class="top-inner">
 
+    <!-- Stats -->
     <div class="stats-bar" id="statsBar" style="margin-bottom:10px">
       <div class="stat-card">
         <div class="stat-label">Σύνολο Αλλαγών</div>
@@ -66,7 +92,8 @@
       </div>
     </div>
 
-    <div style="display:flex;align-items:center;gap:10px;background:white;border-radius:8px;padding:10px 14px;box-shadow:var(--shadow);margin-bottom:10px">
+    <!-- Filter bar -->
+    <div style="display:flex;align-items:center;gap:10px;background:white;border-radius:8px;padding:10px 14px;box-shadow:var(--shadow)">
       <span style="font-size:15px;font-weight:700;color:var(--gray-800);white-space:nowrap">
         Αλλαγές Υλικών <small id="countLabel" style="font-size:12px;font-weight:400;color:var(--gray-400)"></small>
       </span>
@@ -90,17 +117,15 @@
       <button class="btn btn-outline btn-sm" id="clearFilters" style="padding:4px 10px;font-size:12px">✕ Καθαρισμός</button>
     </div>
 
-  </div><!-- /sticky-header -->
+  </div>
+</div>
 
-  <!-- Table -->
+<!-- Scrollable table -->
+<div class="scroll-content">
   <div class="table-wrap">
-    <div id="loadingState" class="loading">
-      <div class="spinner"></div>
-      <p>Φόρτωση δεδομένων...</p>
-    </div>
+    <div id="loadingState" class="loading"><div class="spinner"></div><p>Φόρτωση...</p></div>
     <div id="emptyState" class="empty-state" style="display:none">
-      <div class="icon">📦</div>
-      <p>Δεν βρέθηκαν αλλαγές υλικών</p>
+      <div class="icon">📦</div><p>Δεν βρέθηκαν αλλαγές υλικών</p>
     </div>
     <table id="mainTable" style="display:none">
       <thead>
@@ -121,7 +146,6 @@
       <tbody id="tableBody"></tbody>
     </table>
   </div>
-
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -129,16 +153,17 @@
 <script src="js/list.js"></script>
 
 <script>
-// Sticky table headers — top = 56px(nav) + stickyHeader height
-function updateStickyOffsets() {
-  var h = document.getElementById('stickyHeader').offsetHeight;
-  var thTop = 56 + h + 'px';
+// Μέτρηση πραγματικού ύψους topBlock και εφαρμογή
+function applyOffsets() {
+  var h = document.getElementById('topBlock').offsetHeight;
+  document.body.style.paddingTop = h + 'px';
   document.querySelectorAll('#mainTable thead th').forEach(function(th) {
-    th.style.top = thTop;
+    th.style.top = h + 'px';
   });
 }
-window.addEventListener('load', updateStickyOffsets);
-window.addEventListener('resize', updateStickyOffsets);
+window.addEventListener('load', applyOffsets);
+window.addEventListener('resize', applyOffsets);
 </script>
+
 </body>
 </html>
