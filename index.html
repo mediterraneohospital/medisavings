@@ -7,96 +7,106 @@
   <title>MediSavings – Αλλαγές Υλικών</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    /* Sticky layers */
-    nav { position: sticky; top: 0; z-index: 300; }
+    body { margin: 0; padding-top: 220px; } /* space for fixed header */
 
-    #stickyStats {
-      position: sticky;
-      top: 56px;
-      z-index: 200;
+    #fixedTop {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 300;
       background: var(--gray-50);
-      padding: 12px 24px 0;
     }
-    #stickyBar {
-      position: sticky;
-      top: calc(56px + 106px); /* nav + stats height */
-      z-index: 199;
-      background: var(--gray-50);
+
+    /* Nav */
+    #fixedTop nav { position: relative; }
+
+    /* Stats */
+    #fixedStats {
+      padding: 10px 24px 0;
+    }
+
+    /* Filter bar */
+    #fixedBar {
       padding: 8px 24px;
     }
-    /* Sticky table header */
-    #mainTable thead tr th {
+
+    /* Table container */
+    .table-content { padding: 0 24px 24px; }
+
+    /* Sticky table headers */
+    #mainTable thead th {
       position: sticky;
-      top: calc(56px + 106px + 52px); /* nav + stats + bar */
-      z-index: 100;
+      top: 0;
+      z-index: 10;
       background: var(--gray-50);
     }
-    .table-content { padding: 0 24px 24px; }
   </style>
 </head>
 <body>
 
-<nav>
-  <span class="logo">Medi<span>Savings</span></span>
-  <a href="index.html" class="active"><i class="ti ti-list" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Λίστα</a>
-  <a href="add.html"><i class="ti ti-plus" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Νέα Αλλαγή</a>
-  <a href="stats.html"><i class="ti ti-chart-bar" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Στατιστικά</a>
-  <span class="spacer"></span>
-  <span class="hospital">Mediterraneo Hospital</span>
-</nav>
+<!-- Fixed top block -->
+<div id="fixedTop">
 
-<!-- Stats Bar — sticky layer 2 -->
-<div id="stickyStats">
-  <div class="stats-bar" id="statsBar">
-    <div class="stat-card">
-      <div class="stat-label">Σύνολο Αλλαγών</div>
-      <div class="stat-value" id="statTotal">—</div>
-      <div class="stat-sub">καταχωρημένες</div>
-    </div>
-    <div class="stat-card green">
-      <div class="stat-label">Συνολική Εξοικονόμηση</div>
-      <div class="stat-value green" id="statSaving">—</div>
-      <div class="stat-sub">2025 + Α΄ εξάμηνο 2026</div>
-    </div>
-    <div class="stat-card green">
-      <div class="stat-label">Όφελος Αγορών 2025</div>
-      <div class="stat-value green" id="statPurchases">—</div>
-      <div class="stat-sub">πραγματικό</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Μ.Ο. Μείωση Τιμής</div>
-      <div class="stat-value" id="statAvgPct">—</div>
-      <div class="stat-sub">ανά αλλαγή υλικού</div>
+  <nav>
+    <span class="logo">Medi<span>Savings</span></span>
+    <a href="index.html" class="active"><i class="ti ti-list" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Λίστα</a>
+    <a href="add.html"><i class="ti ti-plus" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Νέα Αλλαγή</a>
+    <a href="stats.html"><i class="ti ti-chart-bar" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Στατιστικά</a>
+    <span class="spacer"></span>
+    <span class="hospital">Mediterraneo Hospital</span>
+  </nav>
+
+  <div id="fixedStats">
+    <div class="stats-bar" id="statsBar">
+      <div class="stat-card">
+        <div class="stat-label">Σύνολο Αλλαγών</div>
+        <div class="stat-value" id="statTotal">—</div>
+        <div class="stat-sub">καταχωρημένες</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">Συνολική Εξοικονόμηση</div>
+        <div class="stat-value green" id="statSaving">—</div>
+        <div class="stat-sub">2025 + Α΄ εξάμηνο 2026</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">Όφελος Αγορών 2025</div>
+        <div class="stat-value green" id="statPurchases">—</div>
+        <div class="stat-sub">πραγματικό</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Μ.Ο. Μείωση Τιμής</div>
+        <div class="stat-value" id="statAvgPct">—</div>
+        <div class="stat-sub">ανά αλλαγή υλικού</div>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Title + Filters — sticky layer 3 -->
-<div id="stickyBar">
-  <div style="display:flex;align-items:center;gap:10px;background:white;border-radius:8px;padding:10px 14px;box-shadow:var(--shadow)">
-    <span style="font-size:15px;font-weight:700;color:var(--gray-800);white-space:nowrap">
-      Αλλαγές Υλικών <small id="countLabel" style="font-size:12px;font-weight:400;color:var(--gray-400)"></small>
-    </span>
-    <div style="width:1px;height:20px;background:var(--gray-200)"></div>
-    <i class="ti ti-search" style="font-size:15px;color:var(--gray-500)"></i>
-    <input type="search" id="searchInput" placeholder="Αναζήτηση..." style="border:none;outline:none;font-size:13px;width:180px;color:var(--gray-800)">
-    <div style="width:1px;height:20px;background:var(--gray-200)"></div>
-    <select id="filterStatus" style="border:none;outline:none;font-size:13px;color:var(--gray-700);cursor:pointer;background:transparent">
-      <option value="">Κατάσταση: Όλα</option>
-      <option value="active">Ενεργά</option>
-      <option value="discontinued">Ανενεργά</option>
-      <option value="pending">Εκκρεμή</option>
-    </select>
-    <select id="filterCategory" style="border:none;outline:none;font-size:13px;color:var(--gray-700);cursor:pointer;background:transparent">
-      <option value="">Κατηγορία: Όλες</option>
-    </select>
-    <select id="filterSupplier" style="border:none;outline:none;font-size:13px;color:var(--gray-700);cursor:pointer;background:transparent">
-      <option value="">Εταιρεία: Όλες</option>
-    </select>
-    <div style="flex:1"></div>
-    <button class="btn btn-outline btn-sm" id="clearFilters" style="padding:4px 10px;font-size:12px">✕ Καθαρισμός</button>
+  <div id="fixedBar">
+    <div style="display:flex;align-items:center;gap:10px;background:white;border-radius:8px;padding:10px 14px;box-shadow:var(--shadow)">
+      <span style="font-size:15px;font-weight:700;color:var(--gray-800);white-space:nowrap">
+        Αλλαγές Υλικών <small id="countLabel" style="font-size:12px;font-weight:400;color:var(--gray-400)"></small>
+      </span>
+      <div style="width:1px;height:20px;background:var(--gray-200)"></div>
+      <i class="ti ti-search" style="font-size:15px;color:var(--gray-500)"></i>
+      <input type="search" id="searchInput" placeholder="Αναζήτηση..." style="border:none;outline:none;font-size:13px;width:180px;color:var(--gray-800)">
+      <div style="width:1px;height:20px;background:var(--gray-200)"></div>
+      <select id="filterStatus" style="border:none;outline:none;font-size:13px;color:var(--gray-700);cursor:pointer;background:transparent">
+        <option value="">Κατάσταση: Όλα</option>
+        <option value="active">Ενεργά</option>
+        <option value="discontinued">Ανενεργά</option>
+        <option value="pending">Εκκρεμή</option>
+      </select>
+      <select id="filterCategory" style="border:none;outline:none;font-size:13px;color:var(--gray-700);cursor:pointer;background:transparent">
+        <option value="">Κατηγορία: Όλες</option>
+      </select>
+      <select id="filterSupplier" style="border:none;outline:none;font-size:13px;color:var(--gray-700);cursor:pointer;background:transparent">
+        <option value="">Εταιρεία: Όλες</option>
+      </select>
+      <div style="flex:1"></div>
+      <button class="btn btn-outline btn-sm" id="clearFilters" style="padding:4px 10px;font-size:12px">✕ Καθαρισμός</button>
+    </div>
   </div>
-</div>
+
+</div><!-- /fixedTop -->
 
 <!-- Table -->
 <div class="table-content">
@@ -135,13 +145,13 @@
 <script src="js/list.js"></script>
 
 <script>
-// Μέτρηση πραγματικού ύψους stats για dynamic sticky offset
+// Υπολόγισε σωστό padding-top βάσει πραγματικού ύψους header
 window.addEventListener('load', function() {
-  var statsH = document.getElementById('stickyStats').offsetHeight;
-  var barH   = document.getElementById('stickyBar').offsetHeight;
-  document.getElementById('stickyBar').style.top = (56 + statsH) + 'px';
-  document.querySelectorAll('#mainTable thead tr th').forEach(function(th) {
-    th.style.top = (56 + statsH + barH) + 'px';
+  var h = document.getElementById('fixedTop').offsetHeight;
+  document.body.style.paddingTop = h + 'px';
+  // Sticky table headers offset
+  document.querySelectorAll('#mainTable thead th').forEach(function(th) {
+    th.style.top = '0';
   });
 });
 </script>
