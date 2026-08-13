@@ -7,56 +7,43 @@
   <title>MediSavings – Αλλαγές Υλικών</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    body { margin: 0; padding-top: 220px; } /* space for fixed header */
+    html { scroll-behavior: smooth; }
+    nav  { position: sticky; top: 0; z-index: 300; }
 
-    #fixedTop {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 300;
+    .sticky-header {
+      position: sticky;
+      top: 56px;
+      z-index: 200;
       background: var(--gray-50);
+      padding-top: 12px;
     }
 
-    /* Nav */
-    #fixedTop nav { position: relative; }
-
-    /* Stats */
-    #fixedStats {
-      padding: 10px 24px 0;
-    }
-
-    /* Filter bar */
-    #fixedBar {
-      padding: 8px 24px;
-    }
-
-    /* Table container */
-    .table-content { padding: 0 24px 24px; }
-
-    /* Sticky table headers */
     #mainTable thead th {
       position: sticky;
-      top: 0;
+      top: 0; /* θα οριστεί δυναμικά */
       z-index: 10;
       background: var(--gray-50);
+      box-shadow: 0 1px 0 var(--gray-200);
     }
   </style>
 </head>
 <body>
 
-<!-- Fixed top block -->
-<div id="fixedTop">
+<nav>
+  <span class="logo">Medi<span>Savings</span></span>
+  <a href="index.html" class="active"><i class="ti ti-list" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Λίστα</a>
+  <a href="add.html"><i class="ti ti-plus" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Νέα Αλλαγή</a>
+  <a href="stats.html"><i class="ti ti-chart-bar" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Στατιστικά</a>
+  <span class="spacer"></span>
+  <span class="hospital">Mediterraneo Hospital</span>
+</nav>
 
-  <nav>
-    <span class="logo">Medi<span>Savings</span></span>
-    <a href="index.html" class="active"><i class="ti ti-list" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Λίστα</a>
-    <a href="add.html"><i class="ti ti-plus" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Νέα Αλλαγή</a>
-    <a href="stats.html"><i class="ti ti-chart-bar" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Στατιστικά</a>
-    <span class="spacer"></span>
-    <span class="hospital">Mediterraneo Hospital</span>
-  </nav>
+<div class="container">
 
-  <div id="fixedStats">
-    <div class="stats-bar" id="statsBar">
+  <!-- Stats + Filters: sticky block -->
+  <div class="sticky-header" id="stickyHeader">
+
+    <div class="stats-bar" id="statsBar" style="margin-bottom:10px">
       <div class="stat-card">
         <div class="stat-label">Σύνολο Αλλαγών</div>
         <div class="stat-value" id="statTotal">—</div>
@@ -78,10 +65,8 @@
         <div class="stat-sub">ανά αλλαγή υλικού</div>
       </div>
     </div>
-  </div>
 
-  <div id="fixedBar">
-    <div style="display:flex;align-items:center;gap:10px;background:white;border-radius:8px;padding:10px 14px;box-shadow:var(--shadow)">
+    <div style="display:flex;align-items:center;gap:10px;background:white;border-radius:8px;padding:10px 14px;box-shadow:var(--shadow);margin-bottom:10px">
       <span style="font-size:15px;font-weight:700;color:var(--gray-800);white-space:nowrap">
         Αλλαγές Υλικών <small id="countLabel" style="font-size:12px;font-weight:400;color:var(--gray-400)"></small>
       </span>
@@ -104,12 +89,10 @@
       <div style="flex:1"></div>
       <button class="btn btn-outline btn-sm" id="clearFilters" style="padding:4px 10px;font-size:12px">✕ Καθαρισμός</button>
     </div>
-  </div>
 
-</div><!-- /fixedTop -->
+  </div><!-- /sticky-header -->
 
-<!-- Table -->
-<div class="table-content">
+  <!-- Table -->
   <div class="table-wrap">
     <div id="loadingState" class="loading">
       <div class="spinner"></div>
@@ -138,6 +121,7 @@
       <tbody id="tableBody"></tbody>
     </table>
   </div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -145,15 +129,16 @@
 <script src="js/list.js"></script>
 
 <script>
-// Υπολόγισε σωστό padding-top βάσει πραγματικού ύψους header
-window.addEventListener('load', function() {
-  var h = document.getElementById('fixedTop').offsetHeight;
-  document.body.style.paddingTop = h + 'px';
-  // Sticky table headers offset
+// Sticky table headers — top = 56px(nav) + stickyHeader height
+function updateStickyOffsets() {
+  var h = document.getElementById('stickyHeader').offsetHeight;
+  var thTop = 56 + h + 'px';
   document.querySelectorAll('#mainTable thead th').forEach(function(th) {
-    th.style.top = '0';
+    th.style.top = thTop;
   });
-});
+}
+window.addEventListener('load', updateStickyOffsets);
+window.addEventListener('resize', updateStickyOffsets);
 </script>
 </body>
 </html>
