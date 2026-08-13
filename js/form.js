@@ -4,6 +4,69 @@ const editId  = params.get('id');
 let periodCount = 0;
 
 const PERIOD_OPTIONS = ["2024","2025","2026-Α' Εξ.","2026-Β' Εξ.","2027-Α' Εξ.","2027-Β' Εξ.","2027"];
+const INV_YEARS = ['2024','2025','2026','2027'];
+let inventoryCount = 0;
+
+// ── Inventory ─────────────────────────────────────────────
+function addInventory(data) {
+  data = data || {};
+  inventoryCount++;
+  var idx = inventoryCount;
+  var container = document.getElementById('inventoryContainer');
+  if (!container) return;
+
+  var div = document.createElement('div');
+  div.id = 'inv_' + idx;
+  div.dataset.dbId = data.id || '';
+  div.style.cssText = 'display:grid;grid-template-columns:100px 120px 160px 32px;gap:8px;align-items:center;padding:8px 12px;background:var(--gray-50);border-radius:8px;margin-bottom:8px;border:1px solid var(--gray-200)';
+
+  var yearOpts = INV_YEARS.map(function(y) {
+    return '<option value="' + y + '"' + (String(data.year) === y ? ' selected' : '') + '>' + y + '</option>';
+  }).join('');
+
+  var oldSel = data.material_type === 'old' ? ' selected' : '';
+  var newSel = data.material_type === 'new' ? ' selected' : '';
+
+  div.innerHTML =
+    '<select id="inv_year_' + idx + '" style="border:1px solid var(--gray-200);border-radius:6px;padding:6px 8px;font-size:13px">' +
+      '<option value="">— Έτος —</option>' + yearOpts +
+    '</select>' +
+    '<input type="number" id="inv_qty_' + idx + '" placeholder="τεμάχια" value="' + (data.quantity != null ? data.quantity : '') + '" style="border:1px solid var(--gray-200);border-radius:6px;padding:6px 8px;font-size:13px">' +
+    '<select id="inv_type_' + idx + '" style="border:1px solid var(--gray-200);border-radius:6px;padding:6px 8px;font-size:13px">' +
+      '<option value="">— Παλιό/Νέο —</option>' +
+      '<option value="old"' + oldSel + '>Παλιό υλικό</option>' +
+      '<option value="new"' + newSel + '>Νέο υλικό</option>' +
+    '</select>' +
+    '<button type="button" class="del-period" onclick="removeInventory(' + idx + ')" title="Διαγραφή">✕</button>';
+
+  container.appendChild(div);
+}
+
+async function removeInventory(idx) {
+  var el = document.getElementById('inv_' + idx);
+  if (!el) return;
+  var dbId = el.dataset.dbId;
+  if (dbId) await db.from('material_inventory').delete().eq('id', dbId);
+  el.remove();
+}
+
+function getInventory() {
+  var rows = document.querySelectorAll('[id^="inv_"]');
+  var result = [];
+  rows.forEach(function(row) {
+    var idx = row.id.replace('inv_', '');
+    var year = document.getElementById('inv_year_' + idx)?.value;
+    var qty  = parseFloat(document.getElementById('inv_qty_'  + idx)?.value);
+    if (!year || isNaN(qty)) return;
+    result.push({
+      id:            row.dataset.dbId || null,
+      year:          parseInt(year) || year,
+      quantity:      qty,
+      material_type: document.getElementById('inv_type_' + idx)?.value || null,
+    });
+  });
+  return result;
+}
 
 function addPeriod(data) {
   data = data || {};
@@ -108,12 +171,14 @@ async function loadForEdit(id) {
 
   var results = await Promise.all([
     db.from('material_changes').select('*').eq('id', id).single(),
-    db.from('material_periods').select('*').eq('change_id', id).order('period')
+    db.from('material_periods').select('*').eq('change_id', id).order('period'),
+    db.from('material_inventory').select('*').eq('change_id', id).order('year')
   ]);
 
-  var rec     = results[0].data;
-  var error   = results[0].error;
-  var periods = results[1].data;
+  var rec       = results[0].data;
+  var error     = results[0].error;
+  var periods   = results[1].data;
+  var inventory = results[2].data;
 
   if (error || !rec) { showToast('Σφάλμα φόρτωσης', 'error'); return; }
 
@@ -158,6 +223,7 @@ async function loadForEdit(id) {
   if (rec.is_discontinued) document.getElementById('is_discontinued').checked = true;
 
   (periods || []).forEach(function(p) { addPeriod(p); });
+  (inventory || []).forEach(function(i) { addInventory(i); });
 }
 
 function setBtns(disabled, text) {
@@ -244,6 +310,18 @@ async function saveRecord() {
     }
   }
 
+  // Αποθήκευση απογραφών
+  var inventory = getInventory();
+  for (var j = 0; j < inventory.length; j++) {
+    var inv = inventory[j];
+    var iRec = { change_id: changeId, year: inv.year, quantity: inv.quantity, material_type: inv.material_type };
+    if (inv.id) {
+      await db.from('material_inventory').update(iRec).eq('id', inv.id);
+    } else {
+      await db.from('material_inventory').insert(iRec);
+    }
+  }
+
   showToast(editId ? 'Αποθηκεύτηκε!' : 'Καταχωρήθηκε!', 'success');
   setTimeout(function() {
     window.location.href = editId ? 'detail.html?id=' + editId : 'index.html';
@@ -252,15 +330,17 @@ async function saveRecord() {
 
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('addPeriodBtn').addEventListener('click', function() { addPeriod(); });
+  document.getElementById('addInventoryBtn').addEventListener('click', function() { addInventory(); });
   document.getElementById('saveBtn').addEventListener('click', saveRecord);
   document.getElementById('saveBtnTop').addEventListener('click', saveRecord);
 
   // Ακύρωση — επαναφορά χωρίς confirm, καθαρισμός περιόδων πριν
   var cancelFn = function() {
     if (editId) {
-      // Καθάρισε τις περιόδους πριν ξαναφορτώσεις
       document.getElementById('periodsContainer').innerHTML = '';
+      document.getElementById('inventoryContainer').innerHTML = '';
       periodCount = 0;
+      inventoryCount = 0;
       loadForEdit(editId);
     } else {
       window.location.href = 'index.html';
