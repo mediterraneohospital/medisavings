@@ -61,18 +61,28 @@ function populateSupplierFilter(data) {
     o.value = s; o.textContent = s;
     sel.appendChild(o);
   });
+
+  const categories = [...new Set(data.map(r => r.category).filter(Boolean))].sort();
+  const catSel = document.getElementById('filterCategory');
+  categories.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c; o.textContent = c;
+    catSel.appendChild(o);
+  });
 }
 
 function getFiltered() {
   const search   = document.getElementById('searchInput').value.toLowerCase();
   const status   = document.getElementById('filterStatus').value;
   const supplier = document.getElementById('filterSupplier').value;
+  const category = document.getElementById('filterCategory').value;
   return allData.filter(r => {
-    if (status   && r.status       !== status)  return false;
-    if (supplier && r.old_supplier !== supplier) return false;
+    if (status   && r.status       !== status)   return false;
+    if (supplier && r.old_supplier !== supplier)  return false;
+    if (category && r.category     !== category)  return false;
     if (search) {
       const hay = [r.old_code, r.old_description, r.new_code, r.new_description,
-                   r.old_supplier, r.new_supplier].join(' ').toLowerCase();
+                   r.old_supplier, r.new_supplier, r.category].join(' ').toLowerCase();
       if (!hay.includes(search)) return false;
     }
     return true;
@@ -140,6 +150,7 @@ function renderTable(data) {
       <td><span class="price-new">${formatEuro(r.new_price)}</span></td>
       <td>${r.price_reduction_pct != null ? `<strong style="color:var(--green)">${formatPct(r.price_reduction_pct)}</strong>` : '—'}</td>
       <td>${savingHtml}</td>
+      <td style="font-size:12px;color:var(--gray-600)">${esc(r.category || '—')}</td>
       <td>${isDisc ? '<span class="badge badge-discontinued">Καταργημένο</span>' : statusBadge(r.status || 'active')}</td>
       <td onclick="event.stopPropagation()">
         <button class="btn btn-outline btn-sm btn-icon" onclick="editRecord('${r.id}')" title="Επεξεργασία"><i class="ti ti-pencil"></i></button>
@@ -155,10 +166,12 @@ function editRecord(id)  { window.location.href = `add.html?id=${id}`; }
 document.getElementById('searchInput').addEventListener('input',   () => renderTable(allData));
 document.getElementById('filterStatus').addEventListener('change',  () => renderTable(allData));
 document.getElementById('filterSupplier').addEventListener('change',() => renderTable(allData));
+document.getElementById('filterCategory').addEventListener('change',() => renderTable(allData));
 document.getElementById('clearFilters').addEventListener('click', () => {
   document.getElementById('searchInput').value    = '';
   document.getElementById('filterStatus').value   = '';
   document.getElementById('filterSupplier').value = '';
+  document.getElementById('filterCategory').value = '';
   renderTable(allData);
 });
 

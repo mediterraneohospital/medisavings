@@ -50,7 +50,6 @@
       Αλλαγές Υλικών
       <small id="countLabel"></small>
     </div>
-    <a href="add.html" class="btn btn-primary"><i class="ti ti-plus" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Νέα Αλλαγή</a>
   </div>
 
   <!-- Filters -->
@@ -64,6 +63,11 @@
       <option value="active">Ενεργά</option>
       <option value="discontinued">Ανενεργά</option>
       <option value="pending">Εκκρεμή</option>
+    </select>
+
+    <label>Κατηγορία</label>
+    <select id="filterCategory">
+      <option value="">Όλες</option>
     </select>
 
     <label>Εταιρεία (παλιά)</label>
@@ -97,6 +101,7 @@
           <th class="sortable" data-col="new_price">Νέα Τιμή</th>
           <th class="sortable" data-col="price_reduction_pct">Μείωση</th>
           <th class="sortable" data-col="total_saving">Συνολική Εξοικονόμηση</th>
+          <th class="sortable" data-col="category">Κατηγορία</th>
           <th>Κατάσταση</th>
           <th></th>
         </tr>
