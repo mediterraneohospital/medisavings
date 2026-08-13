@@ -60,9 +60,14 @@ function addPeriod(data) {
   document.getElementById('p_price_'     + idx).addEventListener('input', function() { calcPeriodSaving(idx); });
 }
 
-function removePeriod(idx) {
+async function removePeriod(idx) {
   var el = document.getElementById('period_' + idx);
-  if (el) el.remove();
+  if (!el) return;
+  var dbId = el.dataset.dbId;
+  if (dbId) {
+    await db.from('material_periods').delete().eq('id', dbId);
+  }
+  el.remove();
 }
 
 function calcPeriodSaving(idx) {
