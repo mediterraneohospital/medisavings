@@ -25,6 +25,16 @@
     .num-card .sub  { font-size:11px; color:var(--gray-400); }
     .manual-tag { font-size:10px; color:var(--yellow); margin-left:6px; }
     @media(max-width:768px){ .detail-grid{grid-template-columns:1fr;} .numbers-grid{grid-template-columns:1fr 1fr;} }
+
+    /* Sticky top block */
+    #detailSticky {
+      position: sticky;
+      top: 56px;
+      z-index: 100;
+      background: var(--gray-50);
+      padding-top: 12px;
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 <body>
@@ -37,21 +47,24 @@
 </nav>
 
 <div class="container">
-  <div class="page-header">
-    <div class="page-title" id="pageTitle">Λεπτομέρειες</div>
-    <div style="display:flex;gap:10px">
-      <button class="btn btn-outline" id="editBtn"><i class="ti ti-pencil" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Επεξεργασία</button>
-      <a href="index.html" class="btn btn-outline"><i class="ti ti-arrow-left" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Πίσω στη Λίστα</a>
-    </div>
-  </div>
 
   <div id="loadingState" class="loading"><div class="spinner"></div><p>Φόρτωση...</p></div>
   <div id="content" style="display:none">
 
-    <!-- Συνολική Εξοικονόμηση -->
-    <div class="form-card" style="margin-bottom:20px">
-      <div class="form-section-title"><i class="ti ti-pig-money" style="margin-right:6px"></i>Εξοικονόμηση</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
+    <!-- Sticky: τίτλος + εξοικονόμηση -->
+    <div id="detailSticky">
+      <div class="page-header" style="margin-bottom:12px">
+        <div class="page-title" id="pageTitle">Λεπτομέρειες</div>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-outline" id="editBtn"><i class="ti ti-pencil" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Επεξεργασία</button>
+          <a href="index.html" class="btn btn-outline"><i class="ti ti-arrow-left" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Πίσω στη Λίστα</a>
+        </div>
+      </div>
+
+      <!-- Συνολική Εξοικονόμηση -->
+      <div class="form-card" style="margin-bottom:0">
+        <div class="form-section-title"><i class="ti ti-pig-money" style="margin-right:6px"></i>Εξοικονόμηση</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
         <div class="num-card" style="background:var(--green-light);border:1px solid var(--green)">
           <div class="year" style="color:var(--green)">Συνολικό Όφελος</div>
           <div class="qty" style="color:var(--green);font-size:26px" id="d_total">—</div>
@@ -79,6 +92,7 @@
         </div>
       </div>
     </div>
+    </div><!-- /detailSticky -->
 
     <!-- Old vs New -->
     <div class="detail-grid">
