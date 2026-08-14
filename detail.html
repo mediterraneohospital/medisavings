@@ -273,11 +273,17 @@ async function load() {
     return '<span style="color:' + color + ';font-weight:600">' + arrow + ' ' + Math.abs(pct).toFixed(1) + '%</span>';
   }
 
-  // 2026 Α΄εξ. — ενδεικτικό βάσει αγορών vs αγορές 2025 παλιό
+  // Συνολικές αγορές 2025 = purchases_2025_old + άθροισμα periods 2025
   var purch2025old = r.purchases_2025_old || 0;
-  var pct2026h1 = (purch2026h1 && purch2025old)
+  var purch2025periods = (periods || [])
+    .filter(function(p) { return p.period && p.period.indexOf('2025') !== -1; })
+    .reduce(function(s, p) { return s + (p.purchases || 0); }, 0);
+  var totalPurch2025 = purch2025old + purch2025periods;
+
+  var pct2026h1 = (purch2026h1 && totalPurch2025)
     ? (function() {
-        var pct = ((purch2026h1 - purch2025old) / purch2025old) * 100;
+        var half2025 = totalPurch2025 / 2;
+        var pct = ((purch2026h1 - half2025) / half2025) * 100;
         var color = pct < 0 ? 'var(--green)' : 'var(--red)';
         var arrow = pct < 0 ? '▼' : '▲';
         return '<span style="color:' + color + ';font-weight:600">' + arrow + ' ' + Math.abs(pct).toFixed(1) + '%</span> <span style="font-size:10px;color:var(--gray-400)">(ενδεικτ. βάσει αγορών)</span>';
