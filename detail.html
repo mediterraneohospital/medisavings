@@ -213,6 +213,9 @@ async function load() {
     return inventory.filter(function(i) { return i.year === year; })
                     .reduce(function(s, i) { return s + (i.quantity || 0); }, 0);
   }
+  function hasInv(year) {
+    return inventory.some(function(i) { return i.year === year; });
+  }
 
   var inv2024 = invTotal(2024);
   var inv2025 = invTotal(2025);
@@ -222,10 +225,17 @@ async function load() {
   var purch2024 = r.purchases_2024 || 0;
   var purch2025 = (r.purchases_2025_old || 0) + (r.purchases_2025_new || 0);
 
-  // Πραγματική μόνο αν υπάρχουν και οι 2 απογραφές
-  var rc2024 = (inv2024 && inv2025) ? inv2024 + purch2024 - inv2025 : null;
-  var rc2025 = (inv2025 && inv2026) ? inv2025 + purch2025 - inv2026 : null;
-  var rc2026 = (inv2026 && inv2027) ? inv2026 + (r.purchases_2026_h1 || 0) - inv2027 : null;
+  // Άθροισμα αγορών 2026 από ΟΛΕς τις περιόδους που περιέχουν "2026"
+  var purch2026h1 = (periods || [])
+    .filter(function(p) { return p.period && p.period.indexOf('2026') !== -1; })
+    .reduce(function(s, p) { return s + (p.purchases || 0); }, 0);
+  // Fallback στο πεδίο αν δεν βρέθηκαν periods
+  if (!purch2026h1 && r.purchases_2026_h1) purch2026h1 = r.purchases_2026_h1;
+
+  // Πραγματική μόνο αν υπάρχουν και οι 2 απογραφές (χρησιμοποιούμε hasInv για να χειριστούμε το 0)
+  var rc2024 = (hasInv(2024) && hasInv(2025)) ? inv2024 + purch2024 - inv2025 : null;
+  var rc2025 = (hasInv(2025) && hasInv(2026)) ? inv2025 + purch2025 - inv2026 : null;
+  var rc2026 = (hasInv(2026) && hasInv(2027)) ? inv2026 + purch2026h1 - inv2027 : null;
 
   function pctChange(curr, prev, bothReal) {
     if (!bothReal || curr == null || !prev) return '—';
@@ -236,9 +246,8 @@ async function load() {
   }
 
   // 2026 Α΄εξ. — ενδεικτικό βάσει αγορών vs αγορές 2025 παλιό
-  var purch2026h1 = r.purchases_2026_h1;
   var purch2025old = r.purchases_2025_old || 0;
-  var pct2026h1 = (purch2026h1 != null && purch2025old)
+  var pct2026h1 = (purch2026h1 && purch2025old)
     ? (function() {
         var pct = ((purch2026h1 - purch2025old) / purch2025old) * 100;
         var color = pct < 0 ? 'var(--green)' : 'var(--red)';
@@ -249,7 +258,7 @@ async function load() {
 
   document.getElementById('d_c2024').textContent     = rc2024 != null ? formatNum(rc2024) : '—';
   document.getElementById('d_c2025').textContent     = rc2025 != null ? formatNum(rc2025) : '—';
-  document.getElementById('d_c2026h1').innerHTML     = purch2026h1 != null
+  document.getElementById('d_c2026h1').innerHTML     = purch2026h1
     ? formatNum(purch2026h1) + ' <span style="font-size:10px;color:var(--gray-500)">(ενδ.)</span>'
     : '—';
   document.getElementById('d_c2026').textContent     = rc2026 != null ? formatNum(rc2026) : '—';
