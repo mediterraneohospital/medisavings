@@ -255,12 +255,11 @@ async function load() {
     .filter(function(p) { return p.period && p.period.indexOf('2024') !== -1; })
     .reduce(function(s, p) { return s + (p.purchases || 0); }, 0);
   var purch2024 = (r.purchases_2024 || 0) + purch2024periods;
-  // Αγορές 2025 = purchases_2025_old + purchases_2025_new (πεδία) + αγορές από periods 2025
-  var purch2025fields = (r.purchases_2025_old || 0) + (r.purchases_2025_new || 0);
+  // Αγορές 2025 = purchases_2025_old + αγορές από periods 2025 (ΟΧΙ purchases_2025_new - είναι ήδη στα periods)
   var purch2025periods_cons = (periods || [])
     .filter(function(p) { return p.period && p.period.indexOf('2025') !== -1; })
     .reduce(function(s, p) { return s + (p.purchases || 0); }, 0);
-  var purch2025 = purch2025fields + purch2025periods_cons;
+  var purch2025 = (r.purchases_2025_old || 0) + purch2025periods_cons;
 
   // Άθροισμα αγορών 2026 από ΟΛΕς τις περιόδους που περιέχουν "2026"
   var purch2026h1 = (periods || [])
