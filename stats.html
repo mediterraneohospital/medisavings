@@ -147,6 +147,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
 <script>
+let allData = [];
+let periodsMap = {};
+
 async function loadAll() {
   document.getElementById('loadingState').style.display = 'block';
   document.getElementById('content').style.display = 'none';
@@ -157,15 +160,15 @@ async function loadAll() {
   ]);
 
   // Map periods by change_id
-  const pMap = {};
+  periodsMap = {};
   (periods || []).forEach(p => {
-    if (!pMap[p.change_id]) pMap[p.change_id] = [];
-    pMap[p.change_id].push(p);
+    if (!periodsMap[p.change_id]) periodsMap[p.change_id] = [];
+    periodsMap[p.change_id].push(p);
   });
 
   // Enriched records
   const data = (changes || []).map(r => {
-    const rp = pMap[r.id] || [];
+    const rp = periodsMap[r.id] || [];
     const totalSaving = rp.reduce((s, p) => s + (p.saving || 0), 0);
     const s2025  = rp.find(p => p.period === '2025')?.saving || 0;
     const s2026h1 = rp.filter(p => p.period && p.period.includes('2026') && p.period.includes('Α')).reduce((s,p) => s+(p.saving||0),0);
@@ -295,7 +298,7 @@ function renderConsumption(data) {
   // Σύγκριση 2026 Α΄εξ. vs 6μηνο 2025 (÷2)
   // Υπολογισμός αγορών 2026 και 2025 από periods (ίδια λογική με detail.html)
   const withData = data.filter(r => {
-    const rp = pMap[r.id] || [];
+    const rp = periodsMap[r.id] || [];
     const p2026 = rp.filter(p => p.period && p.period.indexOf('2026') !== -1)
                     .reduce((s, p) => s + (p.purchases || 0), 0);
     const p2025periods = rp.filter(p => p.period && p.period.indexOf('2025') !== -1)
@@ -303,7 +306,7 @@ function renderConsumption(data) {
     const p2025 = (r.purchases_2025_old || 0) + p2025periods;
     return p2026 > 0 && p2025 > 0;
   }).map(r => {
-    const rp = pMap[r.id] || [];
+    const rp = periodsMap[r.id] || [];
     const p2026 = rp.filter(p => p.period && p.period.indexOf('2026') !== -1)
                     .reduce((s, p) => s + (p.purchases || 0), 0);
     const p2025periods = rp.filter(p => p.period && p.period.indexOf('2025') !== -1)
