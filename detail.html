@@ -260,10 +260,17 @@ async function load() {
   // Fallback στο πεδίο αν δεν βρέθηκαν periods
   if (!purch2026h1 && r.purchases_2026_h1) purch2026h1 = r.purchases_2026_h1;
 
-  // Πραγματική μόνο αν υπάρχουν και οι 2 απογραφές (χρησιμοποιούμε hasInv για να χειριστούμε το 0)
-  var rc2024 = (hasInv(2024) && hasInv(2025)) ? inv2024 + purch2024 - inv2025 : null;
-  var rc2025 = (hasInv(2025) && hasInv(2026)) ? inv2025 + purch2025 - inv2026 : null;
-  var rc2026 = (hasInv(2026) && hasInv(2027)) ? inv2026 + purch2026h1 - inv2027 : null;
+  // Πραγματική μόνο αν υπάρχουν και οι 2 απογραφές (hasInv χειρίζεται το 0 σωστά)
+  // Αν απογραφή = 0 → καταναλώθηκαν όλες οι αγορές (δεν υπήρχε στοκ)
+  var rc2024 = hasInv(2024) && hasInv(2025) ? inv2024 + purch2024 - inv2025 : null;
+  var rc2025 = hasInv(2025) && hasInv(2026) ? inv2025 + purch2025 - inv2026 : null;
+  var rc2026 = hasInv(2026) && hasInv(2027) ? inv2026 + purch2026h1 - inv2027 : null;
+
+  // Αν απογραφή = 0 αλλά υπάρχει μόνο η μία: χρησιμοποίησε αγορές
+  if (rc2024 === null && !hasInv(2024) && hasInv(2025) && inv2025 === 0) rc2024 = purch2024;
+  if (rc2024 === null && hasInv(2024) && !hasInv(2025) && inv2024 === 0) rc2024 = purch2024;
+  if (rc2025 === null && !hasInv(2025) && hasInv(2026) && inv2026 === 0) rc2025 = purch2025;
+  if (rc2025 === null && hasInv(2025) && !hasInv(2026) && inv2025 === 0) rc2025 = purch2025;
 
   function pctChange(curr, prev, bothReal) {
     if (!bothReal || curr == null || !prev) return '—';
