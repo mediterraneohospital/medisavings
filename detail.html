@@ -26,14 +26,22 @@
     .manual-tag { font-size:10px; color:var(--yellow); margin-left:6px; }
     @media(max-width:768px){ .detail-grid{grid-template-columns:1fr;} .numbers-grid{grid-template-columns:1fr 1fr;} }
 
-    /* Sticky top block */
-    #detailSticky {
-      position: sticky;
-      top: 56px;
-      z-index: 100;
+    #detailFixed {
+      position: fixed;
+      top: 56px; left: 0; right: 0;
+      z-index: 200;
       background: var(--gray-50);
-      padding-top: 12px;
-      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .detail-fixed-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 12px 24px;
+    }
+    .detail-scroll-content {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px 40px;
     }
   </style>
 </head>
@@ -46,55 +54,56 @@
   <span class="hospital">Mediterraneo Hospital</span>
 </nav>
 
-<div class="container">
+<!-- Fixed header block -->
+<div id="detailFixed">
+  <div class="detail-fixed-inner">
 
-  <div id="loadingState" class="loading"><div class="spinner"></div><p>Φόρτωση...</p></div>
-  <div id="content" style="display:none">
-
-    <!-- Sticky: τίτλος + εξοικονόμηση -->
-    <div id="detailSticky">
-      <div class="page-header" style="margin-bottom:12px">
-        <div class="page-title" id="pageTitle">Λεπτομέρειες</div>
-        <div style="display:flex;gap:10px">
-          <button class="btn btn-outline" id="editBtn"><i class="ti ti-pencil" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Επεξεργασία</button>
-          <a href="index.html" class="btn btn-outline"><i class="ti ti-arrow-left" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Πίσω στη Λίστα</a>
-        </div>
+    <!-- Τίτλος + κουμπιά -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div class="page-title" id="pageTitle" style="margin:0">Λεπτομέρειες</div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-outline" id="editBtn"><i class="ti ti-pencil" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Επεξεργασία</button>
+        <a href="index.html" class="btn btn-outline"><i class="ti ti-arrow-left" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Πίσω στη Λίστα</a>
       </div>
+    </div>
 
-      <!-- Συνολική Εξοικονόμηση -->
-      <div class="form-card" style="margin-bottom:0">
-        <div class="form-section-title"><i class="ti ti-pig-money" style="margin-right:6px"></i>Εξοικονόμηση</div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
-        <div class="num-card" style="background:var(--green-light);border:1px solid var(--green)">
+    <!-- Εξοικονόμηση -->
+    <div id="loadingState" class="loading" style="padding:10px 0"><div class="spinner"></div></div>
+    <div id="savingBlock" style="display:none">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px">
+        <div class="num-card" style="background:var(--green-light);border:1px solid var(--green);padding:10px">
           <div class="year" style="color:var(--green)">Συνολικό Όφελος</div>
-          <div class="qty" style="color:var(--green);font-size:26px" id="d_total">—</div>
+          <div class="qty" style="color:var(--green);font-size:22px" id="d_total">—</div>
           <div class="sub">όλες οι περίοδοι</div>
         </div>
-        <div class="num-card">
+        <div class="num-card" style="padding:10px">
           <div class="year">Διαφορά Τιμής</div>
           <div class="qty" style="color:var(--teal-dark)" id="d_diff">—</div>
           <div class="sub">ανά τεμάχιο</div>
         </div>
-        <div class="num-card">
+        <div class="num-card" style="padding:10px">
           <div class="year">Μείωση %</div>
           <div class="qty" style="color:var(--green)" id="d_pct">—</div>
           <div class="sub">επί παλιάς τιμής</div>
         </div>
-        <div class="num-card">
+        <div class="num-card" style="padding:10px">
           <div class="year">Κατάσταση</div>
-          <div style="margin:8px 0" id="d_status">—</div>
+          <div style="margin:6px 0" id="d_status">—</div>
           <div class="sub" id="d_disc"></div>
         </div>
-        <div class="num-card">
+        <div class="num-card" style="padding:10px">
           <div class="year">Κατηγορία</div>
-          <div class="qty" style="font-size:13px;color:var(--gray-600)" id="d_cat">—</div>
+          <div class="qty" style="font-size:12px;color:var(--gray-600)" id="d_cat">—</div>
           <div class="sub">&nbsp;</div>
         </div>
       </div>
     </div>
-    </div><!-- /detailSticky -->
 
-    <!-- Old vs New -->
+  </div>
+</div>
+
+<!-- Scrollable content -->
+<div class="detail-scroll-content" id="detailContent" style="display:none">
     <div class="detail-grid">
       <div class="detail-card">
         <div class="form-section-title"><i class="ti ti-package" style="margin-right:6px"></i>Παλιό Υλικό</div>
@@ -195,7 +204,12 @@ async function load() {
 
   document.getElementById('loadingState').style.display = 'none';
   if (error || !r) { alert('Δεν βρέθηκε εγγραφή'); history.back(); return; }
-  document.getElementById('content').style.display = 'block';
+  document.getElementById('savingBlock').style.display  = 'block';
+  document.getElementById('detailContent').style.display = 'block';
+
+  // Δυναμικό padding-top βάσει ύψους fixed header
+  var h = document.getElementById('detailFixed').offsetHeight;
+  document.getElementById('detailContent').style.paddingTop = (h + 16) + 'px';
 
   var title = r.old_description || 'Λεπτομέρειες';
   if (r.is_discontinued) title += ' 🚫';
