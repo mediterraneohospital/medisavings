@@ -337,11 +337,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Ακύρωση — επαναφορά χωρίς confirm, καθαρισμός περιόδων πριν
   var cancelFn = function() {
     if (editId) {
-      document.getElementById('periodsContainer').innerHTML = '';
-      document.getElementById('inventoryContainer').innerHTML = '';
-      periodCount = 0;
-      inventoryCount = 0;
-      loadForEdit(editId);
+      window.location.href = 'detail.html?id=' + editId;
     } else {
       window.location.href = 'index.html';
     }

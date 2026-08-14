@@ -177,6 +177,10 @@ function editRecord(id) {
   sessionStorage.setItem('listScroll', window.scrollY);
   window.location.href = `add.html?id=${id}`;
 }
+function goToList() {
+  sessionStorage.removeItem('listScroll');
+  window.location.href = 'index.html';
+}
 
 document.getElementById('searchInput').addEventListener('input', function() {
   var clearBtn = document.getElementById('clearSearch');
