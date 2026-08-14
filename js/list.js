@@ -152,18 +152,18 @@ function renderTable(data) {
 
     return `<div onclick="openDetail('${r.id}')" style="background:white;border:0.5px solid #e2e8f0;border-radius:16px;padding:14px 16px;cursor:pointer" onmouseover="this.style.background='#f0fdf4';this.style.borderColor='#86efac'" onmouseout="this.style.background='white';this.style.borderColor='#e2e8f0'">
       <div style="display:flex;align-items:flex-start;gap:12px">
-        <span style="font-size:11px;font-weight:500;color:#94a3b8;min-width:20px;padding-top:2px">${aa}</span>
+        <span style="font-size:11px;font-weight:500;color:#64748b;min-width:20px;padding-top:2px">${aa}</span>
         <div style="flex:1">
-          <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:8px">${esc(r.old_description)} <span style="font-weight:400;color:#94a3b8">→</span> ${esc(r.new_description || r.old_description)}</div>
+          <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:8px">${esc(r.old_description)} <span style="font-weight:400;color:#475569">→</span> ${esc(r.new_description || r.old_description)}</div>
           <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
             <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:#f1f5f9;color:#64748b;border:0.5px solid #e2e8f0">${esc(r.old_supplier || '')} → ${esc(r.new_supplier || '')}</span>
             ${periodBadges}
-            ${r.category ? `<span style="font-size:11px;color:#94a3b8">${esc(r.category)}</span>` : ''}
+            ${r.category ? `<span style="font-size:11px;color:#475569">${esc(r.category)}</span>` : ''}
             ${statusHtml}
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:12px;white-space:nowrap;padding-top:1px">
-          <span style="font-size:12px;color:#94a3b8">${formatEuro(r.old_price)} → ${formatEuro(r.new_price)}</span>
+          <span style="font-size:12px;color:#475569">${formatEuro(r.old_price)} → ${formatEuro(r.new_price)}</span>
           ${pct}
           <div style="font-size:15px;font-weight:600;color:#16a34a">▼ ${formatEuro(Math.abs(saving))}</div>
           <button onclick="event.stopPropagation();editRecord('${r.id}')" style="background:none;border:0.5px solid #e2e8f0;border-radius:8px;padding:4px 8px;cursor:pointer;color:#64748b;font-size:13px" title="Επεξεργασία"><i class="ti ti-pencil"></i></button>
