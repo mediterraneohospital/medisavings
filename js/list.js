@@ -127,7 +127,7 @@ function renderTable(data) {
     const rPeriods = periodsMap[r.id] || [];
     const uniquePeriods = [...new Set(rPeriods.map(p => p.period))];
     const periodBadges = uniquePeriods.map(p =>
-      `<span style="font-size:10px;background:var(--gray-100);padding:1px 5px;border-radius:4px;margin-right:2px">${p}</span>`
+      `<span class="period-badge">${p}</span>`
     ).join('');
 
     const savingHtml = `<span class="saving-pill">&#9660; ${formatEuro(Math.abs(saving))}</span>`;
@@ -163,7 +163,11 @@ function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;'
 function openDetail(id) { window.location.href = `detail.html?id=${id}`; }
 function editRecord(id)  { window.location.href = `add.html?id=${id}`; }
 
-document.getElementById('searchInput').addEventListener('input',   () => renderTable(allData));
+document.getElementById('searchInput').addEventListener('input', function() {
+  var clearBtn = document.getElementById('clearSearch');
+  if (clearBtn) clearBtn.style.display = this.value ? 'block' : 'none';
+  renderTable(allData);
+});
 document.getElementById('filterStatus').addEventListener('change',  () => renderTable(allData));
 document.getElementById('filterSupplier').addEventListener('change',() => renderTable(allData));
 document.getElementById('filterCategory').addEventListener('change',() => renderTable(allData));
