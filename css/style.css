@@ -381,7 +381,7 @@ td { padding: 10px 14px; border-bottom: 1px solid var(--gray-100); }
 tr:last-child td { border-bottom: none; }
 
 /* Hover με αριστερό border */
-tr.clickable-row { position: relative; transition: background 0.1s; }
+tr.clickable-row { position: relative; }
 tr.clickable-row:hover td { background: #f0fdfa; }
 tr.clickable-row:hover td:first-child { box-shadow: inset 3px 0 0 var(--teal); }
 

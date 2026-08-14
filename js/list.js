@@ -26,6 +26,15 @@ async function loadData() {
   renderStats(allData);
   populateSupplierFilter(allData);
   renderTable(allData);
+
+  // Επαναφορά scroll position
+  var savedScroll = sessionStorage.getItem('listScroll');
+  if (savedScroll) {
+    setTimeout(function() {
+      window.scrollTo(0, parseInt(savedScroll));
+      sessionStorage.removeItem('listScroll');
+    }, 100);
+  }
 }
 
 function totalSaving(r) {
@@ -160,8 +169,14 @@ function renderTable(data) {
 }
 
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function openDetail(id) { window.location.href = `detail.html?id=${id}`; }
-function editRecord(id)  { window.location.href = `add.html?id=${id}`; }
+function openDetail(id) {
+  sessionStorage.setItem('listScroll', window.scrollY);
+  window.location.href = `detail.html?id=${id}`;
+}
+function editRecord(id) {
+  sessionStorage.setItem('listScroll', window.scrollY);
+  window.location.href = `add.html?id=${id}`;
+}
 
 document.getElementById('searchInput').addEventListener('input', function() {
   var clearBtn = document.getElementById('clearSearch');
