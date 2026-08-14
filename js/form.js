@@ -334,7 +334,6 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('saveBtn').addEventListener('click', saveRecord);
   document.getElementById('saveBtnTop').addEventListener('click', saveRecord);
 
-  // Ακύρωση — επαναφορά χωρίς confirm, καθαρισμός περιόδων πριν
   var cancelFn = function() {
     if (editId) {
       window.location.href = 'detail.html?id=' + editId;
