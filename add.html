@@ -58,6 +58,28 @@
     }
     .del-period:hover { color: var(--red); border-color: var(--red); }
     .saving-input { color: var(--green) !important; font-weight: 700 !important; }
+
+    /* Fixed header */
+    #addFixed {
+      position: fixed;
+      top: 56px; left: 0; right: 0;
+      z-index: 200;
+      background: var(--gray-50);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .add-fixed-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .add-scroll-content {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px 40px;
+    }
   </style>
 </head>
 <body>
@@ -70,9 +92,10 @@
   <span class="hospital">Mediterraneo Hospital</span>
 </nav>
 
-<div class="container">
-  <div class="page-header">
-    <div class="page-title" id="pageTitle">➕ Νέα Αλλαγή Υλικού</div>
+<!-- Fixed header -->
+<div id="addFixed">
+  <div class="add-fixed-inner">
+    <div class="page-title" id="pageTitle" style="margin:0">➕ Νέα Αλλαγή Υλικού</div>
     <div style="display:flex;gap:10px">
       <button type="button" class="btn" style="background:var(--red);color:white;display:none" id="deleteBtn"><i class="ti ti-trash" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Διαγραφή</button>
       <a href="index.html" class="btn btn-outline"><i class="ti ti-arrow-left" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Πίσω στη Λίστα</a>
@@ -80,8 +103,10 @@
       <button type="button" class="btn btn-primary" id="saveBtnTop"><i class="ti ti-device-floppy" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Αποθήκευση</button>
     </div>
   </div>
+</div>
 
-  <!-- Παλιό / Νέο Υλικό -->
+<!-- Scrollable content -->
+<div class="add-scroll-content" id="addContent">
   <div class="two-sections">
     <div class="form-card">
       <div class="form-section-title"><i class="ti ti-package" style="margin-right:6px"></i>Παλιό Υλικό</div>
@@ -208,5 +233,11 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
 <script src="js/form.js"></script>
+<script>
+window.addEventListener('load', function() {
+  var h = document.getElementById('addFixed').offsetHeight;
+  document.getElementById('addContent').style.paddingTop = (h + 16) + 'px';
+});
+</script>
 </body>
 </html>
