@@ -119,52 +119,55 @@ function renderTable(data) {
   document.getElementById('loadingState').style.display = 'none';
   document.getElementById('countLabel').textContent = `${sorted.length} εγγραφές`;
 
+  const cardList = document.getElementById('cardList');
+
   if (sorted.length === 0) {
-    document.getElementById('mainTable').style.display = 'none';
+    cardList.style.display = 'none';
     document.getElementById('emptyState').style.display = 'block';
     return;
   }
 
   document.getElementById('emptyState').style.display = 'none';
-  document.getElementById('mainTable').style.display  = 'table';
+  cardList.style.display = 'flex';
 
-  const tbody = document.getElementById('tableBody');
-  tbody.innerHTML = sorted.map((r, idx) => {
-    const aa      = idx + 1;
-    const saving  = totalSaving(r);
-    const isDisc  = r.is_discontinued;
+  cardList.innerHTML = sorted.map((r, idx) => {
+    const aa       = idx + 1;
+    const saving   = totalSaving(r);
+    const isDisc   = r.is_discontinued;
     const rPeriods = periodsMap[r.id] || [];
     const uniquePeriods = [...new Set(rPeriods.map(p => p.period))];
-    const periodBadges = uniquePeriods.map(p =>
-      `<span class="period-badge">${p}</span>`
+    const periodBadges  = uniquePeriods.map(p =>
+      `<span style="font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;background:var(--teal-subtle);color:var(--teal-dark);margin-right:4px">${p}</span>`
     ).join('');
 
-    const savingHtml = `<span class="saving-pill">&#9660; ${formatEuro(Math.abs(saving))}</span>`;
+    const statusHtml = isDisc
+      ? `<span style="font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;background:var(--red-light);color:var(--red)"><i class="ti ti-ban" style="font-size:11px;margin-right:3px"></i>Καταργημένο</span>`
+      : r.status === 'active'
+        ? `<span style="font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;background:var(--green-light);color:var(--green)"><i class="ti ti-circle-check" style="font-size:11px;margin-right:3px"></i>Ενεργό</span>`
+        : `<span style="font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;background:#fef9c3;color:#a16207">Εκκρεμεί</span>`;
 
-    return `<tr class="clickable-row" onclick="openDetail('${r.id}')">
-      <td style="text-align:center;color:var(--gray-600);font-size:12px;font-weight:600">${aa}</td>
-      <td>
-        <div class="item-code">${esc(r.old_code)}</div>
-        <div class="item-desc">${esc(r.old_description)}</div>
-        <div class="item-supplier">${esc(r.old_supplier || '')}</div>
-      </td>
-      <td class="arrow-col">→</td>
-      <td>
-        <div class="item-code">${esc(r.new_code)}</div>
-        <div class="item-desc">${esc(r.new_description || '')}</div>
-        <div class="item-supplier">${esc(r.new_supplier || '')}</div>
-        <div style="margin-top:4px">${periodBadges}</div>
-      </td>
-      <td><span class="price-old">${formatEuro(r.old_price)}</span></td>
-      <td><span class="price-new">${formatEuro(r.new_price)}</span></td>
-      <td>${r.price_reduction_pct != null ? `<strong style="color:var(--green)">${formatPct(r.price_reduction_pct)}</strong>` : '—'}</td>
-      <td>${savingHtml}</td>
-      <td style="font-size:12px;color:var(--gray-600)">${esc(r.category || '—')}</td>
-      <td>${isDisc ? '<span class="badge badge-discontinued">Καταργημένο</span>' : statusBadge(r.status || 'active')}</td>
-      <td onclick="event.stopPropagation()">
-        <button class="btn btn-outline btn-sm btn-icon" onclick="editRecord('${r.id}')" title="Επεξεργασία"><i class="ti ti-pencil"></i></button>
-      </td>
-    </tr>`;
+    const pct = r.price_reduction_pct != null
+      ? `<span style="font-size:13px;font-weight:500;color:var(--green)">−${formatPct(r.price_reduction_pct)}</span>`
+      : '—';
+
+    return `<div onclick="openDetail('${r.id}')" style="background:white;border:0.5px solid var(--gray-200);border-radius:12px;padding:14px 16px;cursor:pointer;transition:border-color 0.1s" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='var(--gray-200)'">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+        <span style="font-size:11px;font-weight:500;color:var(--gray-400);min-width:20px">${aa}</span>
+        <div style="flex:1;font-size:14px;font-weight:600;color:var(--gray-800)">${esc(r.old_description)} <span style="font-weight:400;color:var(--gray-400)">→</span> ${esc(r.new_description || r.old_description)}</div>
+        <div style="font-size:15px;font-weight:600;color:var(--green)">▼ ${formatEuro(Math.abs(saving))}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--gray-100);color:var(--gray-600);border:0.5px solid var(--gray-200)">${esc(r.old_supplier || '')} → ${esc(r.new_supplier || '')}</span>
+        ${periodBadges}
+        ${r.category ? `<span style="font-size:11px;color:var(--gray-500)">${esc(r.category)}</span>` : ''}
+        ${statusHtml}
+        <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
+          <span style="font-size:12px;color:var(--gray-400)">${formatEuro(r.old_price)} → ${formatEuro(r.new_price)}</span>
+          ${pct}
+          <button onclick="event.stopPropagation();editRecord('${r.id}')" style="background:none;border:0.5px solid var(--gray-200);border-radius:6px;padding:4px 8px;cursor:pointer;color:var(--gray-500);font-size:13px" title="Επεξεργασία"><i class="ti ti-pencil"></i></button>
+        </div>
+      </div>
+    </div>`;
   }).join('');
 }
 
