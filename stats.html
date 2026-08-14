@@ -122,22 +122,14 @@
     <div class="stats-grid">
       <!-- Top 20 Αύξηση Κατανάλωσης -->
       <div class="stat-section">
-        <div class="stat-section-title"><i class="ti ti-trending-up" style="color:var(--red)"></i> Top 20 — Αύξηση Κατανάλωσης 2026 Α΄εξ. vs 2025</div>
+        <div class="stat-section-title"><i class="ti ti-trending-up" style="color:var(--red)"></i> Top 10 — Αύξηση Κατανάλωσης 2026 Α΄εξ. vs 2025</div>
         <table class="rank-table" id="topConsUp"></table>
       </div>
 
       <!-- Top 20 Μείωση Κατανάλωσης -->
       <div class="stat-section">
-        <div class="stat-section-title"><i class="ti ti-trending-down" style="color:var(--green)"></i> Top 20 — Μείωση Κατανάλωσης 2026 Α΄εξ. vs 2025</div>
+        <div class="stat-section-title"><i class="ti ti-trending-down" style="color:var(--green)"></i> Top 10 — Μείωση Κατανάλωσης 2026 Α΄εξ. vs 2025</div>
         <table class="rank-table" id="topConsDown"></table>
-      </div>
-    </div>
-
-    <!-- Υλικά με Αρνητικό Όφελος -->
-    <div class="stats-grid full">
-      <div class="stat-section">
-        <div class="stat-section-title"><i class="ti ti-alert-triangle" style="color:var(--red)"></i> Υλικά με Αρνητικό Όφελος (Αύξηση Τιμής)</div>
-        <table class="rank-table" id="negSaving"></table>
       </div>
     </div>
 
@@ -181,7 +173,6 @@ async function loadAll() {
   renderSupplierSaving(data);
   renderSupplierPct(data);
   renderConsumption(data);
-  renderNegSaving(data);
 
   document.getElementById('lastUpdate').textContent = 'Ενημέρωση: ' + new Date().toLocaleTimeString('el-GR');
   document.getElementById('loadingState').style.display = 'none';
@@ -317,8 +308,8 @@ function renderConsumption(data) {
     return { ...r, consPct: pct, p2026, p2025half: base };
   });
 
-  const up   = [...withData].filter(r => r.consPct > 0).sort((a, b) => b.consPct - a.consPct).slice(0, 20);
-  const down = [...withData].filter(r => r.consPct < 0).sort((a, b) => a.consPct - b.consPct).slice(0, 20);
+  const up   = [...withData].filter(r => r.consPct > 0).sort((a, b) => b.consPct - a.consPct).slice(0, 10);
+  const down = [...withData].filter(r => r.consPct < 0).sort((a, b) => a.consPct - b.consPct).slice(0, 10);
 
   const maxUp   = up[0]?.consPct   || 1;
   const maxDown = Math.abs(down[0]?.consPct || 1);
