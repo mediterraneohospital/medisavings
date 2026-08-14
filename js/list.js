@@ -150,21 +150,23 @@ function renderTable(data) {
       ? `<span style="font-size:13px;font-weight:500;color:var(--green)">−${formatPct(r.price_reduction_pct)}</span>`
       : '—';
 
-    return `<div onclick="openDetail('${r.id}')" style="background:white;border:0.5px solid var(--gray-200);border-radius:12px;padding:14px 16px;cursor:pointer;transition:border-color 0.1s" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='var(--gray-200)'">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
-        <span style="font-size:11px;font-weight:500;color:var(--gray-400);min-width:20px">${aa}</span>
-        <div style="flex:1;font-size:14px;font-weight:600;color:var(--gray-800)">${esc(r.old_description)} <span style="font-weight:400;color:var(--gray-400)">→</span> ${esc(r.new_description || r.old_description)}</div>
-        <div style="font-size:15px;font-weight:600;color:var(--green)">▼ ${formatEuro(Math.abs(saving))}</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-        <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--gray-100);color:var(--gray-600);border:0.5px solid var(--gray-200)">${esc(r.old_supplier || '')} → ${esc(r.new_supplier || '')}</span>
-        ${periodBadges}
-        ${r.category ? `<span style="font-size:11px;color:var(--gray-500)">${esc(r.category)}</span>` : ''}
-        ${statusHtml}
-        <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
-          <span style="font-size:12px;color:var(--gray-400)">${formatEuro(r.old_price)} → ${formatEuro(r.new_price)}</span>
+    return `<div onclick="openDetail('${r.id}')" style="background:white;border:0.5px solid #e2e8f0;border-radius:16px;padding:14px 16px;cursor:pointer" onmouseover="this.style.background='#f0fdf4';this.style.borderColor='#86efac'" onmouseout="this.style.background='white';this.style.borderColor='#e2e8f0'">
+      <div style="display:flex;align-items:flex-start;gap:12px">
+        <span style="font-size:11px;font-weight:500;color:#94a3b8;min-width:20px;padding-top:2px">${aa}</span>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:8px">${esc(r.old_description)} <span style="font-weight:400;color:#94a3b8">→</span> ${esc(r.new_description || r.old_description)}</div>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:#f1f5f9;color:#64748b;border:0.5px solid #e2e8f0">${esc(r.old_supplier || '')} → ${esc(r.new_supplier || '')}</span>
+            ${periodBadges}
+            ${r.category ? `<span style="font-size:11px;color:#94a3b8">${esc(r.category)}</span>` : ''}
+            ${statusHtml}
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;white-space:nowrap;padding-top:1px">
+          <span style="font-size:12px;color:#94a3b8">${formatEuro(r.old_price)} → ${formatEuro(r.new_price)}</span>
           ${pct}
-          <button onclick="event.stopPropagation();editRecord('${r.id}')" style="background:none;border:0.5px solid var(--gray-200);border-radius:6px;padding:4px 8px;cursor:pointer;color:var(--gray-500);font-size:13px" title="Επεξεργασία"><i class="ti ti-pencil"></i></button>
+          <div style="font-size:15px;font-weight:600;color:#16a34a">▼ ${formatEuro(Math.abs(saving))}</div>
+          <button onclick="event.stopPropagation();editRecord('${r.id}')" style="background:none;border:0.5px solid #e2e8f0;border-radius:8px;padding:4px 8px;cursor:pointer;color:#64748b;font-size:13px" title="Επεξεργασία"><i class="ti ti-pencil"></i></button>
         </div>
       </div>
     </div>`;
