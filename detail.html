@@ -250,7 +250,11 @@ async function load() {
   var inv2026 = invTotal(2026);
   var inv2027 = invTotal(2027);
 
-  var purch2024 = r.purchases_2024 || 0;
+  // Αγορές 2024 = purchases_2024 (πεδίο) + αγορές από periods 2024
+  var purch2024periods = (periods || [])
+    .filter(function(p) { return p.period && p.period.indexOf('2024') !== -1; })
+    .reduce(function(s, p) { return s + (p.purchases || 0); }, 0);
+  var purch2024 = (r.purchases_2024 || 0) + purch2024periods;
   // Αγορές 2025 = purchases_2025_old + purchases_2025_new (πεδία) + αγορές από periods 2025
   var purch2025fields = (r.purchases_2025_old || 0) + (r.purchases_2025_new || 0);
   var purch2025periods_cons = (periods || [])
