@@ -293,12 +293,25 @@ function renderSupplierPct(data) {
 // ── Κατανάλωση ────────────────────────────────────────────
 function renderConsumption(data) {
   // Σύγκριση 2026 Α΄εξ. vs 6μηνο 2025 (÷2)
-  const withData = data.filter(r =>
-    r.consumption_2026_h1 != null && r.consumption_2025 != null && r.consumption_2025 > 0
-  ).map(r => {
-    const base = r.consumption_2025 / 2;
-    const pct  = ((r.consumption_2026_h1 - base) / base) * 100;
-    return { ...r, consPct: pct };
+  // Υπολογισμός αγορών 2026 και 2025 από periods (ίδια λογική με detail.html)
+  const withData = data.filter(r => {
+    const rp = pMap[r.id] || [];
+    const p2026 = rp.filter(p => p.period && p.period.indexOf('2026') !== -1)
+                    .reduce((s, p) => s + (p.purchases || 0), 0);
+    const p2025periods = rp.filter(p => p.period && p.period.indexOf('2025') !== -1)
+                           .reduce((s, p) => s + (p.purchases || 0), 0);
+    const p2025 = (r.purchases_2025_old || 0) + p2025periods;
+    return p2026 > 0 && p2025 > 0;
+  }).map(r => {
+    const rp = pMap[r.id] || [];
+    const p2026 = rp.filter(p => p.period && p.period.indexOf('2026') !== -1)
+                    .reduce((s, p) => s + (p.purchases || 0), 0);
+    const p2025periods = rp.filter(p => p.period && p.period.indexOf('2025') !== -1)
+                           .reduce((s, p) => s + (p.purchases || 0), 0);
+    const p2025 = (r.purchases_2025_old || 0) + p2025periods;
+    const base = p2025 / 2;
+    const pct  = ((p2026 - base) / base) * 100;
+    return { ...r, consPct: pct, p2026, p2025half: base };
   });
 
   const up   = [...withData].filter(r => r.consPct > 0).sort((a, b) => b.consPct - a.consPct).slice(0, 20);
@@ -312,7 +325,7 @@ function renderConsumption(data) {
       <td class="rank-num">${i+1}</td>
       <td>
         <div class="rank-desc">${esc(r.old_description)}</div>
-        <div class="rank-sub">${formatNum(Math.round(r.consumption_2025/2))} → ${formatNum(r.consumption_2026_h1)} τεμ.</div>
+        <div class="rank-sub">${formatNum(Math.round(r.p2025half))} → ${formatNum(r.p2026)} τεμ.</div>
         <div class="bar-wrap"><div class="bar-fill red" style="width:${(r.consPct/maxUp*100).toFixed(1)}%"></div></div>
       </td>
       <td class="rank-val red">▲ ${r.consPct.toFixed(1)}%</td>
@@ -323,7 +336,7 @@ function renderConsumption(data) {
       <td class="rank-num">${i+1}</td>
       <td>
         <div class="rank-desc">${esc(r.old_description)}</div>
-        <div class="rank-sub">${formatNum(Math.round(r.consumption_2025/2))} → ${formatNum(r.consumption_2026_h1)} τεμ.</div>
+        <div class="rank-sub">${formatNum(Math.round(r.p2025half))} → ${formatNum(r.p2026)} τεμ.</div>
         <div class="bar-wrap"><div class="bar-fill green" style="width:${(Math.abs(r.consPct)/maxDown*100).toFixed(1)}%"></div></div>
       </td>
       <td class="rank-val green">▼ ${Math.abs(r.consPct).toFixed(1)}%</td>
