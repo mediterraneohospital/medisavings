@@ -98,7 +98,7 @@
     <!-- Filter bar -->
     <div style="display:flex;align-items:center;gap:10px;background:white;border-radius:8px;padding:10px 14px;box-shadow:var(--shadow)">
       <i class="ti ti-search" style="font-size:15px;color:var(--gray-500)"></i>
-      <input type="search" id="searchInput" placeholder="Αναζήτηση περιγραφή, κωδικό, εταιρεία..." style="border:none;outline:none;font-size:13px;width:220px;color:var(--gray-800)">
+      <input type="text" id="searchInput" placeholder="Αναζήτηση περιγραφή, κωδικό, εταιρεία..." style="border:none;outline:none;font-size:13px;width:220px;color:var(--gray-800)">
       <button id="clearSearch" onclick="document.getElementById('searchInput').value='';document.getElementById('searchInput').dispatchEvent(new Event('input'))" style="display:none;background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:16px;padding:0 2px" title="Καθαρισμός">✕</button>
       <div style="width:1px;height:20px;background:var(--gray-200)"></div>
       <select id="filterStatus" style="border:none;outline:none;font-size:13px;color:var(--gray-700);cursor:pointer;background:transparent">
