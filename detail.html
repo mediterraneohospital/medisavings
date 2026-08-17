@@ -308,9 +308,18 @@ async function load() {
 
   document.getElementById('d_c2024').textContent     = rc2024 != null ? formatNum(rc2024) : '—';
   document.getElementById('d_c2025').textContent     = rc2025 != null ? formatNum(rc2025) : '—';
-  document.getElementById('d_c2026h1').innerHTML     = purch2026h1
-    ? formatNum(purch2026h1) + ' <span style="font-size:10px;color:var(--gray-500)">(ενδ.)</span>'
-    : '—';
+
+  // 2026 Α΄εξ. — αν 0 αγορές: "Κάλυψη από απόθεμα"
+  if (purch2026h1 === 0) {
+    document.getElementById('d_c2026h1').innerHTML   = '<span style="font-size:11px;color:var(--gray-500);font-style:italic">Κάλυψη από απόθεμα</span>';
+    document.getElementById('d_c2026h1_pct').innerHTML = '<span style="color:var(--green);font-weight:600">▼ 100%</span> <span style="font-size:10px;color:var(--gray-400)">(ενδεικτ. βάσει αγορών)</span>';
+  } else {
+    document.getElementById('d_c2026h1').innerHTML   = purch2026h1
+      ? formatNum(purch2026h1) + ' <span style="font-size:10px;color:var(--gray-500)">(ενδ.)</span>'
+      : '—';
+    document.getElementById('d_c2026h1_pct').innerHTML = pct2026h1;
+  }
+
   document.getElementById('d_c2026').textContent     = rc2026 != null ? formatNum(rc2026) : '—';
   document.getElementById('d_c2024_pct').innerHTML   = '—';
   document.getElementById('d_c2025_pct').innerHTML   = pctChange(rc2025, rc2024, rc2024 != null && rc2025 != null);
