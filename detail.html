@@ -2,6 +2,10 @@
 <html lang="el">
 <head>
   <meta charset="UTF-8">
+    <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="favicon.ico">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="theme-color" content="#0f766e">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.x/dist/tabler-icons.min.css">
   <title>MediSavings – Λεπτομέρειες</title>
@@ -390,6 +394,11 @@ async function load() {
 }
 
 load();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
 </script>
 </body>
 </html>
