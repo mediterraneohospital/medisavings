@@ -225,8 +225,13 @@ async function load() {
   document.getElementById('d_new_desc').textContent  = r.new_description || '—';
   document.getElementById('d_new_sup').textContent   = r.new_supplier || '—';
   document.getElementById('d_new_price').textContent = formatEuro(r.new_price);
-  document.getElementById('d_diff').textContent      = formatEuro(r.price_diff);
-  document.getElementById('d_pct').textContent       = formatPct(r.price_reduction_pct);
+  const isIncrease = r.price_diff < 0;
+
+  document.getElementById('d_diff').style.color = isIncrease ? 'var(--red)' : 'var(--teal-dark)';
+  document.getElementById('d_pct').style.color  = isIncrease ? 'var(--red)' : 'var(--green)';
+
+  document.getElementById('d_diff').textContent = (isIncrease ? '▲ ' : '') + formatEuro(Math.abs(r.price_diff));
+  document.getElementById('d_pct').textContent  = (isIncrease ? '▲ ' : '▼ ') + formatPct(Math.abs(r.price_reduction_pct));
   document.getElementById('d_cat').textContent       = r.category || '—';
 
   // Κατάσταση: αν καταργημένο, δείχνει μόνο "Καταργημένο" σε κόκκινο
