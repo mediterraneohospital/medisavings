@@ -2,6 +2,10 @@
 <html lang="el">
 <head>
   <meta charset="UTF-8">
+    <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="favicon.ico">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="theme-color" content="#0f766e">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
@@ -149,5 +153,10 @@ window.addEventListener('load', applyOffsets);
 window.addEventListener('resize', applyOffsets);
 </script>
 
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
+</script>
 </body>
 </html>
