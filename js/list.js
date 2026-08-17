@@ -147,7 +147,9 @@ function renderTable(data) {
         : `<span style="font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;background:#fef9c3;color:#a16207">Εκκρεμεί</span>`;
 
     const pct = r.price_reduction_pct != null
-      ? `<span style="font-size:13px;font-weight:500;color:var(--green)">−${formatPct(r.price_reduction_pct)}</span>`
+      ? r.price_reduction_pct < 0
+        ? `<span style="font-size:13px;font-weight:500;color:#dc2626">▲ ${formatPct(Math.abs(r.price_reduction_pct))}</span>`
+        : `<span style="font-size:13px;font-weight:500;color:var(--green)">−${formatPct(r.price_reduction_pct)}</span>`
       : '—';
 
           const sameDesc = r.old_description === r.new_description;
@@ -170,7 +172,7 @@ function renderTable(data) {
         <div style="display:flex;align-items:center;gap:12px;white-space:nowrap;padding-top:1px">
           <span style="font-size:12px;color:#475569">${formatEuro(r.old_price)} → ${formatEuro(r.new_price)}</span>
           ${pct}
-          <div style="font-size:15px;font-weight:600;color:#16a34a">▼ ${formatEuro(Math.abs(saving))}</div>
+          <div style="font-size:15px;font-weight:600;color:${saving >= 0 ? '#16a34a' : '#dc2626'}">${saving >= 0 ? '▼' : '▲'} ${formatEuro(Math.abs(saving))}</div>
           <button onclick="event.stopPropagation();editRecord('${r.id}')" style="background:none;border:0.5px solid #e2e8f0;border-radius:8px;padding:4px 8px;cursor:pointer;color:#64748b;font-size:13px" title="Επεξεργασία"><i class="ti ti-pencil"></i></button>
         </div>
       </div>
