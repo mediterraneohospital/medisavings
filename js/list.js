@@ -163,7 +163,7 @@ function renderTable(data) {
           <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
             <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:#f1f5f9;color:#64748b;border:0.5px solid #e2e8f0">${esc(r.old_supplier || '')} → ${esc(r.new_supplier || '')}</span>
             ${periodBadges}
-            ${r.category ? `<span style="font-size:11px;color:#475569">${esc(r.category)}</span>` : ''}
+            ${r.category ? `<span style="font-size:11px;color:#5b6f8a;background:#e8f0fe;padding:2px 8px;border-radius:20px;font-weight:500">${esc(r.category)}</span>` : ''}
             ${statusHtml}
           </div>
         </div>
