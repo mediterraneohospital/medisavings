@@ -102,6 +102,10 @@
   <a href="add.html" class="active"><i class="ti ti-plus" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Νέα Αλλαγή</a>
   <a href="stats.html"><i class="ti ti-chart-bar" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Στατιστικά</a>
   <span class="spacer"></span>
+  <button id="editModeBtn" class="btn btn-outline btn-sm" type="button" style="margin-right:10px;padding:4px 10px;font-size:12px">
+    <i class="ti ti-lock-open" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>
+    <span>Έξοδος από Επεξεργασία</span>
+  </button>
   <span class="hospital">Mediterraneo Hospital</span>
 </nav>
 
@@ -242,6 +246,19 @@
     <button type="button" class="btn btn-primary" id="saveBtn"><i class="ti ti-device-floppy" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Αποθήκευση</button>
   </div>
 </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var btn = document.getElementById('editModeBtn');
+  if (btn) {
+    btn.addEventListener('click', function() {
+      localStorage.removeItem('medisavingsEditMode');
+      window.location.href = 'index.html';
+    });
+  }
+});
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>

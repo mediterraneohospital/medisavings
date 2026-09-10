@@ -69,6 +69,11 @@
   <a href="add.html" class="edit-only"><i class="ti ti-plus" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Νέα Αλλαγή</a>
   <a href="stats.html"><i class="ti ti-chart-bar" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Στατιστικά</a>
   <span class="spacer"></span>
+  <button id="editModeBtn" class="btn btn-outline btn-sm" type="button"
+    style="margin-right:10px;padding:4px 10px;font-size:12px">
+    <i class="ti ti-lock" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>
+    <span id="editModeText">Επεξεργασία</span>
+  </button>
   <span class="hospital">Mediterraneo Hospital</span>
 </nav>
 
@@ -195,6 +200,56 @@
 
   </div>
 </div>
+
+
+<script>
+(function() {
+  var KEY = 'medisavingsEditMode';
+  var PASSWORD = 'mediterraneo';
+
+  function isEditMode() {
+    return localStorage.getItem(KEY) === '1';
+  }
+
+  function applyEditMode() {
+    var enabled = isEditMode();
+    document.body.classList.toggle('edit-mode', enabled);
+
+    var text = document.getElementById('editModeText');
+    var btn = document.getElementById('editModeBtn');
+    if (text) text.textContent = enabled ? 'Έξοδος από Επεξεργασία' : 'Επεξεργασία';
+    if (btn) {
+      var icon = btn.querySelector('i');
+      if (icon) icon.className = enabled ? 'ti ti-lock-open' : 'ti ti-lock';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    applyEditMode();
+
+    var btn = document.getElementById('editModeBtn');
+    if (!btn) return;
+
+    btn.addEventListener('click', function() {
+      if (isEditMode()) {
+        localStorage.removeItem(KEY);
+        applyEditMode();
+        return;
+      }
+
+      var code = prompt('Κωδικός επεξεργασίας:');
+      if (code === null) return;
+
+      if (code === PASSWORD) {
+        localStorage.setItem(KEY, '1');
+        applyEditMode();
+      } else {
+        alert('Λάθος κωδικός.');
+      }
+    });
+  });
+})();
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
