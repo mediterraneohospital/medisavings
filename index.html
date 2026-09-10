@@ -122,6 +122,13 @@
       <select id="filterSupplier" style="border:none;outline:none;font-size:13px;color:var(--gray-700);cursor:pointer;background:transparent">
         <option value="">Εταιρεία: Όλες</option>
       </select>
+      <div style="width:1px;height:20px;background:var(--gray-200)"></div>
+      <button class="btn btn-outline btn-sm" id="sortOldMaterial" type="button"
+        style="padding:4px 10px;font-size:12px;white-space:nowrap"
+        title="Ταξινόμηση με βάση την περιγραφή του παλιού υλικού">
+        <i class="ti ti-sort-ascending-letters" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>
+        Α–Ω
+      </button>
       <div style="flex:1"></div>
       <span id="countLabel" style="font-size:12px;color:var(--gray-400)"></span>
       <button class="btn btn-outline btn-sm" id="clearFilters" style="padding:4px 10px;font-size:12px">✕ Καθαρισμός</button>
@@ -189,6 +196,26 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
 <script src="js/list.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var btn = document.getElementById('sortOldMaterial');
+  if (!btn) return;
+
+  btn.addEventListener('click', function() {
+    if (sortCol === 'old_description' && sortDir === 'asc') {
+      sortDir = 'desc';
+      btn.innerHTML = '<i class="ti ti-sort-descending-letters" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>Ω–Α';
+    } else {
+      sortCol = 'old_description';
+      sortDir = 'asc';
+      btn.innerHTML = '<i class="ti ti-sort-ascending-letters" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>Α–Ω';
+    }
+    renderTable(allData);
+  });
+});
+</script>
+
 
 <script>
 // Μέτρηση πραγματικού ύψους topBlock και εφαρμογή
