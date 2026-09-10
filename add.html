@@ -85,6 +85,15 @@
       padding: 0 24px 40px;
     }
   </style>
+
+<script>
+(function() {
+  if (localStorage.getItem('medisavingsEditMode') !== '1') {
+    window.location.replace('index.html');
+  }
+})();
+</script>
+
 </head>
 <body>
 <nav>

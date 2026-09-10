@@ -58,6 +58,8 @@
       background: var(--gray-50);
       box-shadow: 0 1px 0 var(--gray-200);
     }
+      body:not(.edit-mode) .edit-only { display:none !important; }
+    body:not(.edit-mode) button[title="Επεξεργασία"] { display:none !important; }
   </style>
 </head>
 <body>
@@ -67,9 +69,12 @@
   <nav>
     <span class="logo">Medi<span>Savings</span></span>
     <a href="index.html" class="active"><i class="ti ti-list" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Λίστα</a>
-    <a href="add.html"><i class="ti ti-plus" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Νέα Αλλαγή</a>
+    <a href="add.html" class="edit-only"><i class="ti ti-plus" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Νέα Αλλαγή</a>
     <a href="stats.html"><i class="ti ti-chart-bar" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Στατιστικά</a>
     <span class="spacer"></span>
+    <button id="editModeBtn" class="btn btn-outline btn-sm" type="button" style="margin-right:10px;padding:4px 10px;font-size:12px">
+      <i class="ti ti-lock" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i><span id="editModeText">Επεξεργασία</span>
+    </button>
     <span class="hospital">Mediterraneo Hospital</span>
   </nav>
 
@@ -135,6 +140,51 @@
     <div id="cardList" style="display:none;flex-direction:column;gap:8px;padding-bottom:24px"></div>
   </div>
 </div>
+
+
+<script>
+(function() {
+  var KEY = 'medisavingsEditMode';
+  var PASSWORD = 'mediterraneo';
+
+  function isEditMode() {
+    return localStorage.getItem(KEY) === '1';
+  }
+
+  function applyEditMode() {
+    var enabled = isEditMode();
+    document.body.classList.toggle('edit-mode', enabled);
+    var text = document.getElementById('editModeText');
+    var btn = document.getElementById('editModeBtn');
+    if (text) text.textContent = enabled ? 'Έξοδος από Επεξεργασία' : 'Επεξεργασία';
+    if (btn) {
+      var icon = btn.querySelector('i');
+      if (icon) icon.className = enabled ? 'ti ti-lock-open' : 'ti ti-lock';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    applyEditMode();
+    document.getElementById('editModeBtn').addEventListener('click', function() {
+      if (isEditMode()) {
+        localStorage.removeItem(KEY);
+        applyEditMode();
+        if (typeof renderTable === 'function' && typeof allData !== 'undefined') renderTable(allData);
+        return;
+      }
+      var code = prompt('Κωδικός επεξεργασίας:');
+      if (code === null) return;
+      if (code === PASSWORD) {
+        localStorage.setItem(KEY, '1');
+        applyEditMode();
+        if (typeof renderTable === 'function' && typeof allData !== 'undefined') renderTable(allData);
+      } else {
+        alert('Λάθος κωδικός.');
+      }
+    });
+  });
+})();
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>

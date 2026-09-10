@@ -47,13 +47,26 @@
       margin: 0 auto;
       padding: 0 24px 40px;
     }
+      body:not(.edit-mode) .edit-only { display:none !important; }
   </style>
+
+<script>
+(function() {
+  if (localStorage.getItem('medisavingsEditMode') === '1') {
+    document.documentElement.classList.add('edit-mode-root');
+    document.addEventListener('DOMContentLoaded', function() {
+      document.body.classList.add('edit-mode');
+    });
+  }
+})();
+</script>
+
 </head>
 <body>
 <nav>
   <span class="logo">Medi<span>Savings</span></span>
   <a href="index.html" onclick="sessionStorage.removeItem('listScroll');"><i class="ti ti-list" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Λίστα</a>
-  <a href="add.html"><i class="ti ti-plus" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Νέα Αλλαγή</a>
+  <a href="add.html" class="edit-only"><i class="ti ti-plus" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Νέα Αλλαγή</a>
   <a href="stats.html"><i class="ti ti-chart-bar" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Στατιστικά</a>
   <span class="spacer"></span>
   <span class="hospital">Mediterraneo Hospital</span>
@@ -67,7 +80,7 @@
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
       <div class="page-title" id="pageTitle" style="margin:0">Λεπτομέρειες</div>
       <div style="display:flex;gap:10px">
-        <button class="btn btn-outline" id="editBtn"><i class="ti ti-pencil" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Επεξεργασία</button>
+        <button class="btn btn-outline edit-only" id="editBtn"><i class="ti ti-pencil" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Επεξεργασία</button>
         <a href="index.html" class="btn btn-outline"><i class="ti ti-arrow-left" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Πίσω στη Λίστα</a>
       </div>
     </div>
