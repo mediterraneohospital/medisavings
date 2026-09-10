@@ -213,6 +213,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     renderTable(allData);
   });
+
+  var clearFiltersBtn = document.getElementById('clearFilters');
+  if (clearFiltersBtn) {
+    clearFiltersBtn.addEventListener('click', function() {
+      sortCol = 'sort_order';
+      sortDir = 'asc';
+      btn.innerHTML = '<i class="ti ti-sort-ascending-letters" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>Α–Ω';
+      renderTable(allData);
+    });
+  }
 });
 </script>
 
