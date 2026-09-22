@@ -58,13 +58,13 @@ function totalSaving(r) {
 
 function renderStats(data) {
   const active = data.filter(r => r.status === 'active');
-  const reportingPeriods = active.flatMap(r => periodsMap[r.id] || [])
-    .filter(p => p.period === '2025' || p.period === "2026-Α' Εξ.");
-  const total = reportingPeriods.reduce((s, p) => s + Number(p.saving || 0), 0);
+  const total  = active.reduce((s, r) => s + totalSaving(r), 0);
   const pcts   = active.filter(r => r.price_reduction_pct).map(r => r.price_reduction_pct);
   const avgPct = pcts.length ? pcts.reduce((a, b) => a + b, 0) / pcts.length : 0;
-  const count2025 = reportingPeriods.filter(p => p.period === '2025')
-    .reduce((s, p) => s + Number(p.saving || 0), 0);
+  const count2025 = active.reduce((s, r) => {
+    const p = (periodsMap[r.id] || []).find(p => p.period === '2025');
+    return s + Number(p?.saving || 0);
+  }, 0);
 
   document.getElementById('statTotal').textContent     = data.length;
   document.getElementById('statSaving').textContent    = formatEuro(total);
@@ -234,3 +234,5 @@ document.querySelectorAll('th.sortable').forEach(th => {
 });
 
 loadData();
+
+
