@@ -355,7 +355,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/supabase.js"></script>
+<script src="js/supabase.js?v=20260922-isolated-auth"></script>
 
 <script>
 let allData = [];
@@ -366,12 +366,18 @@ async function loadAll() {
   document.getElementById('content').style.display = 'none';
 
   const [
-    { data: changes },
-    { data: periods }
+    { data: changes, error: changesError },
+    { data: periods, error: periodsError }
   ] = await Promise.all([
     db.from('material_changes').select('*'),
     db.from('material_periods').select('*')
   ]);
+
+  if (changesError) throw changesError;
+  if (periodsError) throw periodsError;
+  if (!periods || periods.length === 0) {
+    throw new Error('Δεν φορτώθηκαν οι περίοδοι εξοικονόμησης.');
+  }
 
   periodsMap = {};
 
@@ -389,16 +395,17 @@ async function loadAll() {
       rp.reduce((s, p) => s + (p.saving || 0), 0);
 
     const s2025 =
-      rp.find(p => p.period === '2025')?.saving || 0;
+      rp
+        .filter(p => p.period === '2025')
+        .reduce((s, p) => s + Number(p.saving || 0), 0);
 
     const s2026h1 =
       rp
         .filter(p =>
           p.period &&
-          p.period.includes('2026') &&
-          p.period.includes('Α')
+          p.period === "2026-Α' Εξ."
         )
-        .reduce((s, p) => s + (p.saving || 0), 0);
+        .reduce((s, p) => s + Number(p.saving || 0), 0);
 
     return {
       ...r,
@@ -431,8 +438,7 @@ function renderPeriodCards(data) {
   const total2026h1 =
     data.reduce((s, r) => s + r.s2026h1, 0);
 
-  const totalAll =
-    data.reduce((s, r) => s + r.totalSaving, 0);
+  const totalAll = total2025 + total2026h1;
 
   const delta =
     total2025 > 0
@@ -464,7 +470,7 @@ function renderPeriodCards(data) {
       <div class="p-val" style="color:var(--teal-dark)">
         ${formatEuro(totalAll)}
       </div>
-      <div class="p-sub">όλες οι περίοδοι</div>
+      <div class="p-sub">2025 + Α΄ εξάμηνο 2026</div>
     </div>
   `;
 }
@@ -1080,3 +1086,5 @@ if ('serviceWorker' in navigator) {
 
 </body>
 </html>
+
+
