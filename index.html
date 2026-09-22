@@ -195,7 +195,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
-<script src="js/list.js?v=20260922-periods"></script>
+<script src="js/list.js?v=20260922-restore-2"></script>
 
 <script>
 // Normalize both query and searchable fields without changing displayed text.
@@ -268,11 +268,15 @@ window.addEventListener('resize', applyOffsets);
 
 <script>
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
-    .then(registration => registration.update())
-    .catch(error => console.error('Service worker update failed:', error));
+  navigator.serviceWorker.getRegistrations()
+    .then(registrations => Promise.all(registrations.map(registration => registration.unregister())))
+    .catch(error => console.error('Service worker cleanup failed:', error));
+}
+if ('caches' in window) {
+  caches.keys().then(keys => Promise.all(
+    keys.filter(key => key.startsWith('medisavings-')).map(key => caches.delete(key))
+  ));
 }
 </script>
 </body>
 </html>
-
