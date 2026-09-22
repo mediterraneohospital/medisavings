@@ -4,26 +4,21 @@ let periodsMap = {}; // change_id → [periods]
 let sortCol = 'sort_order';
 let sortDir = 'asc';
 
-async function loadPeriods() {
-  const rows = [];
-  for (let from = 0; ; from += 500) {
-    const { data, error } = await db.from('material_periods')
-      .select('*').order('id').range(from, from + 499);
-    if (error) throw error;
-    if (!data) throw new Error('Δεν φορτώθηκαν οι περίοδοι.');
-    rows.push(...data);
-    if (data.length < 500) return rows;
-  }
-}
-
 async function loadData() {
   try {
-  const [{ data, error }, periods] = await Promise.all([
+  const [
+    { data, error },
+    { data: periods, error: periodsError }
+  ] = await Promise.all([
     db.from('material_changes').select('*').order('sort_order', { ascending: true, nullsFirst: false }),
-    loadPeriods()
+    db.from('material_periods').select('*')
   ]);
 
   if (error) throw error;
+  if (periodsError) throw periodsError;
+  if (!periods || periods.length === 0) {
+    throw new Error('Δεν φορτώθηκαν οι περίοδοι εξοικονόμησης.');
+  }
 
   allData = data || [];
   periodsMap = {};
@@ -239,4 +234,3 @@ document.querySelectorAll('th.sortable').forEach(th => {
 });
 
 loadData();
-
