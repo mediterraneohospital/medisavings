@@ -4,17 +4,26 @@ let periodsMap = {}; // change_id → [periods]
 let sortCol = 'sort_order';
 let sortDir = 'asc';
 
+async function loadPeriods() {
+  const rows = [];
+  for (let from = 0; ; from += 500) {
+    const { data, error } = await db.from('material_periods')
+      .select('*').order('id').range(from, from + 499);
+    if (error) throw error;
+    if (!data) throw new Error('Δεν φορτώθηκαν οι περίοδοι.');
+    rows.push(...data);
+    if (data.length < 500) return rows;
+  }
+}
+
 async function loadData() {
-  const [{ data, error }, { data: periods }] = await Promise.all([
+  try {
+  const [{ data, error }, periods] = await Promise.all([
     db.from('material_changes').select('*').order('sort_order', { ascending: true, nullsFirst: false }),
-    db.from('material_periods').select('*')
+    loadPeriods()
   ]);
 
-  if (error) {
-    document.getElementById('loadingState').innerHTML =
-      `<p style="color:var(--red)">❌ Σφάλμα σύνδεσης: ${error.message}</p>`;
-    return;
-  }
+  if (error) throw error;
 
   allData = data || [];
   periodsMap = {};
@@ -35,26 +44,32 @@ async function loadData() {
       sessionStorage.removeItem('listScroll');
     }, 100);
   }
+  } catch (error) {
+    ['statTotal', 'statSaving', 'statPurchases', 'statAvgPct'].forEach(id => {
+      document.getElementById(id).textContent = '—';
+    });
+    document.getElementById('cardList').style.display = 'none';
+    const loading = document.getElementById('loadingState');
+    loading.style.display = 'block';
+    loading.textContent = 'Δεν ήταν δυνατή η φόρτωση των δεδομένων. Κάντε ανανέωση για επανάληψη.';
+    console.error('MediSavings data load failed:', error);
+  }
 }
 
 function totalSaving(r) {
   const periods = periodsMap[r.id] || [];
-  if (periods.length > 0) {
-    return periods.reduce((s, p) => s + (p.saving || 0), 0);
-  }
-  // Fallback για παλιές εγγραφές χωρίς περιόδους
-  return (r.saving_from_purchases || 0) + (r.saving_2026_h1 || 0);
+  return periods.reduce((s, p) => s + Number(p.saving || 0), 0);
 }
 
 function renderStats(data) {
   const active = data.filter(r => r.status === 'active');
-  const total  = active.reduce((s, r) => s + totalSaving(r), 0);
+  const reportingPeriods = active.flatMap(r => periodsMap[r.id] || [])
+    .filter(p => p.period === '2025' || p.period === "2026-Α' Εξ.");
+  const total = reportingPeriods.reduce((s, p) => s + Number(p.saving || 0), 0);
   const pcts   = active.filter(r => r.price_reduction_pct).map(r => r.price_reduction_pct);
   const avgPct = pcts.length ? pcts.reduce((a, b) => a + b, 0) / pcts.length : 0;
-  const count2025 = active.reduce((s, r) => {
-    const p = (periodsMap[r.id] || []).find(p => p.period === '2025');
-    return s + (p?.saving || 0);
-  }, 0);
+  const count2025 = reportingPeriods.filter(p => p.period === '2025')
+    .reduce((s, p) => s + Number(p.saving || 0), 0);
 
   document.getElementById('statTotal').textContent     = data.length;
   document.getElementById('statSaving').textContent    = formatEuro(total);
@@ -204,6 +219,7 @@ document.getElementById('filterSupplier').addEventListener('change',() => render
 document.getElementById('filterCategory').addEventListener('change',() => renderTable(allData));
 document.getElementById('clearFilters').addEventListener('click', () => {
   document.getElementById('searchInput').value    = '';
+  document.getElementById('clearSearch').style.display = 'none';
   document.getElementById('filterStatus').value   = '';
   document.getElementById('filterSupplier').value = '';
   document.getElementById('filterCategory').value = '';
@@ -223,3 +239,4 @@ document.querySelectorAll('th.sortable').forEach(th => {
 });
 
 loadData();
+
