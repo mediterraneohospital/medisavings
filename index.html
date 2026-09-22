@@ -198,6 +198,32 @@
 <script src="js/list.js"></script>
 
 <script>
+// Normalize both query and searchable fields without changing displayed text.
+function normalizeMaterialSearch(value) {
+  return String(value ?? '').normalize('NFD').replace(/\p{M}+/gu, '').toLowerCase();
+}
+
+// Keep the existing list filters; make all seven search fields accent-insensitive.
+function getFiltered() {
+  const search   = normalizeMaterialSearch(document.getElementById('searchInput').value);
+  const status   = document.getElementById('filterStatus').value;
+  const supplier = document.getElementById('filterSupplier').value;
+  const category = document.getElementById('filterCategory').value;
+  return allData.filter(r => {
+    if (status   && r.status       !== status)   return false;
+    if (supplier && r.old_supplier !== supplier)  return false;
+    if (category && r.category     !== category)  return false;
+    if (search) {
+      const hay = normalizeMaterialSearch([r.old_code, r.old_description, r.new_code, r.new_description,
+                   r.old_supplier, r.new_supplier, r.category].join(' '));
+      if (!hay.includes(search)) return false;
+    }
+    return true;
+  });
+}
+</script>
+
+<script>
 document.addEventListener('DOMContentLoaded', function() {
   var btn = document.getElementById('sortOldMaterial');
   if (!btn) return;
