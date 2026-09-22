@@ -4,7 +4,13 @@ const SUPABASE_URL = 'https://odtbtugzilxsfqxlpofq.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_ch-7C1ihpZRrxEhXFqV1xA_hXPwq61S';
 
 const { createClient } = supabase;
-const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+const db = createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: {
+    persistSession: false,
+    autoRefreshToken: false,
+    detectSessionInUrl: false
+  }
+});
 
 // ── Helpers ────────────────────────────────────────────────
 function formatEuro(v) {
@@ -57,3 +63,4 @@ document.addEventListener('wheel', function(e) {
     document.activeElement.blur();
   }
 }, { passive: false });
+
