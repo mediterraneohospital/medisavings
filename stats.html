@@ -315,6 +315,10 @@
           <i class="ti ti-building"></i>
           Εξοικονόμηση ανά Εταιρεία (Παλιός Προμηθευτής)
         </div>
+        <div class="stat-note">
+          Τα ποσοστά υπολογίζονται επί του συνολικού οφέλους όλων των υλικών και προμηθευτών.
+          Εμφανίζονται εταιρείες με συνολική εξοικονόμηση ≥ 1.000 €.
+        </div>
         <div id="supplierSaving"></div>
       </div>
 
@@ -389,7 +393,9 @@ async function loadAll() {
       rp.reduce((s, p) => s + (p.saving || 0), 0);
 
     const s2025 =
-      rp.find(p => p.period === '2025')?.saving || 0;
+      rp
+        .filter(p => p.period === '2025')
+        .reduce((s, p) => s + (p.saving || 0), 0);
 
     const s2026h1 =
       rp
@@ -610,10 +616,7 @@ function renderSupplierSaving(data) {
     sorted[0]?.[1] || 1;
 
   const total =
-    sorted.reduce(
-      (s, [, v]) => s + v,
-      0
-    );
+    data.reduce((s, r) => s + r.totalSaving, 0);
 
   document.getElementById('supplierSaving').innerHTML =
     sorted.map(([name, val]) => `
@@ -1080,4 +1083,5 @@ if ('serviceWorker' in navigator) {
 
 </body>
 </html>
+
 
