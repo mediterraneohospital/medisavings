@@ -62,8 +62,10 @@ function renderStats(data) {
   const pcts   = active.filter(r => r.price_reduction_pct).map(r => r.price_reduction_pct);
   const avgPct = pcts.length ? pcts.reduce((a, b) => a + b, 0) / pcts.length : 0;
   const count2025 = active.reduce((s, r) => {
-    const p = (periodsMap[r.id] || []).find(p => p.period === '2025');
-    return s + Number(p?.saving || 0);
+    const saving2025 = (periodsMap[r.id] || [])
+      .filter(p => p.period === '2025')
+      .reduce((sum, p) => sum + Number(p.saving || 0), 0);
+    return s + saving2025;
   }, 0);
 
   document.getElementById('statTotal').textContent     = data.length;
@@ -234,5 +236,8 @@ document.querySelectorAll('th.sortable').forEach(th => {
 });
 
 loadData();
+
+
+
 
 
