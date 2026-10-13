@@ -31,3 +31,5 @@ body.app-shell nav.app-sidebar a.nav-link{color:#41586c}
 body.app-shell th{color:#40566a!important}body.app-shell .item-code{color:#526579!important}
 body.app-shell input,body.app-shell select,body.app-shell textarea{color:#263e54}
 body.app-shell input::placeholder{color:#64758a;opacity:1}
+
+@media(min-width:1400px){body.app-shell .top-inner,body.app-shell .scroll-content,body.app-shell .container,body.app-shell .detail-fixed-inner,body.app-shell .detail-scroll-content,body.app-shell .add-fixed-inner,body.app-shell .add-scroll-content{margin-left:120px!important;width:calc(100% - 120px)}}
