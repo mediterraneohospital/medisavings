@@ -19,3 +19,5 @@ const oldExport=$('exportReport'),newExport=oldExport.cloneNode(true);oldExport.
 $('purchaseYearView').addEventListener('change',()=>{syncYearChecks('purchaseYearView');page=0;renderItems();});
 $('itemYearView').addEventListener('change',()=>syncYearChecks('itemYearView'));
 if(dataset)renderItems();
+document.addEventListener('pointerdown',event=>{document.querySelectorAll('.year-picker[open]').forEach(picker=>{if(!picker.contains(event.target))picker.open=false;});});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'){const open=[...document.querySelectorAll('.year-picker[open]')];if(open.length){event.preventDefault();event.stopPropagation();open.forEach(picker=>{picker.open=false;picker.querySelector('summary').focus();});}}},true);
