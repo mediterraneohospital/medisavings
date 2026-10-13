@@ -115,6 +115,9 @@ async function openItem(code){
   $('itemMonths').innerHTML=item.months.map(m=>{const a=PC.aggregate(item,[m.month]);return '<tr><td>'+PC.MONTHS[m.month-1]+'</td><td class="right num">'+formatNum(a.quantity)+'</td><td class="right money">'+money(a.value)+'</td><td class="right">'+price(a.price)+'</td><td class="month-supplier">'+m.suppliers.map(s=>(PC.isTransfer(s)?'<span class="transfer-tag">Μεταφορά στις μονάδες</span> ':'')+escapeHtml(s.name)+' ('+formatNum(s.quantity)+' / '+money(s.value)+')').join('<br>')+'</td></tr>';}).join('');
   $('itemVersions').textContent=imports.length?'Φόρτωση ιστορικού…':'Το ιστορικό αρχείων θα εμφανιστεί μετά την πρώτη αποθήκευση.';
   $('itemDialog').showModal();
+  $('itemDialog').scrollTop=0;
+  $('itemPriceBars').scrollLeft=0;
+  $('itemDialog').querySelector('.purchase-table-wrap').scrollLeft=0;
   try{const versions=await Promise.all(imports.filter(i=>i.purchase_year===dataset.year).map(async i=>{const d=await getSnapshot(i.id),match=d.items.find(it=>it.code===code);return {meta:i,item:match};}));if($('itemCode').textContent!==code+' · '+dataset.year)return;
     $('itemVersions').innerHTML=versions.map(v=>{const a=v.item?PC.aggregate(v.item,v.meta.months):null;return '<div class="version-row"><div>'+escapeHtml(v.meta.file_name)+'<small>'+date(v.meta.imported_at)+' · '+periodText(v.meta.purchase_year,v.meta.months)+'</small></div><div>'+(a?money(a.value)+' · '+formatNum(a.quantity):'Δεν περιλαμβάνεται')+'<small>'+(a?'Μέση τιμή '+price(a.price):'')+'</small></div></div>';}).join('')||'<p class="muted">Δεν υπάρχει προηγούμενη εισαγωγή για το έτος.</p>';
   }catch(error){$('itemVersions').textContent='Δεν φορτώθηκε το ιστορικό αρχείων.';}
