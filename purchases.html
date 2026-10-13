@@ -2,7 +2,7 @@
 <html lang="el">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#365a73">
-<title>MediSavings — Ιστορικό Αγορών</title><link rel="icon" href="favicon.ico"><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/shell.css?v=20261013f"><link rel="stylesheet" href="css/purchases.css?v=20261013j">
+<title>MediSavings — Ιστορικό Αγορών</title><link rel="icon" href="favicon.ico"><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/shell.css?v=20261013f"><link rel="stylesheet" href="css/purchases.css?v=20261013k">
 <script>if(localStorage.getItem('medisavingsEditMode')!=='1')location.replace('index.html');</script>
 <script src="js/shell.js?v=20261013b" defer></script>
 </head>
@@ -30,5 +30,5 @@
   <div id="emptyPurchases" class="empty-panel"><h3>Το ιστορικό ξεκινά από το πρώτο Excel.</h3><p>Ανέβασε το αναλυτικό αρχείο για προεπισκόπηση πριν την αποθήκευση.</p></div>
 </main>
 <dialog id="itemDialog" class="item-dialog"><div class="dialog-heading"><div><div class="eyebrow" id="itemCode"></div><h2 id="itemTitle"></h2><p class="muted" id="itemSupplier"></p></div><button id="closeItem" aria-label="Κλείσιμο" class="close-dialog">×</button></div><div class="dialog-body"><div class="view-toolbar"><label>Προβολή <select id="itemYearView" aria-label="Έτος αγορών είδους"></select></label></div><div class="item-metrics" id="itemMetrics"></div><div class="section-top"><span class="section-title">Αξία αγορών ανά μήνα</span><span class="muted" id="itemChartLegend">Αξία αγορών (€)</span></div><div id="itemPriceBars" class="item-price-bars"></div><p id="itemComparison" class="notice" style="margin-bottom:18px"></p><div class="purchase-table-wrap"><table class="purchase-table"><thead><tr><th>Μήνας</th><th class="right">Ποσότητα</th><th class="right">Αξία</th><th class="right">Μέση τιμή</th><th>Προμηθευτές</th></tr></thead><tbody id="itemMonths"></tbody></table></div><div class="notice" style="margin-top:18px">Οι αποστολές σε Πάρο και Σαντορίνη είναι μεταφορές στις μονάδες. Παραμένουν στα καθαρά σύνολα του Excel, αλλά αφαιρούνται από τον υπολογισμό των τιμών αγοράς. Οι μεταβολές τιμής παραλείπουν μήνες με επιστροφές προμηθευτών. Οι τιμές του Excel δεν ενημερώνουν τις καταχωρημένες αλλαγές υλικών.</div></div></dialog>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/supabase.js"></script><script src="js/vendor/xlsx.full.min.js"></script><script src="js/purchase-core.js?v=20261013b"></script><script src="js/purchases.js?v=20261013j"></script><script src="js/purchase-view.js?v=20261013j"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/supabase.js"></script><script src="js/vendor/xlsx.full.min.js"></script><script src="js/purchase-core.js?v=20261013b"></script><script src="js/purchases.js?v=20261013j"></script><script src="js/purchase-view.js?v=20261013k"></script><script src="js/purchase-selection.js?v=20261013k"></script>
 </body></html>
