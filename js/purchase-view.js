@@ -1,0 +1,41 @@
+'use strict';
+const yearData=new Map();let mainViewToken=0,modalCode=null;
+function renderMainTotals(mode,all){document.querySelector('.purchase-metrics').hidden=mode==='compare';let panel=$('comparisonMetrics');if(!panel){panel=document.createElement('div');panel.id='comparisonMetrics';panel.className='stats-bar';document.querySelector('.purchase-metrics').before(panel);}panel.hidden=mode!=='compare';if(mode!=='compare'||all.length!==2)return;const common=all[0].months.filter(m=>all[1].months.includes(m)),totals=all.map(d=>d.items.reduce((sum,i)=>sum+PC.aggregate(i,common).value,0));panel.innerHTML=[['Αγορές 2025',totals[0]],['Αγορές 2026',totals[1]],['Διαφορά δαπάνης',totals[1]-totals[0]]].map(([label,value])=>'<div class="stat-card"><div class="stat-label">'+label+'</div><div class="stat-value">'+money(value)+'</div><div class="stat-sub">'+common.map(m=>PC.MONTHS[m-1].slice(0,3)).join(', ')+' · κοινοί μήνες</div></div>').join('');}
+let viewInitialized=false;
+const yearOptions=()=>[...new Set([...imports.map(i=>i.purchase_year),...(dataset?[dataset.year]:[])])].sort((a,b)=>b-a);
+function viewOptions(select,value){select.innerHTML=yearOptions().map(y=>'<option value="'+y+'">'+y+'</option>').join('')+(yearOptions().includes(2025)&&yearOptions().includes(2026)?'<option value="compare">Σύγκριση 2025–2026</option>':'');select.value=String(value);}
+async function latestYear(year){if(preview?.data.year===year)return preview.data;const meta=imports.find(i=>i.purchase_year===year);if(!meta)return null;const data=await getSnapshot(meta.id);yearData.set(year,data);return data;}
+function purchaseChart(target,series){
+ const months=[...new Set(series.flatMap(s=>s.months))].sort((a,b)=>a-b),values=series.flatMap(s=>months.map(m=>s.months.includes(m)?s.value(m):null));
+ const low=Math.min(0,...values.filter(v=>v!=null)),high=Math.max(1,...values.filter(v=>v!=null)),range=high-low;
+ const y=v=>220-(v-low)/range*180,zero=y(0),step=1100/Math.max(1,months.length),barWidth=Math.min(30,step/(series.length+2));
+ const compact=v=>new Intl.NumberFormat('el-GR',{notation:'compact',maximumFractionDigits:1}).format(v);
+ let svg='<svg viewBox="0 0 1200 265" role="img" aria-label="Αξίες αγορών ανά μήνα σε ευρώ"><text x="12" y="20" class="chart-axis">€</text>';
+ for(let n=0;n<=4;n++){const v=low+range*n/4,py=y(v);svg+='<line x1="75" x2="1180" y1="'+py+'" y2="'+py+'" class="chart-grid"/><text x="65" y="'+(py+4)+'" text-anchor="end" class="chart-axis">'+compact(v)+'</text>';}
+ months.forEach((m,i)=>{const center=75+step*(i+.5);series.forEach((s,j)=>{const v=s.months.includes(m)?s.value(m):null,x=center+(j-(series.length-1)/2)*(barWidth+4)-barWidth/2;if(v==null){svg+='<text x="'+(x+barWidth/2)+'" y="'+(zero-6)+'" text-anchor="middle" class="chart-axis">—</text>';return;}svg+='<rect x="'+x+'" y="'+Math.min(y(v),zero)+'" width="'+barWidth+'" height="'+Math.max(v===0?0:1,Math.abs(y(v)-zero))+'" rx="3" fill="'+(s.year===2025?'#b788b4':'#456f8c')+'"><title>'+s.year+' · '+PC.MONTHS[m-1]+': '+money(v)+'</title></rect>';});svg+='<text x="'+center+'" y="245" text-anchor="middle" class="chart-axis">'+PC.MONTHS[m-1].slice(0,3)+'</text>';});
+ svg+='</svg>';target.innerHTML='<div class="chart-legend">'+series.map(s=>'<span><i style="background:'+(s.year===2025?'#b788b4':'#456f8c')+'"></i>'+s.year+'</span>').join('')+'<small>— μήνας χωρίς διαθέσιμα δεδομένα · ποσά με τον δείκτη πάνω στη μπάρα</small></div>'+svg;
+}
+const originalDisplayDataset=displayDataset;
+displayDataset=function(data,isPreview){originalDisplayDataset(data,isPreview);const mode=!viewInitialized&&!isPreview&&yearOptions().includes(2025)&&yearOptions().includes(2026)?'compare':data.year;viewInitialized=true;viewOptions($('purchaseYearView'),mode);$('datasetMode').hidden=!isPreview;$('datasetTitle').hidden=true;$('datasetSource').hidden=true;$('yearCoverage').textContent=periodText(data.year,data.months);void renderMainChart(String(mode));};
+async function renderMainChart(mode){const token=++mainViewToken;try{const years=mode==='compare'?[2025,2026]:[Number(mode)],all=await Promise.all(years.map(latestYear));if(token!==mainViewToken)return;const available=all.filter(Boolean);purchaseChart($('monthlyBars'),available.map(d=>({year:d.year,months:d.months,value:m=>d.items.reduce((s,i)=>s+PC.aggregate(i,[m]).value,0)})));if(mode==='compare')$('yearCoverage').textContent='Σύγκριση δαπανών · πίνακας ειδών: '+dataset.year;else $('yearCoverage').textContent=periodText(dataset.year,dataset.months);}catch(e){$('monthlyBars').textContent='Δεν φορτώθηκε το γράφημα. Δοκίμασε ξανά.';}}
+$('purchaseYearView').addEventListener('change',async()=>{const mode=$('purchaseYearView').value;if(mode==='compare'){await renderMainChart(mode);return;}const meta=imports.find(i=>i.purchase_year===Number(mode));if(meta)await selectImport(meta.id);});
+let modalData=[];
+function renderModal(mode){
+ const selected=mode==='compare'?modalData:modalData.filter(d=>d.year===Number(mode));
+ const series=selected.map(d=>({year:d.year,months:d.months,item:d.items.find(i=>i.code===modalCode)}));
+ $('itemChartLegend').textContent='Αξία αγορών (€)';
+ purchaseChart($('itemPriceBars'),series.filter(s=>s.item).map(s=>({...s,value:m=>PC.aggregate(s.item,[m]).value})));
+ $('itemMetrics').innerHTML=series.map(s=>{const a=s.item?PC.aggregate(s.item,s.months):null,latest=s.item?PC.latestPrice(s.item,s.months):null;return '<div class="item-metric"><span class="muted">Αγορές '+s.year+'</span><strong>'+money(a?.value)+'</strong><p>Ποσότητα: '+(a?formatNum(a.quantity):'—')+'</p><p>Μέση τιμή: '+price(a?.price)+'</p><p>Τιμή τελευταίου μήνα: '+price(latest?.price)+'</p></div>';}).join('');
+ const absent=series.filter(s=>!s.item).map(s=>s.year);
+ $('itemComparison').textContent=absent.length?'Ο κωδικός δεν περιλαμβάνεται στο αρχείο του '+absent.join(', ')+'.':'';
+ if(mode==='compare'&&series.every(s=>s.item)){const common=series[0].months.filter(m=>series[1].months.includes(m));const totals=series.map(s=>PC.aggregate(s.item,common).value);$('itemComparison').textContent='Κοινοί μήνες: '+common.map(m=>PC.MONTHS[m-1].slice(0,3)).join(', ')+' · 2025: '+money(totals[0])+' · 2026: '+money(totals[1])+' · Διαφορά δαπάνης: '+money(totals[1]-totals[0]);}
+ $('itemComparison').hidden=!$('itemComparison').textContent;
+ const months=[...new Set(series.flatMap(s=>s.months))].sort((a,b)=>a-b);
+ const table=$('itemMonths').closest('table');table.querySelector('thead').innerHTML='<tr><th>Μήνας</th>'+series.map(s=>'<th colspan="3">'+s.year+'</th>').join('')+'</tr><tr><th></th>'+series.map(()=>'<th>Ποσότητα</th><th>Αξία</th><th>Μέση τιμή</th>').join('')+'</tr>';
+ $('itemMonths').innerHTML=months.map(m=>'<tr><td>'+PC.MONTHS[m-1]+'</td>'+series.map(s=>{const a=s.item&&s.months.includes(m)?PC.aggregate(s.item,[m]):null;return '<td class="right">'+(a?formatNum(a.quantity):'—')+'</td><td class="right">'+money(a?.value)+'</td><td class="right">'+price(a?.price)+'</td>';}).join('')+'</tr>').join('');
+}
+openItem=async function(code){const token=++itemOpenToken;modalCode=code;const item=dataset.items.find(i=>i.code===code);if(!item)return;$('itemCode').textContent=code;$('itemTitle').textContent=item.description;$('itemSupplier').textContent=item.supplier||'—';modalData=[dataset];viewOptions($('itemYearView'),dataset.year);renderModal(String(dataset.year));$('itemDialog').showModal();$('itemDialog').scrollTop=0;try{const loaded=await Promise.all(yearOptions().map(latestYear));if(token!==itemOpenToken)return;modalData=loaded.filter(Boolean).sort((a,b)=>a.year-b.year);const mode=modalData.some(d=>d.year===2025)&&modalData.some(d=>d.year===2026)?'compare':String(dataset.year);viewOptions($('itemYearView'),mode);renderModal(mode);}catch(e){$('itemComparison').hidden=false;$('itemComparison').textContent='Δεν φορτώθηκε η σύγκριση. Δοκίμασε ξανά.';}};
+$('itemYearView').addEventListener('change',()=>{renderModal($('itemYearView').value);$('itemDialog').scrollTop=0;});
+$('importControls').querySelector('.purchase-top').appendChild(document.querySelector('.rules-panel'));
+$('purchaseYearView').closest('.view-toolbar').appendChild(document.querySelector('.dataset-actions'));
+if(dataset)displayDataset(dataset,!!preview);

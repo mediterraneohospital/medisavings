@@ -32,7 +32,7 @@ function updateSave(){const duplicate=preview&&imports.some(i=>i.purchase_year==
 async function allImports(){let result=[];for(let offset=0;;offset+=500){const {data,error}=await db.from('medisavings_purchase_imports').select(metadataColumns).order('imported_at',{ascending:false}).order('id',{ascending:false}).range(offset,offset+499);if(error)throw error;result.push(...data);if(data.length<500)break;}return result;}
 async function refresh(loadLatest=false){
   if(!checkedMode())return;
-  try{imports=await allImports();cloudReady=true;setError('');renderHistory();updateSave();if(loadLatest&&!preview&&imports.length)await selectImport(imports[0].id);}
+  try{imports=await allImports();cloudReady=true;setError('');renderHistory();updateSave();if(loadLatest&&!preview&&imports.length)await selectImport([...imports].sort((a,b)=>b.purchase_year-a.purchase_year)[0].id);}
   catch(error){cloudReady=false;updateSave();setError('Η σύνδεση με το ιστορικό εισαγωγών δεν είναι ακόμη διαθέσιμη. Μπορείς να εξετάσεις το Excel σε προεπισκόπηση· η αποθήκευση θα ενεργοποιηθεί όταν συνδεθεί η νέα ενότητα.');console.error('Purchase history unavailable',error);}
 }
 function renderHistory(){
