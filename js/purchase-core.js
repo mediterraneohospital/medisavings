@@ -87,16 +87,33 @@
   function aggregate(item,months) {
     const entries=item.months.filter(m=>months.includes(m.month));
     const quantity=entries.reduce((s,m)=>s+m.quantity,0),value=entries.reduce((s,m)=>s+m.value,0);
-    const hasReturns=entries.some(m=>m.suppliers.some(p=>p.quantity<0||p.value<0));
-    return {quantity,value,price:quantity>0&&value>=0 ? value/quantity : null,hasReturns};
+    const transfers=entries.flatMap(m=>m.suppliers.filter(isTransfer));
+    const transferQuantity=transfers.reduce((s,p)=>s+p.quantity,0),transferValue=transfers.reduce((s,p)=>s+p.value,0);
+    const purchaseQuantity=quantity-transferQuantity,purchaseValue=value-transferValue;
+    const hasReturns=entries.some(m=>m.suppliers.some(p=>!isTransfer(p)&&(p.quantity<0||p.value<0)));
+    return {quantity,value,purchaseQuantity,purchaseValue,transferQuantity,transferValue,hasTransfers:transfers.length>0,price:purchaseQuantity>0&&purchaseValue>=0 ? purchaseValue/purchaseQuantity : null,hasReturns};
+  }
+  function isTransfer(line) {
+    const name=norm(line.name).replace(/\s+/g,' ');
+    return /mediterraneo\s+first\s+care/.test(name)||/^(παρου|παρος|σαντορινη|σαντορινης)$/.test(name)||(/πολυιατρειο/.test(name)&&/παρου|σαντοριν/.test(name));
+  }
+  function movementCounts(data) {
+    const lines=data.items.flatMap(i=>i.months.flatMap(m=>m.suppliers));
+    return {transfers:lines.filter(isTransfer).length,returns:lines.filter(p=>!isTransfer(p)&&(p.quantity<0||p.value<0)).length};
   }
   function priceChange(item,months) {
-    const valid=item.months.filter(m=>months.includes(m.month)&&m.quantity>0&&m.value>0&&m.suppliers.every(p=>p.quantity>=0&&p.value>=0));
+    const valid=item.months.filter(m=>months.includes(m.month)).map(m=>({month:m.month,...aggregate(item,[m.month])})).filter(a=>a.price>0&&!a.hasReturns);
     if(valid.length<2) return null;
-    const first=valid[0],last=valid.at(-1),base=first.value/first.quantity;
-    return {pct:(last.value/last.quantity-base)/base,first:first.month,last:last.month};
+    const first=valid[0],last=valid.at(-1);
+    return {pct:(last.price-first.price)/first.price,first:first.month,last:last.month};
   }
-  const api={MONTHS,EXCLUDED,norm,parseRows,parseWorkbook,aggregate,priceChange};
+  function latestPrice(item,months) {
+    const last=item.months.filter(m=>months.includes(m.month)&&aggregate(item,[m.month]).price!=null).sort((a,b)=>a.month-b.month).at(-1);
+    if(!last)return null;
+    const a=aggregate(item,[last.month]);
+    return {month:last.month,price:a.price,hasReturns:a.hasReturns};
+  }
+  const api={MONTHS,EXCLUDED,norm,parseRows,parseWorkbook,aggregate,priceChange,latestPrice,isTransfer,movementCounts};
   root.PurchaseCore=api;
   if(typeof module!=='undefined') module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

@@ -61,7 +61,7 @@
       body:not(.edit-mode) .edit-only { display:none !important; }
     body:not(.edit-mode) button[title="Επεξεργασία"] { display:none !important; }
   </style>
-<link rel="stylesheet" href="css/shell.css?v=20261013"><script src="js/shell.js?v=20261013" defer></script>
+<link rel="stylesheet" href="css/shell.css?v=20261013b"><script src="js/shell.js?v=20261013b" defer></script>
 </head>
 <body class="app-shell">
 
@@ -98,31 +98,31 @@
     <!-- Filter bar -->
     <div style="display:flex;align-items:center;gap:10px;background:white;border-radius:8px;padding:10px 14px;box-shadow:var(--shadow)" class="list-filters">
       <i class="ti ti-search" style="font-size:15px;color:var(--gray-500)"></i>
-      <input type="text" id="searchInput" placeholder="Αναζήτηση περιγραφή, κωδικό, εταιρεία..." style="border:none;outline:none;font-size:13px;width:220px;color:var(--gray-800)">
+      <input type="text" id="searchInput" placeholder="Αναζήτηση περιγραφή, κωδικό, εταιρεία..." style="border:none;outline:none;font-size:16px;width:220px;color:var(--gray-800)">
       <button id="clearSearch" onclick="document.getElementById('searchInput').value='';document.getElementById('searchInput').dispatchEvent(new Event('input'))" style="display:none;background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:16px;padding:0 2px" title="Καθαρισμός">✕</button>
       <div style="width:1px;height:20px;background:var(--gray-200)"></div>
-      <select id="filterStatus" style="border:none;outline:none;font-size:13px;color:var(--gray-700);cursor:pointer;background:transparent">
+      <select id="filterStatus" style="border:none;outline:none;font-size:16px;color:var(--gray-700);cursor:pointer;background:transparent">
         <option value="">Κατάσταση: Όλα</option>
         <option value="active">Ενεργά</option>
         <option value="discontinued">Ανενεργά</option>
         <option value="pending">Εκκρεμή</option>
       </select>
-      <select id="filterCategory" style="border:none;outline:none;font-size:13px;color:var(--gray-700);cursor:pointer;background:transparent">
+      <select id="filterCategory" style="border:none;outline:none;font-size:16px;color:var(--gray-700);cursor:pointer;background:transparent">
         <option value="">Κατηγορία: Όλες</option>
       </select>
-      <select id="filterSupplier" style="border:none;outline:none;font-size:13px;color:var(--gray-700);cursor:pointer;background:transparent">
+      <select id="filterSupplier" style="border:none;outline:none;font-size:16px;color:var(--gray-700);cursor:pointer;background:transparent">
         <option value="">Εταιρεία: Όλες</option>
       </select>
       <div style="width:1px;height:20px;background:var(--gray-200)"></div>
       <button class="btn btn-outline btn-sm" id="sortOldMaterial" type="button"
-        style="padding:4px 10px;font-size:12px;white-space:nowrap"
+        style="padding:4px 10px;font-size:15px;white-space:nowrap"
         title="Ταξινόμηση με βάση την περιγραφή του παλιού υλικού">
-        <i class="ti ti-sort-ascending-letters" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>
+        <i class="ti ti-sort-ascending-letters" style="font-size:17px;vertical-align:-2px;margin-right:4px"></i>
         Α–Ω
       </button>
       <div style="flex:1"></div>
-      <span id="countLabel" style="font-size:12px;color:var(--gray-400)"></span>
-      <button class="btn btn-outline btn-sm" id="clearFilters" style="padding:4px 10px;font-size:12px">✕ Καθαρισμός</button>
+      <span id="countLabel" style="font-size:15px;color:var(--gray-400)"></span>
+      <button class="btn btn-outline btn-sm" id="clearFilters" style="padding:4px 10px;font-size:15px">✕ Καθαρισμός</button>
     </div>
 
   </div>
@@ -180,11 +180,11 @@ document.addEventListener('DOMContentLoaded', function() {
   btn.addEventListener('click', function() {
     if (sortCol === 'old_description' && sortDir === 'asc') {
       sortDir = 'desc';
-      btn.innerHTML = '<i class="ti ti-sort-descending-letters" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>Ω–Α';
+      btn.innerHTML = '<i class="ti ti-sort-descending-letters" style="font-size:17px;vertical-align:-2px;margin-right:4px"></i>Ω–Α';
     } else {
       sortCol = 'old_description';
       sortDir = 'asc';
-      btn.innerHTML = '<i class="ti ti-sort-ascending-letters" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>Α–Ω';
+      btn.innerHTML = '<i class="ti ti-sort-ascending-letters" style="font-size:17px;vertical-align:-2px;margin-right:4px"></i>Α–Ω';
     }
     renderTable(allData);
   });
@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
     clearFiltersBtn.addEventListener('click', function() {
       sortCol = 'sort_order';
       sortDir = 'asc';
-      btn.innerHTML = '<i class="ti ti-sort-ascending-letters" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>Α–Ω';
+      btn.innerHTML = '<i class="ti ti-sort-ascending-letters" style="font-size:17px;vertical-align:-2px;margin-right:4px"></i>Α–Ω';
       renderTable(allData);
     });
   }

@@ -26,16 +26,16 @@
       border: 1px solid var(--gray-200);
     }
     .period-row .form-group { margin: 0; }
-    .period-row label { font-size: 11px; color: var(--gray-600); font-weight: 600; display: block; margin-bottom: 3px; }
+    .period-row label { font-size:14px; color: var(--gray-600); font-weight: 600; display: block; margin-bottom: 3px; }
     .manual-col { display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 18px; gap: 3px; }
-    .manual-col label { font-size: 10px; color: var(--yellow); font-weight: 600; margin: 0; text-align: center; cursor: pointer; }
+    .manual-col label { font-size:13px; color: var(--yellow); font-weight: 600; margin: 0; text-align: center; cursor: pointer; }
     .periods-header {
       display: grid;
       grid-template-columns: 130px 120px 140px 130px 36px 1fr 36px;
       gap: 8px;
       padding: 0 12px 6px;
     }
-    .periods-header span { font-size: 11px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; }
+    .periods-header span { font-size:14px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; }
     .add-period-btn {
       background: var(--teal-subtle);
       border: 2px dashed var(--teal);
@@ -44,7 +44,7 @@
       padding: 12px;
       width: 100%;
       cursor: pointer;
-      font-size: 14px;
+      font-size:17px;
       font-weight: 600;
       margin-top: 10px;
       transition: all 0.15s;
@@ -55,7 +55,7 @@
       border: 1px solid var(--gray-200);
       color: var(--gray-400);
       cursor: pointer;
-      font-size: 14px;
+      font-size:17px;
       padding: 6px 8px;
       border-radius: 6px;
       height: 36px;
@@ -94,7 +94,7 @@
 })();
 </script>
 
-<link rel="stylesheet" href="css/shell.css?v=20261013"><script src="js/shell.js?v=20261013" defer></script>
+<link rel="stylesheet" href="css/shell.css?v=20261013b"><script src="js/shell.js?v=20261013b" defer></script>
 </head>
 <body class="app-shell">
 <div class="shell-mobile"><span class="brand-name">Medi<span>Savings</span></span><button id="shellMenu" aria-label="Άνοιγμα μενού">☰</button></div><nav class="app-sidebar" aria-label="Κύρια πλοήγηση"><a class="brand" href="index.html"><span class="brand-mark">M</span><div><div class="brand-name">Medi<span>Savings</span></div><div class="brand-sub">Procurement insights</div></div></a><div class="nav-label">Χώρος εργασίας</div><a href="index.html" class="nav-link  "><span data-icon="list"></span>Αλλαγές υλικών</a><a href="stats.html" class="nav-link  "><span data-icon="chart"></span>Στατιστικά οφέλους</a><a href="purchases.html" class="nav-link edit-only "><span data-icon="file"></span>Ιστορικό Αγορών</a><a href="add.html" class="nav-link edit-only active"><span data-icon="plus"></span>Νέα αλλαγή</a><div class="sidebar-bottom"><button id="shellEditToggle" class="sidebar-edit"><span data-icon="lock"></span><span id="shellEditLabel">Λειτουργία επεξεργασίας</span></button><div class="hospital-label"><strong>Mediterraneo Hospital</strong>Διαχείριση προμηθειών</div></div></nav>
@@ -143,16 +143,16 @@
     <div class="form-section-title"><i class="ti ti-chart-bar" style="margin-right:6px"></i>Ιστορικό Αγορών</div>
     <!-- Πληροφοριακές γραμμές: 2024 και 2025 παλιό -->
     <div style="display:grid;grid-template-columns:130px 120px 140px 1fr;gap:8px;padding:8px 12px;background:var(--gray-100);border-radius:8px;margin-bottom:8px;border:1px dashed var(--gray-300)">
-      <div style="font-size:11px;color:var(--gray-700);font-weight:600;display:flex;align-items:center">2024</div>
-      <div><input type="number" id="purchases_2024" placeholder="αγορές" style="width:100%;border:1px solid var(--gray-200);border-radius:6px;padding:5px 8px;font-size:12px;color:var(--gray-600)"></div>
-      <div style="display:flex;align-items:center;font-size:12px;color:var(--gray-400)" id="old_price_display_2024">παλιά τιμή</div>
-      <div style="display:flex;align-items:center;font-size:11px;color:var(--gray-400)">Δεν μετράει στο όφελος</div>
+      <div style="font-size:14px;color:var(--gray-700);font-weight:600;display:flex;align-items:center">2024</div>
+      <div><input type="number" id="purchases_2024" placeholder="αγορές" style="width:100%;border:1px solid var(--gray-200);border-radius:6px;padding:5px 8px;font-size:15px;color:var(--gray-600)"></div>
+      <div style="display:flex;align-items:center;font-size:15px;color:var(--gray-400)" id="old_price_display_2024">παλιά τιμή</div>
+      <div style="display:flex;align-items:center;font-size:14px;color:var(--gray-400)">Δεν μετράει στο όφελος</div>
     </div>
     <div style="display:grid;grid-template-columns:130px 120px 140px 1fr;gap:8px;padding:8px 12px;background:var(--gray-100);border-radius:8px;margin-bottom:12px;border:1px dashed var(--gray-300)">
-      <div style="font-size:11px;color:var(--gray-700);font-weight:600;display:flex;align-items:center">2025 Παλιό</div>
-      <div><input type="number" id="purchases_2025_old" placeholder="αγορές" style="width:100%;border:1px solid var(--gray-200);border-radius:6px;padding:5px 8px;font-size:12px;color:var(--gray-600)"></div>
-      <div style="display:flex;align-items:center;font-size:12px;color:var(--gray-400)" id="old_price_display_2025">παλιά τιμή</div>
-      <div style="display:flex;align-items:center;font-size:11px;color:var(--gray-400)">Δεν μετράει στο όφελος</div>
+      <div style="font-size:14px;color:var(--gray-700);font-weight:600;display:flex;align-items:center">2025 Παλιό</div>
+      <div><input type="number" id="purchases_2025_old" placeholder="αγορές" style="width:100%;border:1px solid var(--gray-200);border-radius:6px;padding:5px 8px;font-size:15px;color:var(--gray-600)"></div>
+      <div style="display:flex;align-items:center;font-size:15px;color:var(--gray-400)" id="old_price_display_2025">παλιά τιμή</div>
+      <div style="display:flex;align-items:center;font-size:14px;color:var(--gray-400)">Δεν μετράει στο όφελος</div>
     </div>
     <div class="periods-header">
       <span>Περίοδος</span>
@@ -169,8 +169,8 @@
 
   <!-- Απογραφή -->
   <div class="form-card">
-    <div class="form-section-title"><i class="ti ti-clipboard-list" style="margin-right:6px"></i>Απογραφή <span style="font-size:11px;color:var(--gray-400);font-weight:400">(προαιρετική)</span></div>
-    <div style="font-size:12px;color:var(--gray-500);margin-bottom:12px">Ετήσια απογραφή αρχής έτους — χρησιμοποιείται για τον υπολογισμό πραγματικής κατανάλωσης.</div>
+    <div class="form-section-title"><i class="ti ti-clipboard-list" style="margin-right:6px"></i>Απογραφή <span style="font-size:14px;color:var(--gray-400);font-weight:400">(προαιρετική)</span></div>
+    <div style="font-size:15px;color:var(--gray-500);margin-bottom:12px">Ετήσια απογραφή αρχής έτους — χρησιμοποιείται για τον υπολογισμό πραγματικής κατανάλωσης.</div>
     <div class="periods-header" style="grid-template-columns:100px 120px 160px 32px">
       <span>Έτος</span>
       <span>Ποσότητα (τεμ.)</span>

@@ -20,6 +20,7 @@ async function refresh(loadLatest=false){
 }
 function renderHistory(){
   const latest=imports[0];
+  $('importSummary').textContent=latest?'Τελευταία εισαγωγή · '+date(latest.imported_at):'Δεν υπάρχει εισαγωγή ακόμη';
   if(latest)$('lastImport').innerHTML='<span class="history-status-dot" style="background:#69a78f"></span><div><strong>Τελευταία εισαγωγή · '+date(latest.imported_at)+'</strong><p>'+escapeHtml(latest.file_name)+'<br>'+periodText(latest.purchase_year,latest.months)+' · '+formatNum(latest.item_count)+' είδη</p></div>';
   $('importHistory').innerHTML=imports.map(i=>'<button class="history-entry '+(selectedImport?.id===i.id?'active':'')+'" data-import="'+i.id+'"><div><strong>'+periodText(i.purchase_year,i.months)+'</strong><small>'+date(i.imported_at)+' · '+formatNum(i.item_count)+' είδη</small></div>'+appIcon('arrow')+'</button>').join('');
   $('importHistory').querySelectorAll('[data-import]').forEach(b=>b.addEventListener('click',()=>selectImport(b.dataset.import)));
@@ -29,6 +30,7 @@ async function selectImport(id){if(saving||reading)return;if(preview&&!confirm('
 async function digest(data){const buffer=typeof data==='string'?new TextEncoder().encode(data):data;return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',buffer)),b=>b.toString(16).padStart(2,'0')).join('');}
 async function readFile(file){
   if(!file||!checkedMode()||saving)return;
+  $('importControls').open=true;
   const token=++readToken;reading=true;if(preview){dataset=null;$('purchaseData').hidden=true;$('emptyPurchases').hidden=false;}preview=null;updateSave();$('reviewAccepted').checked=false;$('reviewChecks').hidden=true;
   $('previewStatus').hidden=false;$('previewStatus').textContent='Ανάγνωση αρχείου…';
   try{
@@ -57,23 +59,36 @@ function displayDataset(data,isPreview){
   for(const half of [1,2]){const months=data.months.filter(m=>half===1?m<=6:m>6);$('metricH'+half).textContent=months.length?money(sum(months)):'—';$('metricH'+half+'Coverage').textContent=months.length?periodText(data.year,months)+(months.length<6?' · έως διαθέσιμο μήνα':''):'Δεν καλύπτεται από το αρχείο';}
   const monthly=data.months.map(month=>({month,value:sum([month])}));const max=Math.max(1,...monthly.map(m=>Math.abs(m.value)));
   $('monthlyBars').innerHTML=monthly.map(m=>'<div class="month-bar-cell" title="'+PC.MONTHS[m.month-1]+': '+money(m.value)+'"><span class="month-value">'+new Intl.NumberFormat('el-GR',{notation:'compact',maximumFractionDigits:0}).format(m.value)+' €</span><div class="month-bar-track"><div class="month-bar '+(m.month>6?'h2':'')+'" style="height:'+Math.max(1,Math.abs(m.value)/max*100)+'%"></div></div><span class="month-bar-label">'+PC.MONTHS[m.month-1].slice(0,3)+'</span></div>').join('');
-  $('qualitySummary').innerHTML='<div class="quality-line"><span>Περίοδος</span><strong>'+data.months.length+' μήνες</strong></div><div class="quality-line"><span>Εξαιρούμενα είδη</span><strong>'+data.excluded.length+'</strong></div><div class="quality-line"><span>Γραμμές με αρνητικά ποσά</span><strong>'+data.negativeCount+'</strong></div><div class="quality-line"><span>Παρατηρήσεις ελέγχου</span><strong>'+data.warnings.length+'</strong></div>';
+  const movements=PC.movementCounts(data);
+  $('qualitySummary').innerHTML='<div class="quality-line"><span>Περίοδος</span><strong>'+data.months.length+' μήνες</strong></div><div class="quality-line"><span>Εξαιρούμενα είδη</span><strong>'+data.excluded.length+'</strong></div><div class="quality-line"><span>Αρνητικές κινήσεις προμηθευτών</span><strong>'+movements.returns+'</strong></div><div class="quality-line"><span>Μεταφορές στις μονάδες</span><strong>'+movements.transfers+'</strong></div><div class="quality-line"><span>Παρατηρήσεις ελέγχου</span><strong>'+data.warnings.length+'</strong></div>';
   $('qualityList').innerHTML=data.excluded.map(e=>'<div class="quality-detail"><strong>'+escapeHtml(e.code)+'</strong> · '+escapeHtml(e.description)+'<br>Δεν εισάγεται.</div>').join('')+data.warnings.map(w=>'<div class="quality-detail"><strong>'+escapeHtml(w.code)+'</strong> · '+escapeHtml(w.message)+'</div>').join('');
   $('purchasePeriod').innerHTML='<option value="all">Όλοι οι μήνες</option>'+([1,2].map(h=>data.months.some(m=>h===1?m<=6:m>6)?'<option value="h'+h+'">'+(h===1?'Α΄':'Β΄')+' εξάμηνο'+(data.months.filter(m=>h===1?m<=6:m>6).length<6?' (διαθέσιμοι μήνες)':'')+'</option>':'').join(''))+data.months.map(m=>'<option value="'+m+'">'+PC.MONTHS[m-1]+'</option>').join('');
   $('purchaseCategory').innerHTML='<option value="">Όλες οι κατηγορίες</option>'+[...new Set(data.items.map(i=>i.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'el')).map(c=>'<option value="'+escapeHtml(c)+'">'+escapeHtml(c)+'</option>').join('');
-  $('purchaseSearch').value='';$('purchaseSort').value='value';renderItems();
+  $('purchaseSearch').value='';$('purchaseSort').value='value:desc';renderItems();
 }
 function selectedMonths(){const value=$('purchasePeriod').value;return dataset.months.filter(m=>value==='all'||value==='h1'&&m<=6||value==='h2'&&m>6||Number(value)===m);}
 function pctHtml(change){if(!change)return '<span class="muted">—</span>';const pct=change.pct*100;return '<span class="price-pct '+(pct>.05?'up':pct<-.05?'down':'flat')+'" title="'+PC.MONTHS[change.first-1]+' → '+PC.MONTHS[change.last-1]+'">'+(pct>0?'+':'')+pct.toFixed(1)+'%</span>';}
 function renderItems(){
   if(!dataset)return;
   const query=PC.norm($('purchaseSearch').value),category=$('purchaseCategory').value,months=selectedMonths();
-  filtered=dataset.items.filter(i=>(!category||i.category===category)&&(!query||PC.norm([i.code,i.description,i.supplier,...i.months.flatMap(m=>m.suppliers.map(s=>s.name))].join(' ')).includes(query))).map(item=>({item,...PC.aggregate(item,months),change:PC.priceChange(item,months)}));
-  const sort=$('purchaseSort').value;
-  filtered.sort((a,b)=>sort==='description'?a.item.description.localeCompare(b.item.description,'el'):sort==='price-up'?(b.change?.pct??-Infinity)-(a.change?.pct??-Infinity):sort==='price-down'?(a.change?.pct??Infinity)-(b.change?.pct??Infinity):b.value-a.value);
+  filtered=dataset.items.filter(i=>(!category||i.category===category)&&(!query||PC.norm([i.code,i.description,i.supplier,...i.months.flatMap(m=>m.suppliers.map(s=>s.name))].join(' ')).includes(query))).map(item=>({item,...PC.aggregate(item,months),change:PC.priceChange(item,months),latest:PC.latestPrice(item,months)}));
+  const [sort,direction]=$('purchaseSort').value.split(':');
+  const sortValue=r=>sort==='description'?r.item.description:sort==='supplier'?r.item.supplier:sort==='change'?r.change?.pct:sort==='latest'?r.latest?.price:r[sort];
+  filtered.sort((a,b)=>{
+    const av=sortValue(a),bv=sortValue(b);
+    const aEmpty=av==null||av==='',bEmpty=bv==null||bv==='';
+    if(aEmpty!==bEmpty)return aEmpty?1:-1;
+    const comparison=aEmpty?0:typeof av==='string'?av.localeCompare(bv,'el',{numeric:true,sensitivity:'base'}):av-bv;
+    return (direction==='asc'?comparison:-comparison)||a.item.description.localeCompare(b.item.description,'el')||a.item.code.localeCompare(b.item.code);
+  });
+  document.querySelectorAll('[data-sort-header]').forEach(th=>{
+    const active=th.dataset.sortHeader===sort;
+    th.setAttribute('aria-sort',active?(direction==='asc'?'ascending':'descending'):'none');
+    th.querySelector('.sort-arrow').textContent=active?(direction==='asc'?'↑':'↓'):'↕';
+  });
   page=Math.min(page,Math.max(0,Math.ceil(filtered.length/PAGE_SIZE)-1));
   $('itemCount').textContent='· '+formatNum(filtered.length)+' είδη';
-  $('purchaseRows').innerHTML=filtered.slice(page*PAGE_SIZE,(page+1)*PAGE_SIZE).map(r=>'<tr data-code="'+escapeHtml(r.item.code)+'" tabindex="0" role="button" aria-label="Ιστορικό '+escapeHtml(r.item.description)+'"><td><span class="item-desc" title="'+escapeHtml(r.item.description)+'">'+escapeHtml(r.item.description)+'</span><span class="item-code">'+escapeHtml(r.item.code)+(r.hasReturns?' <span class="return-tag">περιλαμβάνει επιστροφές</span>':'')+'</span></td><td><div class="supplier-name" title="'+escapeHtml(r.item.supplier)+'">'+escapeHtml(r.item.supplier||'—')+'</div></td><td class="right num">'+formatNum(r.quantity)+'</td><td class="right money num">'+money(r.value)+'</td><td class="right num">'+price(r.price)+'</td><td class="right">'+pctHtml(r.change)+'</td><td>›</td></tr>').join('')||'<tr><td colspan="7" class="empty-panel">Δεν βρέθηκαν είδη.</td></tr>';
+  $('purchaseRows').innerHTML=filtered.slice(page*PAGE_SIZE,(page+1)*PAGE_SIZE).map(r=>'<tr data-code="'+escapeHtml(r.item.code)+'" tabindex="0" role="button" aria-label="Ιστορικό '+escapeHtml(r.item.description)+'"><td><span class="item-desc" title="'+escapeHtml(r.item.description)+'">'+escapeHtml(r.item.description)+'</span><span class="item-code">'+escapeHtml(r.item.code)+(r.hasReturns?' <span class="return-tag">περιλαμβάνει επιστροφές</span>':'')+(r.hasTransfers?' <span class="transfer-tag">μεταφορές στις μονάδες · '+formatNum(r.transferQuantity)+' τεμ.</span>':'')+'</span></td><td><div class="supplier-name" title="'+escapeHtml(r.item.supplier)+'">'+escapeHtml(r.item.supplier||'—')+'</div></td><td class="right num">'+formatNum(r.quantity)+'</td><td class="right money num">'+money(r.value)+'</td><td class="right num">'+price(r.price)+'</td><td class="right num">'+(r.latest?price(r.latest.price)+'<span class="item-code">'+PC.MONTHS[r.latest.month-1]+(r.latest.hasReturns?' · με επιστροφές':'')+'</span>':'—')+'</td><td class="right">'+pctHtml(r.change)+'</td><td>›</td></tr>').join('')||'<tr><td colspan="8" class="empty-panel">Δεν βρέθηκαν είδη.</td></tr>';
   $('purchaseRows').querySelectorAll('[data-code]').forEach(row=>{row.addEventListener('click',()=>openItem(row.dataset.code));row.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openItem(row.dataset.code);}});});
   $('pageLabel').textContent=(filtered.length?page*PAGE_SIZE+1:0)+'–'+Math.min(filtered.length,(page+1)*PAGE_SIZE)+' / '+formatNum(filtered.length);$('prevPage').disabled=page===0;$('nextPage').disabled=(page+1)*PAGE_SIZE>=filtered.length;
 }
@@ -86,18 +101,18 @@ async function saveImport(){
     const record={file_name:draft.fileName,file_hash:draft.fileHash,content_hash:draft.contentHash,purchase_year:data.year,months:data.months,item_count:data.items.length,total_value:Math.round(total*100)/100,warning_count:data.warnings.length,negative_count:data.negativeCount,dataset:data};
     const {data:saved,error}=await db.from('medisavings_purchase_imports').insert(record).select(metadataColumns).single();
     if(error){if(error.code==='23505')throw new Error('Το ίδιο αρχείο ή τα ίδια δεδομένα έχουν ήδη εισαχθεί.');throw error;}
-    snapshots.set(saved.id,data);imports.unshift(saved);selectedImport=saved;preview=null;$('reviewChecks').hidden=true;$('previewStatus').textContent='Η εισαγωγή αποθηκεύτηκε επιτυχώς · '+date(saved.imported_at);$('excelFile').value='';displayDataset(data,false);renderHistory();showToast('Αποθηκεύτηκε το ιστορικό αγορών.');
+    snapshots.set(saved.id,data);imports.unshift(saved);selectedImport=saved;preview=null;$('reviewChecks').hidden=true;$('previewStatus').textContent='Η εισαγωγή αποθηκεύτηκε επιτυχώς · '+date(saved.imported_at);$('excelFile').value='';displayDataset(data,false);renderHistory();$('importControls').open=false;showToast('Αποθηκεύτηκε το ιστορικό αγορών.');
   }catch(error){showToast(error.message||'Η εισαγωγή δεν αποθηκεύτηκε. Δοκίμασε ξανά.','error');console.error(error);}
   finally{saving=false;$('excelFile').disabled=false;$('importYear').disabled=false;$('saveImport').innerHTML=appIcon('plus')+' Αποθήκευση εισαγωγής';updateSave();}
 }
 async function openItem(code){
   const item=dataset.items.find(i=>i.code===code);if(!item)return;
   $('itemCode').textContent=code+' · '+dataset.year;$('itemTitle').textContent=item.description;$('itemSupplier').textContent=item.supplier||'—';
-  const total=PC.aggregate(item,dataset.months);
-  $('itemMetrics').innerHTML=[['Ποσότητα',formatNum(total.quantity)],['Αξία αγορών',money(total.value)],['Μέση τιμή',price(total.price)]].map(([label,value])=>'<div class="item-metric"><span class="muted">'+label+'</span><strong class="num">'+value+'</strong></div>').join('');
+  const total=PC.aggregate(item,dataset.months),latest=PC.latestPrice(item,dataset.months);
+  $('itemMetrics').innerHTML=[['Ποσότητα',formatNum(total.quantity)],['Αξία αγορών',money(total.value)],['Μέση τιμή',price(total.price)],['Τιμή τελευταίου μήνα'+(latest?' · '+PC.MONTHS[latest.month-1]:''),latest?price(latest.price):'—']].map(([label,value])=>'<div class="item-metric"><span class="muted">'+label+'</span><strong class="num">'+value+'</strong></div>').join('');
   const prices=item.months.map(m=>({month:m.month,...PC.aggregate(item,[m.month])})),max=Math.max(.0001,...prices.map(p=>p.price||0));
   $('itemPriceBars').innerHTML=prices.map(p=>'<div class="month-bar-cell"><span class="month-value">'+(p.price==null?'—':price(p.price))+'</span><div class="month-bar-track"><div class="month-bar" style="height:'+(p.price==null?0:Math.max(1,p.price/max*100))+'%"></div></div><span class="month-bar-label">'+PC.MONTHS[p.month-1].slice(0,3)+'</span></div>').join('');
-  $('itemMonths').innerHTML=item.months.map(m=>{const a=PC.aggregate(item,[m.month]);return '<tr><td>'+PC.MONTHS[m.month-1]+'</td><td class="right num">'+formatNum(a.quantity)+'</td><td class="right money">'+money(a.value)+'</td><td class="right">'+price(a.price)+'</td><td class="month-supplier">'+m.suppliers.map(s=>escapeHtml(s.name)+' ('+formatNum(s.quantity)+' / '+money(s.value)+')').join('<br>')+'</td></tr>';}).join('');
+  $('itemMonths').innerHTML=item.months.map(m=>{const a=PC.aggregate(item,[m.month]);return '<tr><td>'+PC.MONTHS[m.month-1]+'</td><td class="right num">'+formatNum(a.quantity)+'</td><td class="right money">'+money(a.value)+'</td><td class="right">'+price(a.price)+'</td><td class="month-supplier">'+m.suppliers.map(s=>(PC.isTransfer(s)?'<span class="transfer-tag">Μεταφορά στις μονάδες</span> ':'')+escapeHtml(s.name)+' ('+formatNum(s.quantity)+' / '+money(s.value)+')').join('<br>')+'</td></tr>';}).join('');
   $('itemVersions').textContent=imports.length?'Φόρτωση ιστορικού…':'Το ιστορικό αρχείων θα εμφανιστεί μετά την πρώτη αποθήκευση.';
   $('itemDialog').showModal();
   try{const versions=await Promise.all(imports.filter(i=>i.purchase_year===dataset.year).map(async i=>{const d=await getSnapshot(i.id),match=d.items.find(it=>it.code===code);return {meta:i,item:match};}));if($('itemCode').textContent!==code+' · '+dataset.year)return;
@@ -107,14 +122,14 @@ async function openItem(code){
 function exportReport(){
   if(!dataset)return;
   const months=selectedMonths(),label=periodText(dataset.year,months);
-  const rows=[['Περίοδος',label],['Πηγή',preview?.fileName||selectedImport?.file_name||''],['Κατάσταση',preview?'Μη αποθηκευμένη προεπισκόπηση':'Αποθηκευμένη εισαγωγή'],[],['Κωδικός','Περιγραφή','Εταιρεία','Κατηγορία','Ποσότητα','Αξία','Μέση τιμή αγοράς','Μεταβολή μέσης τιμής %','Επιστροφές']];
-  filtered.forEach(r=>rows.push([r.item.code,r.item.description,r.item.supplier,r.item.category,r.quantity,r.value,r.price,r.change?r.change.pct*100:null,r.hasReturns?'Ναι':'Όχι']));
-  const monthly=[['Έτος','Μήνας','Κωδικός','Περιγραφή','Ποσότητα','Αξία','Μέση τιμή αγοράς']];
-  filtered.forEach(r=>r.item.months.filter(m=>months.includes(m.month)).forEach(m=>{const a=PC.aggregate(r.item,[m.month]);monthly.push([dataset.year,PC.MONTHS[m.month-1],r.item.code,r.item.description,a.quantity,a.value,a.price]);}));
+  const rows=[['Περίοδος',label],['Πηγή',preview?.fileName||selectedImport?.file_name||''],['Κατάσταση',preview?'Μη αποθηκευμένη προεπισκόπηση':'Αποθηκευμένη εισαγωγή'],[],['Κωδικός','Περιγραφή','Εταιρεία','Κατηγορία','Ποσότητα','Αξία','Μέση τιμή αγοράς','Τιμή τελευταίου μήνα (μηνιαία μέση)','Τελευταίος μήνας','Μεταβολή μέσης τιμής %','Επιστροφές','Μεταφορές μονάδων (τεμ.)','Ποσότητα χωρίς μεταφορές','Αξία χωρίς μεταφορές']];
+  filtered.forEach(r=>rows.push([r.item.code,r.item.description,r.item.supplier,r.item.category,r.quantity,r.value,r.price,r.latest?.price??null,r.latest?PC.MONTHS[r.latest.month-1]:'',r.change?r.change.pct*100:null,r.hasReturns?'Ναι':'Όχι',r.transferQuantity,r.purchaseQuantity,r.purchaseValue]));
+  const monthly=[['Έτος','Μήνας','Κωδικός','Περιγραφή','Καθαρή ποσότητα Excel','Αξία Excel','Μέση τιμή αγοράς χωρίς μεταφορές','Μεταφορές μονάδων (τεμ.)','Ποσότητα χωρίς μεταφορές','Αξία χωρίς μεταφορές']];
+  filtered.forEach(r=>r.item.months.filter(m=>months.includes(m.month)).forEach(m=>{const a=PC.aggregate(r.item,[m.month]);monthly.push([dataset.year,PC.MONTHS[m.month-1],r.item.code,r.item.description,a.quantity,a.value,a.price,a.transferQuantity,a.purchaseQuantity,a.purchaseValue]);}));
   const audit=[['Κωδικός','Παρατήρηση'],...dataset.excluded.map(e=>[e.code,'Εξαιρείται: '+e.reason]),...dataset.warnings.map(w=>[w.code,w.message])];
   const wb=XLSX.utils.book_new();for(const [name,data] of [['Σύνοψη',rows],['Ανά μήνα',monthly],['Έλεγχοι',audit]]){const ws=XLSX.utils.aoa_to_sheet(data);ws['!cols']=[{wch:18},{wch:52},{wch:35},{wch:24},{wch:16},{wch:18},{wch:20}];XLSX.utils.book_append_sheet(wb,ws,name);}XLSX.writeFile(wb,'MediSavings-αγορές-'+dataset.year+'-'+$('purchasePeriod').value+'.xlsx');
 }
-$('chooseExcel').addEventListener('click',()=>{if(!saving&&checkedMode())$('excelFile').click();});
+$('chooseExcel').addEventListener('click',()=>{if(!saving&&checkedMode()){$('importControls').open=true;$('excelFile').click();}});
 $('excelFile').addEventListener('change',e=>readFile(e.target.files[0]));
 $('importYear').addEventListener('change',()=>{const file=$('excelFile').files[0];if(file)readFile(file);else if(preview){preview=null;updateSave();$('reviewChecks').hidden=true;$('previewStatus').textContent='Επίλεξε ξανά το αρχείο για το νέο έτος.';}});
 for(const event of ['dragenter','dragover'])$('dropZone').addEventListener(event,e=>{e.preventDefault();$('dropZone').classList.add('dragging');});
@@ -123,5 +138,6 @@ $('reviewAccepted').addEventListener('change',updateSave);$('saveImport').addEve
 $('cancelPreview').addEventListener('click',()=>{if(saving)return;readToken++;reading=false;preview=null;$('excelFile').value='';$('reviewChecks').hidden=true;$('previewStatus').hidden=true;updateSave();if(imports.length)selectImport(imports[0].id);else{dataset=null;$('purchaseData').hidden=true;$('emptyPurchases').hidden=false;}});
 $('refreshHistory').addEventListener('click',()=>refresh(!preview));
 for(const id of ['purchaseSearch','purchasePeriod','purchaseCategory','purchaseSort'])$(id).addEventListener(id==='purchaseSearch'?'input':'change',()=>{page=0;renderItems();});
+document.querySelectorAll('[data-sort]').forEach(button=>button.addEventListener('click',()=>{const [key,direction]=$('purchaseSort').value.split(':');$('purchaseSort').value=button.dataset.sort+':'+(key===button.dataset.sort&&direction==='asc'?'desc':'asc');page=0;renderItems();}));
 $('prevPage').addEventListener('click',()=>{page--;renderItems();});$('nextPage').addEventListener('click',()=>{page++;renderItems();});$('exportReport').addEventListener('click',exportReport);$('closeItem').addEventListener('click',()=>$('itemDialog').close());
 refresh(true);
