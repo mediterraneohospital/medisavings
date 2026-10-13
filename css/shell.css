@@ -18,7 +18,7 @@ body:not(.edit-mode) .edit-only{display:none!important}body:not(.edit-mode) butt
 
 /* Align all workspaces to the sidebar, including page-local overrides. */
 body.app-shell{font-size:16px}
-body.app-shell .top-inner,body.app-shell .scroll-content,body.app-shell .container,body.app-shell .detail-fixed-inner,body.app-shell .detail-scroll-content,body.app-shell .add-fixed-inner,body.app-shell .add-scroll-content{max-width:1572px!important;width:100%;margin-left:0!important;margin-right:0!important;padding-left:36px!important;padding-right:36px!important}
+body.app-shell .top-inner,body.app-shell .scroll-content,body.app-shell .container,body.app-shell .detail-fixed-inner,body.app-shell .detail-scroll-content,body.app-shell .add-fixed-inner,body.app-shell .add-scroll-content{max-width:1572px!important;width:100%;margin-left:0!important;margin-right:0!important;padding-left:72px!important;padding-right:36px!important}
 body.app-shell th{font-size:14px!important}body.app-shell td{font-size:15px}
 body.app-shell .item-code{font-size:13px!important}
 body.app-shell input,body.app-shell select,body.app-shell textarea{font-size:16px}
